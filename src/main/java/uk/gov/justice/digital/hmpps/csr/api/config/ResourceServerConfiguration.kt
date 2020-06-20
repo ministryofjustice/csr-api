@@ -25,7 +25,7 @@ class ResourceServerConfiguration : WebSecurityConfigurerAdapter() {
                 .sessionManagement()
                 .sessionCreationPolicy(STATELESS) // Can't have CSRF protection as requires session
                 .and().csrf().disable()
-                .authorizeRequests({ auth ->
+                .authorizeRequests { auth ->
                     auth
                             .antMatchers(
                                     "/webjars/**",
@@ -41,7 +41,7 @@ class ResourceServerConfiguration : WebSecurityConfigurerAdapter() {
                             .permitAll()
                             .anyRequest()
                             .authenticated()
-                })
+                }
                 .oauth2ResourceServer().jwt().jwtAuthenticationConverter(AuthAwareTokenConverter())
     }
 

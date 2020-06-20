@@ -1,6 +1,15 @@
 spring:
   application:
     name: csr-api
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    database: H2
+  datasource:
+    initialization-mode: never
 
 jackson:
   date-format: "yyyy-MM-dd HH:mm:ss"
