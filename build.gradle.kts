@@ -1,11 +1,11 @@
 plugins {
 	id("uk.gov.justice.hmpps.gradle-spring-boot") version "0.4.2"
 	kotlin("plugin.spring") version "1.3.72"
-	//kotlin("plugin.jpa") version "1.3.72"
+	kotlin("plugin.jpa") version "1.3.72"
 }
 
 configurations {
-	//implementation { exclude(mapOf("module" to "tomcat-jdbc")) }
+	implementation { exclude(mapOf("module" to "tomcat-jdbc")) }
 }
 
 dependencies {
@@ -18,9 +18,9 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-jdbc")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	//implementation("org.springframework.boot:spring-boot-starter-security")
-	//implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-	//implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 
 
 
