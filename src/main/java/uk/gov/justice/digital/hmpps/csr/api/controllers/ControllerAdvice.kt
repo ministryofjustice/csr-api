@@ -3,13 +3,13 @@ package uk.gov.justice.digital.hmpps.csr.api.controllers
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
 import uk.gov.justice.digital.hmpps.csr.api.dto.ErrorResponse
+import javax.persistence.EntityExistsException
 import javax.validation.ValidationException
 
 @RestControllerAdvice(basePackages = ["uk.gov.justice.digital.hmpps.csr.api.controllers"])
@@ -61,14 +61,14 @@ class ControllerAdvice {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse(status = (HttpStatus.INTERNAL_SERVER_ERROR.value()), developerMessage = (e.message)))
     }
-/* TODO: We don't have a database yet.
+
     @ExceptionHandler(EntityExistsException::class)
     fun handleEntityExistsException(e: Exception): ResponseEntity<ErrorResponse> {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(ErrorResponse(status = (HttpStatus.CONFLICT.value()), developerMessage = (e.message)))
     }
-*/
+
     companion object {
         private val log = LoggerFactory.getLogger(ControllerAdvice::class.java)
     }

@@ -1,20 +1,17 @@
 spring:
   application:
     name: csr-api
+
   jpa:
     open-in-view: false
+    show-sql: false
     hibernate:
-      ddl-auto: none
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    database: H2
+    database: postgresql
+
   datasource:
     initialization-mode: never
-
-jackson:
-  date-format: "yyyy-MM-dd HH:mm:ss"
-  serialization:
-    WRITE_DATES_AS_TIMESTAMPS: false
 
 server:
   port: 8080
