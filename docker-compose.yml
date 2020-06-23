@@ -1,18 +1,5 @@
 version: '3.1'
 services:
-  probation-teams-db:
-    image: postgres
-    command: "-c logging_collector=on"
-    networks:
-      - hmpps
-    container_name: csr-db
-    restart: always
-    ports:
-      - '5432:5432'
-    environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=admin_password
-      - POSTGRES_DB=csr-db
 
   hmpps-auth:
     image: quay.io/hmpps/hmpps-auth:latest
