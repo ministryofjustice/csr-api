@@ -12,6 +12,10 @@ spring:
 
   datasource:
     initialization-mode: never
+    hikari:
+      maximum-pool-size: 5
+      connectionTimeout: 1000
+      validationTimeout:  500
 
 server:
   port: 8080
@@ -42,3 +46,12 @@ management:
     info:
       cache:
         time-to-live: 2000ms
+
+csr:
+  regions:
+    - name : region1
+      username: admin
+      password: admin_password
+      schema: schema1
+  url: jdbc:h2:mem:csr-db;Mode=Oracle
+  dataname: org.h2.Driver

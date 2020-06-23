@@ -12,7 +12,7 @@ dependencies {
 
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-	runtimeOnly("org.postgresql:postgresql:42.2.12")
+	runtimeOnly("com.h2database:h2:1.4.200")
 	runtimeOnly("com.zaxxer:HikariCP:3.4.3")
 
 	implementation("org.springframework.boot:spring-boot-starter-web")
