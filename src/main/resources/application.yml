@@ -5,10 +5,6 @@ spring:
   jpa:
     open-in-view: false
     show-sql: false
-    hibernate:
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    database: postgresql
 
   datasource:
     initialization-mode: never
@@ -49,7 +45,7 @@ management:
 
 csr:
   regions:
-    - name : region1
+    - name: region1
       username: admin
       password: admin_password
       schema: schema1

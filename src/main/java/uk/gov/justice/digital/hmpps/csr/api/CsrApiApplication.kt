@@ -20,7 +20,7 @@ import javax.sql.DataSource
 class CsrApiApplication {
 
     @Autowired
-    lateinit var regionData : Regions;
+    lateinit var regionData: Regions;
 
     @Bean
     fun dataSource(): DataSource {
@@ -28,17 +28,17 @@ class CsrApiApplication {
         val targetDataSources: Map<Any, Any> = regionData.regions.map {
             it.name to
                     createDataSource(regionData.url,
-                                    it.username,
-                                    it.password,
-                                    it.schema,
-                                    regionData.dataname)
+                            it.username,
+                            it.password,
+                            it.schema,
+                            regionData.dataname)
         }.toMap()
         dataSource.setTargetDataSources(targetDataSources)
         dataSource.afterPropertiesSet()
         return dataSource
     }
 
-    fun createDataSource(url: String, username: String, password: String, currentSchema: String, dataSourceClassName : String) : DataSource {
+    fun createDataSource(url: String, username: String, password: String, currentSchema: String, dataSourceClassName: String): DataSource {
         val dataSource = HikariDataSource()
         dataSource.dataSourceClassName = dataSourceClassName
         dataSource.addDataSourceProperty("url", url)
