@@ -20,7 +20,7 @@ import javax.sql.DataSource
 class CsrApiApplication {
 
     @Autowired
-    lateinit var regionData: Regions;
+    lateinit var regionData: Regions
 
     @Bean
     fun dataSource(): DataSource {
