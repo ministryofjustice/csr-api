@@ -62,13 +62,6 @@ class ControllerAdvice {
                 .body(ErrorResponse(status = (HttpStatus.INTERNAL_SERVER_ERROR.value()), developerMessage = (e.message)))
     }
 
-    @ExceptionHandler(EntityExistsException::class)
-    fun handleEntityExistsException(e: Exception): ResponseEntity<ErrorResponse> {
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(ErrorResponse(status = (HttpStatus.CONFLICT.value()), developerMessage = (e.message)))
-    }
-
     companion object {
         private val log = LoggerFactory.getLogger(ControllerAdvice::class.java)
     }
