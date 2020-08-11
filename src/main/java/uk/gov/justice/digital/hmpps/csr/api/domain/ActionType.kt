@@ -1,10 +1,10 @@
 package uk.gov.justice.digital.hmpps.csr.api.domain
 
 enum class ActionType(val action: String, val number: Int) {
-    UNCHANGED("UNCHANGED", 0),
-    ADD("ADD", 1),
-    EDIT("EDIT", 2),
-    DELETE("DELETE", 3);
+    UNCHANGED("unchanged", 0),
+    ADD("add", 1),
+    EDIT("edit", 2),
+    DELETE("delete", 3);
 
 
     companion object {
