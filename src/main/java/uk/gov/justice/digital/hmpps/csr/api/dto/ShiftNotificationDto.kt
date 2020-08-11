@@ -18,27 +18,19 @@ data class ShiftNotificationDto @JsonCreator constructor(
         @JsonProperty("quantumId")
         val quantumId: String,
 
-        @ApiModelProperty(required = true, value = "When the shift notification was created", position = 2, example = "2020-04-20T17:45:55")
-        @JsonProperty("createdAt")
-        val createdAt: LocalDateTime,
-
-        @ApiModelProperty(required = true, value = "Staff ID number", position = 3, example = "123")
-        @JsonProperty("staffId")
-        val staffId: Int,
-
-        @ApiModelProperty(required = true, value = "Date of shift", position = 4, example = "2020-08-22")
+        @ApiModelProperty(required = true, value = "Date of shift", position = 2, example = "2020-08-22")
         @JsonProperty("shiftDate")
         val shiftDate: LocalDate,
 
-        @ApiModelProperty(required = true, value = "Date shift was last modified", position = 5, example = "2020-08-22T09:45:55")
+        @ApiModelProperty(required = true, value = "Date shift was last modified", position = 3, example = "2020-08-22T09:45:55")
         @JsonProperty("lastModified")
-        val lastModified: LocalDateTime,
+        val shiftModified: LocalDateTime,
 
-        @ApiModelProperty(required = true, value = "Type of shift", position = 6, example = "SHIFT")
+        @ApiModelProperty(required = true, value = "Type of shift", position = 4, example = "SHIFT")
         @JsonProperty("shiftType")
         val shiftType: String,
 
-        @ApiModelProperty(required = true, value = "Action type of notification", position = 3, example = "EDIT")
+        @ApiModelProperty(required = true, value = "Action type of notification", position = 5, example = "EDIT")
         @JsonProperty("actionType")
         val actionType: String
 ) {
@@ -53,10 +45,8 @@ data class ShiftNotificationDto @JsonCreator constructor(
                 fun from(it: ShiftNotification): ShiftNotificationDto {
                         return ShiftNotificationDto(
                                 it.quantumId,
-                                it.createdAt,
-                                it.staffId,
                                 it.shiftDate,
-                                it.lastModified,
+                                it.shiftModified,
                                 ShiftType.fromInt(it.shiftType)!!.shiftType,
                                 ActionType.fromInt(it.actionType)!!.action
                         )
