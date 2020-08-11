@@ -23,10 +23,9 @@ class NotificationController(val notificationService: NotificationService) {
     @ApiResponses(value = [
         ApiResponse(code = 200, message = "OK", response = ShiftNotificationDto::class)
     ])
-    @GetMapping("api/notifications/shifts/{businessunit}")
-    fun getNotifications(@PathVariable businessunit: String): ResponseEntity<Collection<ShiftNotificationDto>> {
-        //TODO: What am i doing with the businessunit?
-        return ResponseEntity.ok(notificationService.getNotifications())
+    @GetMapping("api/notifications/shifts/{planUnit}")
+    fun getNotifications(@PathVariable planUnit: String): ResponseEntity<Collection<ShiftNotificationDto>> {
+        return ResponseEntity.ok(notificationService.getNotifications(planUnit))
     }
 
 }
