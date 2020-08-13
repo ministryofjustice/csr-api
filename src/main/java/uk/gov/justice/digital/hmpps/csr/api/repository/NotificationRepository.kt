@@ -11,5 +11,5 @@ import java.util.*
 interface NotificationRepository : CrudRepository<ShiftNotification, UUID>{
 
     @Procedure("GET_MODIFIED_SHIFTS")
-    fun GetModifiedShifts(planUnit:String): Collection<ShiftNotification>
+    fun getModifiedShifts(planUnit:String): Collection<ShiftNotification>
 }

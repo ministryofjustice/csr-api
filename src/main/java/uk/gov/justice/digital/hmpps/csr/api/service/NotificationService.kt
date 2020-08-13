@@ -16,8 +16,7 @@ class NotificationService(
     fun getNotifications(planUnit:String): Collection<ShiftNotificationDto> {
         log.info("Fetching notifications")
 
-        return notificationRepository
-            .getModifiedShifts(planUnit)
+        return notificationRepository.getModifiedShifts(planUnit)
             .map { ShiftNotificationDto.from(it) }
     }
 
