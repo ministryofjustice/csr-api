@@ -9,6 +9,7 @@ import java.util.*
 
 @Repository
 interface NotificationRepository : CrudRepository<ShiftNotification, UUID>{
-    @Procedure
-    fun GET_MODIFIED_SHIFTS(planUnit:String): Collection<ShiftNotification>
+
+    @Procedure("GET_MODIFIED_SHIFTS")
+    fun GetModifiedShifts(planUnit:String): Collection<ShiftNotification>
 }

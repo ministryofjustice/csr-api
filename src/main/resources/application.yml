@@ -5,6 +5,9 @@ spring:
   jpa:
     open-in-view: false
     show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.Oracle10gDialect
 
   datasource:
     initialization-mode: never
@@ -49,5 +52,9 @@ csr:
       username: admin
       password: admin_password
       schema: schema1
+    - name: region2
+      username: admin
+      password: admin_password
+      schema: schema2
   url: jdbc:h2:mem:csr-db;Mode=Oracle
   dataname: org.h2.Driver

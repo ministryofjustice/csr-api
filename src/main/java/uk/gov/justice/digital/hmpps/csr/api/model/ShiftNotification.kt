@@ -8,7 +8,6 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
-@Table(name = "ST_STAFF")
 data class ShiftNotification(
         @Id
         @Column(nullable = false, name = "QuantumId")
@@ -31,6 +30,7 @@ data class ShiftNotification(
 
         @Column(nullable = false, name = "Type")
         var shiftType: Int,
+
 
         @Column(nullable = false, name = "ActionType")
         var actionType: Int
