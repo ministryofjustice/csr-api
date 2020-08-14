@@ -5,9 +5,11 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
+import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
 import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.csr.api.model.ShiftNotification
+import uk.gov.justice.digital.hmpps.csr.api.service.NotificationService
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -47,10 +49,22 @@ data class ShiftNotificationDto @JsonCreator constructor(
                                 it.quantumId,
                                 it.shiftDate,
                                 it.shiftModified,
-                                ShiftType.fromInt(it.shiftType)!!.shiftType,
-                                ActionType.fromInt(it.actionType)!!.action
+                                ShiftType.fromInt(it.shiftType)
+                                        ?.shiftType
+                                        ?: run {
+                                                log.warn("No shift type. Overwriting as shift")
+                                                ShiftType.SHIFT.shiftType
+                                        },
+                                ActionType.fromInt(it.actionType)
+                                        ?.action
+                                        ?: run {
+                                                log.warn("No Action Type. Overwrite with edit")
+                                                ActionType.EDIT.action
+                                        }
                         )
                 }
+
+                private val log = LoggerFactory.getLogger(NotificationService::class.java)
 
         }
 }
