@@ -2,11 +2,11 @@ package uk.gov.justice.digital.hmpps.csr.api.model
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
+import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
 import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
-import uk.gov.justice.digital.hmpps.csr.api.dto.ShiftNotificationDtoTest
 import java.time.*
 
-class ShiftDetailTest {
+class ShiftNotificationTest {
 
     @Test
     fun `Should return a valid ShiftDetail`() {
@@ -18,32 +18,26 @@ class ShiftDetailTest {
         val shiftDate = date.toLocalDate()
         val shiftModified = date.minusDays(3)
         val shiftModifiedInSeconds = shiftModified.toEpochSecond(ZoneOffset.of("Z"))
-        val taskStart = 123L
-        val taskEnd = 456L
-        val task = "Diving"
-        val shiftType = ShiftType.OVERTIME.number
+        val shiftType = ShiftType.SHIFT.number
+        val actionType = ActionType.EDIT.number
 
-        val detail = ShiftDetail(
+        val detail = ShiftNotification(
                 quantumId,
+                date,
                 staffId,
                 shiftDate,
                 shiftModified,
                 shiftModifiedInSeconds,
-                taskStart,
-                taskEnd,
-                task,
-                shiftType
+                shiftType,
+                actionType
         )
 
         Assertions.assertThat(detail.quantumId).isEqualTo(quantumId)
         Assertions.assertThat(detail.staffId).isEqualTo(staffId)
         Assertions.assertThat(detail.shiftDate).isEqualTo(shiftDate)
         Assertions.assertThat(detail.lastModified).isEqualTo(shiftModified)
-        Assertions.assertThat(detail.detailModifiedInSeconds).isEqualTo(shiftModifiedInSeconds)
-        Assertions.assertThat(detail.detailStartTimeInSeconds).isEqualTo(taskStart)
-        Assertions.assertThat(detail.detailEndTimeInSeconds).isEqualTo(taskEnd)
-        Assertions.assertThat(detail.task).isEqualTo(task)
         Assertions.assertThat(detail.shiftType).isEqualTo(shiftType)
+        Assertions.assertThat(detail.actionType).isEqualTo(actionType)
 
     }
         companion object {
