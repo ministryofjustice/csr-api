@@ -4,6 +4,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.csr.api.dto.ShiftNotificationDto
+import uk.gov.justice.digital.hmpps.csr.api.model.ShiftDetail
+import uk.gov.justice.digital.hmpps.csr.api.model.ShiftNotification
 import uk.gov.justice.digital.hmpps.csr.api.repository.NotificationRepository
 
 
@@ -13,15 +15,31 @@ class NotificationService(
         val notificationRepository: NotificationRepository
 ) {
 
-    fun getShiftNotifications(planUnit:String): Collection<ShiftNotificationDto> {
+    fun getShiftNotificationsAndDetails(planUnit:String): Collection<ShiftNotificationDto>{
+        val notifications = getShiftNotifications(planUnit)
+        val details = getShiftDetails(planUnit)
+
+        //TODO: merge notifications and details
+
+        return listOf<ShiftNotificationDto>()
+    }
+
+    private fun getShiftNotifications(planUnit:String): Collection<ShiftNotification> {
         log.debug("Fetching modified shifts")
 
-        val modifiedShifts =  notificationRepository
-                .getModifiedShifts(planUnit)
-                .map { ShiftNotificationDto.from(it) }
+        val modifiedShifts =  notificationRepository.getModifiedShifts(planUnit)
 
         log.info("Found ${modifiedShifts.size} modified shifts")
          return modifiedShifts
+    }
+
+    private fun getShiftDetails(planUnit:String): Collection<ShiftDetail> {
+        log.debug("Fetching modified shifts")
+
+        val modifiedShiftDetails =  notificationRepository.getModifiedDetail(planUnit)
+
+        log.info("Found ${modifiedShiftDetails.size} modified shifts")
+         return modifiedShiftDetails
     }
 
     companion object {
