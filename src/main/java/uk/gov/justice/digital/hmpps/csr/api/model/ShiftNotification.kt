@@ -5,7 +5,6 @@ import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
-import javax.persistence.Table
 
 @Entity
 data class ShiftNotification(
@@ -23,7 +22,7 @@ data class ShiftNotification(
         var shiftDate: LocalDate,
 
         @Column(nullable = false, name = "LastModifiedDateTime")
-        var shiftModified: LocalDateTime,
+        var lastModified: LocalDateTime,
 
         @Column(nullable = false, name = "LastModifiedDateTimeInSeconds")
         var lastModifiedInSeconds: Int,

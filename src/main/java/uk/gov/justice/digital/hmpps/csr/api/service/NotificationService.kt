@@ -16,12 +16,10 @@ class NotificationService(
 ) {
 
     fun getShiftNotificationsAndDetails(planUnit:String): Collection<ShiftNotificationDto>{
-        val notifications = getShiftNotifications(planUnit)
-        val details = getShiftDetails(planUnit)
+        val notificationsAsDto = ShiftNotificationDto.fromShift(getShiftNotifications(planUnit))
+        val detailsAsDto = ShiftNotificationDto.fromDetail(getShiftDetails(planUnit))
 
-        //TODO: merge notifications and details
-
-        return listOf<ShiftNotificationDto>()
+        return notificationsAsDto.plus(detailsAsDto)
     }
 
     private fun getShiftNotifications(planUnit:String): Collection<ShiftNotification> {

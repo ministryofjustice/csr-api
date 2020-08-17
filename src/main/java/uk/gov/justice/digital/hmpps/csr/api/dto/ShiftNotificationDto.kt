@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.csr.api.dto
 
-import java.util.*
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiModel
@@ -8,9 +7,9 @@ import io.swagger.annotations.ApiModelProperty
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
 import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
+import uk.gov.justice.digital.hmpps.csr.api.model.ShiftDetail
 import uk.gov.justice.digital.hmpps.csr.api.model.ShiftNotification
 import uk.gov.justice.digital.hmpps.csr.api.service.NotificationService
-import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -28,27 +27,48 @@ data class ShiftNotificationDto @JsonCreator constructor(
         @JsonProperty("lastModified")
         val shiftModified: LocalDateTime,
 
-        @ApiModelProperty(required = true, value = "Type of shift", position = 4, example = "SHIFT")
-        @JsonProperty("shiftType")
+        @ApiModelProperty(required = true, value = "Start time from midnight", position = 4, example = "36000")
+        @JsonProperty("detailStartTimeInSeconds")
+        val taskStart: Long?,
+
+        @ApiModelProperty(required = true, value = "End time from midnight", position = 5, example = "83000")
+        @JsonProperty("detailEndTimeInSeconds")
+        val taskEnd: Long?,
+
+        @ApiModelProperty(required = true, value = "Detail of shift task", position = 6, example = "83000")
+        @JsonProperty("task")
+        val task: String?,
+
+        @ApiModelProperty(required = true, value = "Type of shift", position = 7, example = "overtime")
+        @JsonProperty("type")
         val shiftType: String,
 
-        @ApiModelProperty(required = true, value = "Action type of notification", position = 5, example = "EDIT")
+        @ApiModelProperty(required = true, value = "Type of notification action", position = 7, example = "edit")
         @JsonProperty("actionType")
-        val actionType: String
+        val actionType: String = ActionType.EDIT.action
 ) {
         companion object {
 
-                fun from(shiftNotifications: Collection<ShiftNotification>): Collection<ShiftNotificationDto> {
+                fun fromShift(shiftNotifications: Collection<ShiftNotification>): Collection<ShiftNotificationDto> {
                         return shiftNotifications.map {
-                                from(it)
+                                fromShift(it)
+                        }
+                }
+                fun fromDetail(shiftDetail: Collection<ShiftDetail>): Collection<ShiftNotificationDto> {
+                        return shiftDetail.map {
+                                fromDetail(it)
                         }
                 }
 
-                fun from(it: ShiftNotification): ShiftNotificationDto {
+                fun fromShift(it: ShiftNotification): ShiftNotificationDto {
                         return ShiftNotificationDto(
                                 it.quantumId,
                                 it.shiftDate,
-                                it.shiftModified,
+                                it.lastModified,
+                                null,
+                                null,
+                                null,
+
                                 ShiftType.fromInt(it.shiftType)
                                         ?.shiftType
                                         ?: run {
@@ -61,6 +81,26 @@ data class ShiftNotificationDto @JsonCreator constructor(
                                                 log.warn("No Action Type. Overwrite with edit")
                                                 ActionType.EDIT.action
                                         }
+                        )
+                }
+
+                fun fromDetail(it: ShiftDetail): ShiftNotificationDto {
+                        return ShiftNotificationDto(
+                                it.quantumId,
+                                it.shiftDate,
+                                it.lastModified,
+                                it.detailStartTimeInSeconds,
+                                it.detailEndTimeInSeconds,
+                                it.task,
+
+
+                                ShiftType.fromInt(it.shiftType)
+                                        ?.shiftType
+                                        ?: run {
+                                                log.warn("No shift type. Overwriting as shift")
+                                                ShiftType.SHIFT.shiftType
+                                        },
+                                ActionType.EDIT.action
                         )
                 }
 
