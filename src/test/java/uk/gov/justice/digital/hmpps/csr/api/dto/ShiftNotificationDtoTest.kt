@@ -11,11 +11,11 @@ class ShiftNotificationDtoTest {
     @Test
     fun `Create Notification Dto from collection of ShiftNotification`() {
         val shifts = listOf(getValidShiftNotification())
-        val notificationDtos = shifts.map { ShiftNotificationDto.fromShift(it) }
+        val notificationDtos = ShiftNotificationDto.fromShift(shifts)
 
         Assertions.assertThat(notificationDtos).hasSize(1)
 
-        val first = notificationDtos[0]
+        val first = notificationDtos.first()
         Assertions.assertThat(first.quantumId).isEqualTo("XYZ")
         Assertions.assertThat(first.task).isEqualTo(null)
     }
@@ -23,11 +23,11 @@ class ShiftNotificationDtoTest {
     @Test
     fun `Create Notification Dto from collection of ShiftDetail`() {
         val shifts = listOf(getValidShiftDetail())
-        val notificationDtos = shifts.map { ShiftNotificationDto.fromDetail(it) }
+        val notificationDtos = ShiftNotificationDto.fromDetail(shifts)
 
         Assertions.assertThat(notificationDtos).hasSize(1)
 
-        val first = notificationDtos[0]
+        val first = notificationDtos.first()
         Assertions.assertThat(first.quantumId).isEqualTo("ABC")
         Assertions.assertThat(first.task).isEqualTo("Diving")
     }

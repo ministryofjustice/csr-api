@@ -27,15 +27,15 @@ data class ShiftNotificationDto @JsonCreator constructor(
         @JsonProperty("lastModified")
         val shiftModified: LocalDateTime,
 
-        @ApiModelProperty(required = true, value = "Start time from midnight", position = 4, example = "36000")
+        @ApiModelProperty(required = true, value = "Start time in seconds from midnight", position = 4, example = "36000")
         @JsonProperty("detailStartTimeInSeconds")
         val taskStart: Long?,
 
-        @ApiModelProperty(required = true, value = "End time from midnight", position = 5, example = "83000")
+        @ApiModelProperty(required = true, value = "End time in seconds from midnight", position = 5, example = "83000")
         @JsonProperty("detailEndTimeInSeconds")
         val taskEnd: Long?,
 
-        @ApiModelProperty(required = true, value = "Detail of shift task", position = 6, example = "83000")
+        @ApiModelProperty(required = true, value = "Detail of shift task", position = 6, example = "Gym watch")
         @JsonProperty("task")
         val task: String?,
 
