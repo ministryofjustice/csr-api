@@ -11,7 +11,7 @@ import java.time.ZoneId
 class OvertimesDtoTestDetail {
     @Test
     fun `Create Overtimes Dto from collection of ShiftOvertime`() {
-        val overtimes = DetailDto.from(listOf(getValidShiftOvertime()))
+        val overtimes = listOf(getValidShiftOvertime())
         val overtimesDto = DetailsDto.from(overtimes)
         val first = overtimesDto.details.first()
 

@@ -14,8 +14,8 @@ data class DetailsDto @JsonCreator constructor(
 ) {
         companion object {
 
-                fun from(details: Collection<DetailDto>): DetailsDto {
-                        return DetailsDto(details)
+                fun from(details: Collection<Detail>): DetailsDto {
+                        return DetailsDto(DetailDto.from(details))
                 }
 
         }

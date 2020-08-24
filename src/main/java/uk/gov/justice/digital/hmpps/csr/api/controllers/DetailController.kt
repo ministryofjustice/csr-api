@@ -21,7 +21,7 @@ class DetailController(val detailService: DetailService) {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: LocalDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: LocalDate
     ): ResponseEntity<DetailsDto> {
-        return ResponseEntity.ok(detailService.getDetail(from, to))
+        return ResponseEntity.ok(detailService.getStaffDetails(from, to))
     }
 
 }
