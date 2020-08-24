@@ -5,6 +5,6 @@ import uk.gov.justice.digital.hmpps.csr.api.utils.RegionContext.getRegion
 
 class RegionAwareRoutingSource : AbstractRoutingDataSource() {
     override fun determineCurrentLookupKey(): Any {
-        return getRegion()
+        return getRegion() ?: "1"
     }
 }

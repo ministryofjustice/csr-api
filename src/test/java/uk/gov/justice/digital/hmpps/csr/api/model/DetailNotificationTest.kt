@@ -3,10 +3,9 @@ package uk.gov.justice.digital.hmpps.csr.api.model
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
-import uk.gov.justice.digital.hmpps.csr.api.dto.ShiftNotificationDtoTest
 import java.time.*
 
-class ShiftDetailTest {
+class DetailNotificationTest {
 
     @Test
     fun `Should return a valid ShiftDetail`() {
@@ -23,7 +22,7 @@ class ShiftDetailTest {
         val task = "Diving"
         val shiftType = ShiftType.OVERTIME.number
 
-        val detail = ShiftDetail(
+        val detail = DetailNotification(
                 quantumId,
                 staffId,
                 shiftDate,

@@ -7,14 +7,14 @@ import io.swagger.annotations.ApiModelProperty
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
 import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
-import uk.gov.justice.digital.hmpps.csr.api.model.ShiftDetail
+import uk.gov.justice.digital.hmpps.csr.api.model.DetailNotification
 import uk.gov.justice.digital.hmpps.csr.api.model.ShiftNotification
 import uk.gov.justice.digital.hmpps.csr.api.service.NotificationService
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 @ApiModel(description = "ShiftNotification")
-data class ShiftNotificationDto @JsonCreator constructor(
+data class NotificationDto @JsonCreator constructor(
         @ApiModelProperty(required = true, value = "User unique identifier", position = 1, example = "AB102CD")
         @JsonProperty("quantumId")
         val quantumId: String,
@@ -49,19 +49,19 @@ data class ShiftNotificationDto @JsonCreator constructor(
 ) {
         companion object {
 
-                fun fromShift(shiftNotifications: Collection<ShiftNotification>): Collection<ShiftNotificationDto> {
+                fun fromShift(shiftNotifications: Collection<ShiftNotification>): Collection<NotificationDto> {
                         return shiftNotifications.map {
                                 fromShift(it)
                         }
                 }
-                fun fromDetail(shiftDetail: Collection<ShiftDetail>): Collection<ShiftNotificationDto> {
-                        return shiftDetail.map {
+                fun fromDetail(detailNotification: Collection<DetailNotification>): Collection<NotificationDto> {
+                        return detailNotification.map {
                                 fromDetail(it)
                         }
                 }
 
-                fun fromShift(it: ShiftNotification): ShiftNotificationDto {
-                        return ShiftNotificationDto(
+                fun fromShift(it: ShiftNotification): NotificationDto {
+                        return NotificationDto(
                                 it.quantumId,
                                 it.shiftDate,
                                 it.lastModified,
@@ -84,8 +84,8 @@ data class ShiftNotificationDto @JsonCreator constructor(
                         )
                 }
 
-                fun fromDetail(it: ShiftDetail): ShiftNotificationDto {
-                        return ShiftNotificationDto(
+                fun fromDetail(it: DetailNotification): NotificationDto {
+                        return NotificationDto(
                                 it.quantumId,
                                 it.shiftDate,
                                 it.lastModified,

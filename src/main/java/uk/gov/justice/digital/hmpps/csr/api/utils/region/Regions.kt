@@ -7,13 +7,13 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class Regions {
     lateinit var regions: List<Region>
-    lateinit var url: String
-    lateinit var dataname: String
 }
 
 class Region {
     lateinit var name: String
     lateinit var username: String
     lateinit var password: String
+    lateinit var url: String
+    lateinit var driverClassName: String
     lateinit var schema: String
 }

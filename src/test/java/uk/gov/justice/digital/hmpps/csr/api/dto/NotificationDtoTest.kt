@@ -2,16 +2,16 @@ package uk.gov.justice.digital.hmpps.csr.api.dto
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.csr.api.model.ShiftDetail
+import uk.gov.justice.digital.hmpps.csr.api.model.DetailNotification
 import uk.gov.justice.digital.hmpps.csr.api.model.ShiftNotification
 import java.time.*
 
-class ShiftNotificationDtoTest {
+class NotificationDtoTest {
 
     @Test
     fun `Create Notification Dto from collection of ShiftNotification`() {
         val shifts = listOf(getValidShiftNotification())
-        val notificationDtos = ShiftNotificationDto.fromShift(shifts)
+        val notificationDtos = NotificationDto.fromShift(shifts)
 
         Assertions.assertThat(notificationDtos).hasSize(1)
 
@@ -23,7 +23,7 @@ class ShiftNotificationDtoTest {
     @Test
     fun `Create Notification Dto from collection of ShiftDetail`() {
         val shifts = listOf(getValidShiftDetail())
-        val notificationDtos = ShiftNotificationDto.fromDetail(shifts)
+        val notificationDtos = NotificationDto.fromDetail(shifts)
 
         Assertions.assertThat(notificationDtos).hasSize(1)
 
@@ -58,7 +58,7 @@ class ShiftNotificationDtoTest {
             )
         }
 
-        fun getValidShiftDetail(): ShiftDetail {
+        fun getValidShiftDetail(): DetailNotification {
             val shiftDate = LocalDateTime.now(clock)
 
             val quantumId = "ABC"
@@ -69,7 +69,7 @@ class ShiftNotificationDtoTest {
             val task = "Diving"
             val shiftType = 1
 
-            return ShiftDetail(
+            return DetailNotification(
                     quantumId,
                     staffId,
                     shiftDate.toLocalDate(),

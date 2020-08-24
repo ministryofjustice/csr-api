@@ -1,24 +1,19 @@
 package uk.gov.justice.digital.hmpps.csr.api.repository
 
-import org.springframework.data.jpa.repository.query.Procedure
-import org.springframework.data.repository.CrudRepository
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
-import uk.gov.justice.digital.hmpps.csr.api.model.ShiftDetail
+import uk.gov.justice.digital.hmpps.csr.api.model.DetailNotification
 import uk.gov.justice.digital.hmpps.csr.api.model.ShiftNotification
-import uk.gov.justice.digital.hmpps.csr.api.model.ShiftOvertime
-import java.time.LocalDate
-import java.util.*
 
 
 @Repository
-interface NotificationRepository : CrudRepository<ShiftNotification, UUID> {
+class NotificationRepository(val jdbcTemplate: JdbcTemplate) {
 
-    @Procedure("GET_MODIFIED_SHIFTS")
-    fun getModifiedShifts(planUnit: String): Collection<ShiftNotification>
+    fun getModifiedShifts(planUnit: String): Collection<ShiftNotification> {
+        return listOf()
+    }
 
-    @Procedure("GET-MODIFIED-DETAIL")
-    fun getModifiedDetail(planUnit: String): Collection<ShiftDetail>
-
-    @Procedure("GET_STAFF_OVERTIME")
-    fun getStaffOvertime(from: LocalDate, to: LocalDate, quantumId: String): Collection<ShiftOvertime>
+    fun getModifiedDetail(planUnit: String): Collection<DetailNotification>{
+        return listOf()
+    }
 }

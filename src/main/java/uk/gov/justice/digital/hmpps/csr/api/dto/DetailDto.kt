@@ -5,12 +5,11 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
 import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
-import uk.gov.justice.digital.hmpps.csr.api.model.ShiftOvertime
+import uk.gov.justice.digital.hmpps.csr.api.model.Detail
 import java.time.LocalDate
 
-
-@ApiModel(description = "ShiftOvertimeDto")
-data class ShiftOvertimeDto @JsonCreator constructor(
+@ApiModel(description = "DetailDto")
+data class DetailDto @JsonCreator constructor(
         @ApiModelProperty(required = true, value = "Date of detail", position = 1, example = "01/01/2010")
         @JsonProperty("date")
         val date: LocalDate,
@@ -23,28 +22,28 @@ data class ShiftOvertimeDto @JsonCreator constructor(
         @JsonProperty("end")
         val end: Long,
 
-        @ApiModelProperty(required = true, value = "Type of shift", position = 4, example = "overtime")
+        @ApiModelProperty(required = true, value = "Type of detail", position = 4, example = "overtime")
         @JsonProperty("type")
         val type: String,
 
-        @ApiModelProperty(required = true, value = "Detail of shift task", position = 5, example = "Canteen watch")
-        @JsonProperty("task")
-        val task: String
+        @ApiModelProperty(required = true, value = "Detail activity", position = 5, example = "Canteen watch")
+        @JsonProperty("activity")
+        val activity: String
 ) {
         companion object {
 
-                fun from(it: ShiftOvertime): ShiftOvertimeDto {
-                        return ShiftOvertimeDto(
+                fun from(it: Detail): DetailDto {
+                        return DetailDto(
                                 it.date,
                                 it.detailStartTimeInSeconds,
                                 it.detailEndTimeInSeconds,
                                 ShiftType.OVERTIME.name,
-                                it.task
+                                it.activity
                         )
                 }
 
-                fun from(overtimes: Collection<ShiftOvertime>): Collection<ShiftOvertimeDto> {
-                        return overtimes.map { from(it) }
+                fun from(details: Collection<Detail>): Collection<DetailDto> {
+                        return details.map { from(it) }
                 }
 
         }
