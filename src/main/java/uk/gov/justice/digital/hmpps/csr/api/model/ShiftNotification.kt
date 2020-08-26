@@ -7,15 +7,9 @@ data class ShiftNotification(
 
         var quantumId: String,
 
-        var date: LocalDateTime,
-
-        var staffId: Int,
-
         var shiftDate: LocalDate,
 
         var lastModified: LocalDateTime,
-
-        var lastModifiedInSeconds: Long,
 
         var shiftType: Int,
 

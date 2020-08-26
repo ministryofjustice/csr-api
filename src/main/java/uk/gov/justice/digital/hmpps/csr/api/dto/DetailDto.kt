@@ -22,9 +22,9 @@ data class DetailDto @JsonCreator constructor(
         @JsonProperty("end")
         val end: Long,
 
-        @ApiModelProperty(required = true, value = "Type of detail", position = 4, example = "overtime")
-        @JsonProperty("type")
-        val type: String,
+        @ApiModelProperty(required = true, value = "Type of shift the detail relates to", position = 4, example = "OVERTIME")
+        @JsonProperty("shiftType")
+        val shiftType: ShiftType,
 
         @ApiModelProperty(required = true, value = "Detail activity", position = 5, example = "Canteen watch")
         @JsonProperty("activity")
@@ -35,9 +35,9 @@ data class DetailDto @JsonCreator constructor(
                 fun from(it: Detail): DetailDto {
                         return DetailDto(
                                 it.date,
-                                it.detailStartTimeInSeconds,
-                                it.detailEndTimeInSeconds,
-                                ShiftType.OVERTIME.name,
+                                it.startTimeInSeconds,
+                                it.endTimeInSeconds,
+                                ShiftType.from(it.shiftType),
                                 it.activity
                         )
                 }

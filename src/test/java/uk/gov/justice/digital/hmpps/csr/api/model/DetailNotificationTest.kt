@@ -3,31 +3,30 @@ package uk.gov.justice.digital.hmpps.csr.api.model
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
-import java.time.*
+import java.time.Clock
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 class DetailNotificationTest {
 
     @Test
-    fun `Should return a valid ShiftDetail`() {
+    fun `Should return a valid DetailNotification`() {
 
         val date = LocalDateTime.now(clock)
 
         val quantumId = "ABC"
-        val staffId = 3
         val shiftDate = date.toLocalDate()
         val shiftModified = date.minusDays(3)
-        val shiftModifiedInSeconds = shiftModified.toEpochSecond(ZoneOffset.of("Z"))
         val taskStart = 123L
         val taskEnd = 456L
         val task = "Diving"
-        val shiftType = ShiftType.OVERTIME.number
+        val shiftType = ShiftType.OVERTIME.value
 
         val detail = DetailNotification(
                 quantumId,
-                staffId,
                 shiftDate,
                 shiftModified,
-                shiftModifiedInSeconds,
                 taskStart,
                 taskEnd,
                 task,
@@ -35,10 +34,8 @@ class DetailNotificationTest {
         )
 
         Assertions.assertThat(detail.quantumId).isEqualTo(quantumId)
-        Assertions.assertThat(detail.staffId).isEqualTo(staffId)
         Assertions.assertThat(detail.shiftDate).isEqualTo(shiftDate)
         Assertions.assertThat(detail.lastModified).isEqualTo(shiftModified)
-        Assertions.assertThat(detail.detailModifiedInSeconds).isEqualTo(shiftModifiedInSeconds)
         Assertions.assertThat(detail.detailStartTimeInSeconds).isEqualTo(taskStart)
         Assertions.assertThat(detail.detailEndTimeInSeconds).isEqualTo(taskEnd)
         Assertions.assertThat(detail.task).isEqualTo(task)

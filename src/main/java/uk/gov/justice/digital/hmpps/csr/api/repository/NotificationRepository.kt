@@ -7,13 +7,13 @@ import uk.gov.justice.digital.hmpps.csr.api.model.ShiftNotification
 
 
 @Repository
-class NotificationRepository(val jdbcTemplate: JdbcTemplate) {
+class NotificationRepository(private val jdbcTemplate: JdbcTemplate) {
 
     fun getModifiedShifts(planUnit: String): Collection<ShiftNotification> {
         return listOf()
     }
 
-    fun getModifiedDetail(planUnit: String): Collection<DetailNotification>{
+    fun getModifiedDetail(planUnit: String): Collection<DetailNotification> {
         return listOf()
     }
 }

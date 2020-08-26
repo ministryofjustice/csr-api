@@ -4,7 +4,9 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.csr.api.model.DetailNotification
 import uk.gov.justice.digital.hmpps.csr.api.model.ShiftNotification
-import java.time.*
+import java.time.Clock
+import java.time.LocalDate
+import java.time.ZoneId
 
 class NotificationDtoTest {
 
@@ -37,21 +39,17 @@ class NotificationDtoTest {
         private val clock = Clock.fixed(LocalDate.of(2020, 5, 3).atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
 
         fun getValidShiftNotification(): ShiftNotification {
-            val shiftDate = LocalDateTime.now(clock)
+            val shiftDate = LocalDate.now(clock)
 
             val quantumId = "XYZ"
-            val staffId = 7
-            val shiftModified = shiftDate.minusDays(3)
+            val shiftModified = shiftDate.minusDays(3).atStartOfDay()
             val shiftType = 0
             val actionType = 2
 
             return ShiftNotification(
                     quantumId,
                     shiftDate,
-                    staffId,
-                    shiftDate.toLocalDate(),
                     shiftModified,
-                    shiftModified.toEpochSecond(ZoneOffset.of("Z")),
                     shiftType,
                     actionType
 
@@ -59,11 +57,10 @@ class NotificationDtoTest {
         }
 
         fun getValidShiftDetail(): DetailNotification {
-            val shiftDate = LocalDateTime.now(clock)
+            val shiftDate = LocalDate.now(clock)
 
             val quantumId = "ABC"
-            val staffId = 3
-            val shiftModified = shiftDate.minusDays(3)
+            val shiftModified = shiftDate.minusDays(3).atStartOfDay()
             val taskStart = 123L
             val taskEnd = 456L
             val task = "Diving"
@@ -71,10 +68,8 @@ class NotificationDtoTest {
 
             return DetailNotification(
                     quantumId,
-                    staffId,
-                    shiftDate.toLocalDate(),
+                    shiftDate,
                     shiftModified,
-                    shiftModified.toEpochSecond(ZoneOffset.of("Z")),
                     taskStart,
                     taskEnd,
                     task,

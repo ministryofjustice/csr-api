@@ -4,18 +4,14 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.csr.api.dto.NotificationDto
-import uk.gov.justice.digital.hmpps.csr.api.dto.NotificationsDto
 import uk.gov.justice.digital.hmpps.csr.api.repository.NotificationRepository
 
 @Service
 @Transactional
-class NotificationService(val notificationRepository: NotificationRepository) {
+class NotificationService(private val notificationRepository: NotificationRepository) {
 
-    fun getShiftAndDetailNotifications(planUnit: String): NotificationsDto {
-        return NotificationsDto.from(
-                getShiftNotifications(planUnit) +
-                getDetailNotifications(planUnit)
-        )
+    fun getShiftAndDetailNotifications(planUnit: String): Collection<NotificationDto> {
+        return getShiftNotifications(planUnit) + getDetailNotifications(planUnit)
     }
 
     private fun getShiftNotifications(planUnit: String): Collection<NotificationDto> {

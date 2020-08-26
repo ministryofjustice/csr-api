@@ -9,15 +9,15 @@ import java.sql.ResultSet
 import java.time.LocalDate
 
 @Repository
-class DetailRepository(val jdbcTemplate: NamedParameterJdbcTemplate) {
+class DetailRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
 
     fun getDetails(from: LocalDate, to: LocalDate, quantumId: String): Collection<Detail> {
         return jdbcTemplate.query(
-                GET_OVERTIME_DETAILS,
+                GET_DETAILS,
                 MapSqlParameterSource()
                         .addValue("from", from)
                         .addValue("to", to)
-                        .addValue("quantum_id", quantumId),
+                        .addValue("quantumId", quantumId),
                 rowMapper
         )
     }
@@ -29,45 +29,27 @@ class DetailRepository(val jdbcTemplate: NamedParameterJdbcTemplate) {
                     resultSet.getDate("date").toLocalDate(),
                     resultSet.getLong("startTime"),
                     resultSet.getLong("endTime"),
+                    resultSet.getInt("shiftType"),
                     resultSet.getString("activity")
             )
         }
 
-        val GET_OVERTIME_DETAILS = """
-        SELECT DISTINCT 
-          CASE
-            WHEN TW_SCHEDULE.TASK_START < 0 THEN TW_SCHEDULE.ON_DATE-1
-            ELSE TW_SCHEDULE.ON_DATE
-          END as date,
-          
-          CASE 
-            WHEN TW_SCHEDULE.TASK_START = -2147483648 THEN 0
-            WHEN TW_SCHEDULE.TASK_START < 0 THEN (TW_SCHEDULE.TASK_START + 86400)
-            ELSE TW_SCHEDULE.TASK_START
-          END as startTime,
-          
-          CASE 
-            WHEN TW_SCHEDULE.TASK_END = -2147483648 THEN 0
-            WHEN TW_SCHEDULE.TASK_END < 0 THEN (TW_SCHEDULE.TASK_END + 86400)
-            ELSE TW_SCHEDULE.TASK_END
-          END as endTime,
-                     
-          DECODE (TK_MODEL.NAME, NULL, TK_TYPE.NAME, TK_MODEL.NAME) as activity
-                      
-        FROM TW_SCHEDULE 
-            INNER JOIN SM_USER ON TW_SCHEDULE.ST_STAFF_ID = SM_USER.OBJ_ID
-            LEFT JOIN TK_TYPE ON TW_SCHEDULE.REF_ID = TK_TYPE.TK_TYPE_ID
-            LEFT JOIN TK_MODEL ON TK_MODEL.TK_MODEL_ID = TW_SCHEDULE.OPTIONAL_1
-                 
-        -- Filter records for a period of time
+        val GET_DETAILS = """
+        SELECT DISTINCT tw_schedule.on_date as date, 
+                        tw_schedule.task_start as startTime, 
+                        tw_schedule.task_end as endTime,
+                        CASE tw_schedule.level_id  WHEN 4000 THEN 1 ELSE 0 END AS shiftType,
+                        DECODE (tk_model.NAME, NULL, tk_type.NAME, tk_model.NAME) as activity 
+        FROM tw_schedule
+                INNER JOIN sm_user usr ON tw_schedule.st_staff_id = usr.obj_id AND usr.obj_type = 3 AND usr.is_deleted = 0
+                LEFT JOIN tk_type ON tw_schedule.ref_id = tk_type.tk_type_id 
+                LEFT JOIN tk_model ON tk_model.tk_model_id = tw_schedule.optional_1 
         WHERE TW_SCHEDULE.ST_STAFF_ID = SM_USER.OBJ_ID
-        
         AND   TW_SCHEDULE.ON_DATE BETWEEN :from AND :to
         AND   TW_SCHEDULE.LAYER = -1        -- TOP LAYER
         AND   TW_SCHEDULE.LEVEL_ID = 4000   -- Time Recording line only
-        AND   LOWER(SM_USER.NAME) = LOWER(:quantum_id)
-        
-        ORDER BY date, startTime;
+        AND   LOWER(SM_USER.NAME) = LOWER(:quantumId)
+        ORDER BY date;
         """.trimIndent()
 
     }

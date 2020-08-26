@@ -1,13 +1,11 @@
 package uk.gov.justice.digital.hmpps.csr.api.domain
 
-import java.util.*
-
-enum class ShiftType(val shiftType: String, val number: Int) {
-    SHIFT("shift", 0),
-    OVERTIME("overtime", 1);
+enum class ShiftType(val value: Int) {
+    SHIFT(0),
+    OVERTIME(1);
 
     companion object {
-        private val map = values().associateBy(ShiftType::number)
-        fun fromInt(type: Int) = map[type]
+        private val map = values().associateBy(ShiftType::value)
+        fun from(type: Int) = map.getOrDefault(type, SHIFT)
     }
 }

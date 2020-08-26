@@ -11,19 +11,19 @@ import java.time.ZoneId
 class DetailDtoTest {
 
     @Test
-    fun `Create Overtime Dto from ShiftOvertime`() {
+    fun `Create Overtime Dto`() {
         val overtime = getValidShiftOvertime()
         val overtimeDto = DetailDto.from(overtime)
 
         Assertions.assertThat(overtimeDto.date).isEqualTo(date)
         Assertions.assertThat(overtimeDto.start).isEqualTo(detailStartTimeInSeconds)
         Assertions.assertThat(overtimeDto.end).isEqualTo(detailEndTimeInSeconds)
+        Assertions.assertThat(overtimeDto.shiftType).isEqualTo(ShiftType.OVERTIME)
         Assertions.assertThat(overtimeDto.activity).isEqualTo(activity)
-        Assertions.assertThat(overtimeDto.type).isEqualTo(ShiftType.OVERTIME.name)
     }
 
     @Test
-    fun `Create Overtime Dto from collection of ShiftOvertime`() {
+    fun `Create Overtime Dto from collection`() {
         val overtimes = listOf(getValidShiftOvertime())
         val overtimesDto = DetailDto.from(overtimes)
         val first = overtimesDto.first()
@@ -32,8 +32,8 @@ class DetailDtoTest {
         Assertions.assertThat(first.date).isEqualTo(date)
         Assertions.assertThat(first.start).isEqualTo(detailStartTimeInSeconds)
         Assertions.assertThat(first.end).isEqualTo(detailEndTimeInSeconds)
+        Assertions.assertThat(first.shiftType).isEqualTo(ShiftType.OVERTIME)
         Assertions.assertThat(first.activity).isEqualTo(activity)
-        Assertions.assertThat(first.type).isEqualTo(ShiftType.OVERTIME.name)
     }
 
     companion object {
@@ -43,6 +43,7 @@ class DetailDtoTest {
         val date: LocalDate = LocalDate.now(clock)
         const val detailStartTimeInSeconds = 7200L
         const val detailEndTimeInSeconds = 84500L
+        val shiftType = ShiftType.OVERTIME.value
         const val activity = "Phone Center"
 
         fun getValidShiftOvertime(): Detail {
@@ -51,6 +52,7 @@ class DetailDtoTest {
                     date,
                     detailStartTimeInSeconds,
                     detailEndTimeInSeconds,
+                    shiftType,
                     activity
             )
         }

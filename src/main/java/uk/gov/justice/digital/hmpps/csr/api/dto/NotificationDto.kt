@@ -4,12 +4,10 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
-import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
 import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.csr.api.model.DetailNotification
 import uk.gov.justice.digital.hmpps.csr.api.model.ShiftNotification
-import uk.gov.justice.digital.hmpps.csr.api.service.NotificationService
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -39,28 +37,29 @@ data class NotificationDto @JsonCreator constructor(
         @JsonProperty("task")
         val task: String?,
 
-        @ApiModelProperty(required = true, value = "Type of shift", position = 7, example = "overtime")
+        @ApiModelProperty(required = true, value = "Type of shift", position = 7, example = "OVERTIME")
         @JsonProperty("type")
-        val shiftType: String,
+        val shiftType: ShiftType,
 
-        @ApiModelProperty(required = true, value = "Type of notification action", position = 7, example = "edit")
+        @ApiModelProperty(required = true, value = "Type of notification action", position = 8, example = "EDIT")
         @JsonProperty("actionType")
-        val actionType: String = ActionType.EDIT.action
+        val actionType: ActionType
 ) {
         companion object {
 
                 fun fromShift(shiftNotifications: Collection<ShiftNotification>): Collection<NotificationDto> {
                         return shiftNotifications.map {
-                                fromShift(it)
-                        }
-                }
-                fun fromDetail(detailNotification: Collection<DetailNotification>): Collection<NotificationDto> {
-                        return detailNotification.map {
-                                fromDetail(it)
+                                from(it)
                         }
                 }
 
-                fun fromShift(it: ShiftNotification): NotificationDto {
+                fun fromDetail(detailNotification: Collection<DetailNotification>): Collection<NotificationDto> {
+                        return detailNotification.map {
+                                from(it)
+                        }
+                }
+
+                private fun from(it: ShiftNotification): NotificationDto {
                         return NotificationDto(
                                 it.quantumId,
                                 it.shiftDate,
@@ -68,23 +67,12 @@ data class NotificationDto @JsonCreator constructor(
                                 null,
                                 null,
                                 null,
-
-                                ShiftType.fromInt(it.shiftType)
-                                        ?.shiftType
-                                        ?: run {
-                                                log.warn("No shift type. Overwriting as shift")
-                                                ShiftType.SHIFT.shiftType
-                                        },
-                                ActionType.fromInt(it.actionType)
-                                        ?.action
-                                        ?: run {
-                                                log.warn("No Action Type. Overwrite with edit")
-                                                ActionType.EDIT.action
-                                        }
+                                ShiftType.from(it.shiftType),
+                                ActionType.from(it.actionType)
                         )
                 }
 
-                fun fromDetail(it: DetailNotification): NotificationDto {
+                private fun from(it: DetailNotification): NotificationDto {
                         return NotificationDto(
                                 it.quantumId,
                                 it.shiftDate,
@@ -92,19 +80,9 @@ data class NotificationDto @JsonCreator constructor(
                                 it.detailStartTimeInSeconds,
                                 it.detailEndTimeInSeconds,
                                 it.task,
-
-
-                                ShiftType.fromInt(it.shiftType)
-                                        ?.shiftType
-                                        ?: run {
-                                                log.warn("No shift type. Overwriting as shift")
-                                                ShiftType.SHIFT.shiftType
-                                        },
-                                ActionType.EDIT.action
+                                ShiftType.from(it.shiftType),
+                                ActionType.EDIT
                         )
                 }
-
-                private val log = LoggerFactory.getLogger(NotificationService::class.java)
-
         }
 }

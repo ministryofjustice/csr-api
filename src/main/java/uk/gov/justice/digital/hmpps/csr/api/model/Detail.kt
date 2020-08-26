@@ -6,9 +6,11 @@ data class Detail(
 
         var date: LocalDate,
 
-        var detailStartTimeInSeconds: Long,
+        var startTimeInSeconds: Long,
 
-        var detailEndTimeInSeconds: Long,
+        var endTimeInSeconds: Long,
+
+        var shiftType: Int,
 
         var activity: String
 )
