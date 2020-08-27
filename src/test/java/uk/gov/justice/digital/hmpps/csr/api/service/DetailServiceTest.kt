@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
 import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.csr.api.model.Detail
 import uk.gov.justice.digital.hmpps.csr.api.repository.DetailRepository
@@ -94,7 +95,7 @@ internal class DetailServiceTest {
             confirmVerified(detailRepository)
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().date).isEqualTo(LocalDate.now(clock).minusDays(1))
+            assertThat(returnValue.first().shiftDate).isEqualTo(LocalDate.now(clock).minusDays(1))
         }
 
         @Test
@@ -113,7 +114,7 @@ internal class DetailServiceTest {
             confirmVerified(detailRepository)
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().start).isEqualTo(0)
+            assertThat(returnValue.first().detailStart).isEqualTo(0)
         }
 
         @Test
@@ -132,7 +133,7 @@ internal class DetailServiceTest {
             confirmVerified(detailRepository)
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().end).isEqualTo(0)
+            assertThat(returnValue.first().detailEnd).isEqualTo(0)
         }
 
         @Test
@@ -151,7 +152,7 @@ internal class DetailServiceTest {
             confirmVerified(detailRepository)
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().start).isEqualTo(86277)
+            assertThat(returnValue.first().detailStart).isEqualTo(86277)
         }
 
         @Test
@@ -170,26 +171,31 @@ internal class DetailServiceTest {
             confirmVerified(detailRepository)
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().end).isEqualTo(85944)
+            assertThat(returnValue.first().detailEnd).isEqualTo(85944)
         }
     }
 
     companion object {
-        private val clock = Clock.fixed(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
-
+        val clock: Clock = Clock.fixed(LocalDate.of(2020, 5, 3).atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
 
         private fun getValidShiftDetail(start: Long, end: Long): Detail {
 
-            val date = LocalDateTime.now(clock).toLocalDate()
-            val shiftType = ShiftType.SHIFT.value
-            val activity = "Bed Watch"
+            val quantumId = "XYZ"
+            val shiftModified: LocalDateTime = LocalDateTime.now(clock).minusDays(3)
+            val shiftDate: LocalDate = LocalDate.now(clock)
+            val shiftType = ShiftType.OVERTIME
+            val actionType = ActionType.EDIT
+            val activity = "Phone Center"
 
             return Detail(
-                    date,
+                    quantumId,
+                    shiftModified,
+                    shiftDate,
+                    shiftType.value,
                     start,
                     end,
-                    shiftType,
-                    activity
+                    activity,
+                    actionType.value
             )
         }
 

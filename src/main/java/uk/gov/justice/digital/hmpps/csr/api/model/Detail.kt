@@ -1,16 +1,23 @@
 package uk.gov.justice.digital.hmpps.csr.api.model
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 data class Detail(
 
-        var date: LocalDate,
+        val quantumId: String?,
 
-        var startTimeInSeconds: Long,
+        val shiftModified: LocalDateTime?,
 
-        var endTimeInSeconds: Long,
+        var shiftDate: LocalDate?,
 
-        var shiftType: Int,
+        val shiftType: Int?,
 
-        var activity: String
+        var startTimeInSeconds: Long?,
+
+        var endTimeInSeconds: Long?,
+
+        val activity: String?,
+
+        val actionType: Int?
 )

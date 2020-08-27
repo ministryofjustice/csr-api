@@ -5,10 +5,7 @@ import io.swagger.annotations.ApiOperation
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import uk.gov.justice.digital.hmpps.csr.api.dto.DetailDto
 import uk.gov.justice.digital.hmpps.csr.api.service.DetailService
 import java.time.LocalDate
@@ -19,12 +16,18 @@ import java.time.LocalDate
 class DetailController(private val detailService: DetailService) {
 
     @ApiOperation(value = "Retrieve all details for a user between two dates")
-    @GetMapping("/shift/detail")
+    @GetMapping("/user/detail")
     fun getNotificationsByShift(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: LocalDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: LocalDate
     ): ResponseEntity<Collection<DetailDto>> {
         return ResponseEntity.ok(detailService.getStaffDetails(from, to))
+    }
+
+    @ApiOperation(value = "Retrieve all notifications for a plan unit")
+    @GetMapping("planUnit/{planUnit}/detail/modified")
+    fun getNotificationsByShift(@PathVariable planUnit: String): ResponseEntity<Collection<DetailDto>> {
+        return ResponseEntity.ok(detailService.getModifiedDetailByPlanUnit(planUnit))
     }
 
 }
