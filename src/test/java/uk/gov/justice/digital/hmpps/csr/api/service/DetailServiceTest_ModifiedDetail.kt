@@ -1,10 +1,7 @@
 package uk.gov.justice.digital.hmpps.csr.api.service
 
-import io.mockk.clearMocks
-import io.mockk.every
+import io.mockk.*
 import io.mockk.junit5.MockKExtension
-import io.mockk.mockk
-import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -92,8 +89,107 @@ internal class DetailServiceTest_ModifiedDetail {
         }
     }
 
+    @Nested
+    @DisplayName("Service Task Time tests")
+    inner class ServiceTaskTimeTests {
+
+        @Test
+        fun `Should subtract a day when start time less than 0`() {
+            val planUnit = "ABC"
+
+            val details = listOf(getValidShiftDetail(-1234L, 456L))
+            every { detailRepository.getModifiedShifts(planUnit) } returns listOf()
+            every { detailRepository.getModifiedDetails(planUnit) } returns details
+
+            val returnValue = service.getModifiedDetailByPlanUnit(planUnit)
+
+            verify { detailRepository.getModifiedShifts(planUnit) }
+            verify { detailRepository.getModifiedDetails(planUnit) }
+
+            assertThat(returnValue).hasSize(1)
+            confirmVerified(detailRepository)
+
+            assertThat(returnValue).hasSize(1)
+            assertThat(returnValue.first().shiftDate).isEqualTo(LocalDate.now(DetailServiceTest.clock).minusDays(1))
+        }
+
+        @Test
+        fun `Should replace full_day start time with 0`() {
+            val planUnit = "ABC"
+
+            val details = listOf(getValidShiftDetail(-2147483648L, 456L))
+            every { detailRepository.getModifiedShifts(planUnit) } returns listOf()
+            every { detailRepository.getModifiedDetails(planUnit) } returns details
+
+            val returnValue = service.getModifiedDetailByPlanUnit(planUnit)
+
+            verify { detailRepository.getModifiedShifts(planUnit) }
+            verify { detailRepository.getModifiedDetails(planUnit) }
+
+            assertThat(returnValue).hasSize(1)
+            confirmVerified(detailRepository)
+
+            assertThat(returnValue).hasSize(1)
+            assertThat(returnValue.first().detailStart).isEqualTo(0)
+        }
+
+        @Test
+        fun `Should replace full_day end time with 0`() {
+            val planUnit = "ABC"
+
+            val details = listOf(getValidShiftDetail(123L, -2147483648L))
+            every { detailRepository.getModifiedShifts(planUnit) } returns listOf()
+            every { detailRepository.getModifiedDetails(planUnit) } returns details
+
+            val returnValue = service.getModifiedDetailByPlanUnit(planUnit)
+
+            verify { detailRepository.getModifiedShifts(planUnit) }
+            verify { detailRepository.getModifiedDetails(planUnit) }
+
+            assertThat(returnValue).hasSize(1)
+            confirmVerified(detailRepository)
+
+            assertThat(returnValue).hasSize(1)
+            assertThat(returnValue.first().detailEnd).isEqualTo(0)
+        }
+
+        @Test
+        fun `Should add 24H to less than 0 start time`() {
+            val planUnit = "ABC"
+
+            val details = listOf(getValidShiftDetail(-123L, 456L))
+            every { detailRepository.getModifiedShifts(planUnit) } returns listOf()
+            every { detailRepository.getModifiedDetails(planUnit) } returns details
+
+            val returnValue = service.getModifiedDetailByPlanUnit(planUnit)
+
+            verify { detailRepository.getModifiedShifts(planUnit) }
+            verify { detailRepository.getModifiedDetails(planUnit) }
+
+            assertThat(returnValue).hasSize(1)
+            assertThat(returnValue.first().detailStart).isEqualTo(86277)
+        }
+
+        @Test
+        fun `Should add 24H to less than 0 end time`() {
+            val planUnit = "ABC"
+
+            val details = listOf(getValidShiftDetail(123L, -456L))
+            every { detailRepository.getModifiedShifts(planUnit) } returns listOf()
+            every { detailRepository.getModifiedDetails(planUnit) } returns details
+
+            val returnValue = service.getModifiedDetailByPlanUnit(planUnit)
+
+            verify { detailRepository.getModifiedShifts(planUnit) }
+            verify { detailRepository.getModifiedDetails(planUnit) }
+
+            assertThat(returnValue).hasSize(1)
+            assertThat(returnValue.first().detailEnd).isEqualTo(85944)
+        }
+    }
+
     companion object {
-        private fun getValidShiftDetail(): Detail {
+        private fun getValidShiftDetail(start: Long = 7200L, end: Long = 84500L): Detail {
 
             val clock = Clock.fixed(LocalDate.of(2020, 5, 3).atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
             val quantumId = "XYZ"
@@ -101,8 +197,6 @@ internal class DetailServiceTest_ModifiedDetail {
             val shiftDate: LocalDate = LocalDate.now(clock)
             val shiftType = ShiftType.OVERTIME
             val actionType = ActionType.EDIT
-            val detailStartTimeInSeconds = 7200L
-            val detailEndTimeInSeconds = 84500L
             val activity = "Phone Center"
 
             return Detail(
@@ -110,8 +204,8 @@ internal class DetailServiceTest_ModifiedDetail {
                     shiftModified,
                     shiftDate,
                     shiftType.value,
-                    detailStartTimeInSeconds,
-                    detailEndTimeInSeconds,
+                    start,
+                    end,
                     activity,
                     actionType.value
             )
