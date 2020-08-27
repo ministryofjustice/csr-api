@@ -7,13 +7,9 @@ spring:
   jpa:
     show-sql: true
 
-  datasource:
-    continue-on-error: true
-
   h2:
     console:
       enabled: true
-      path: /h2-console
 
   security:
     oauth2:
