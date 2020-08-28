@@ -49,8 +49,8 @@ class DetailService(
         private val log = LoggerFactory.getLogger(DetailService::class.java)
 
         private fun putDetailOnCorrectDateTime(detail: Detail) {
-            if (detail.startTimeInSeconds != null && detail.startTimeInSeconds!! < 0) {
-                detail.shiftDate = detail.shiftDate?.minusDays(1)
+            if (detail.startTimeInSeconds != null && detail.startTimeInSeconds!! < 0 && detail.startTimeInSeconds!! > FULL_DAY_ACTIVITY) {
+                detail.shiftDate = detail.shiftDate.minusDays(1)
             }
             detail.startTimeInSeconds = detail.startTimeInSeconds?.let { time -> ensureTimeWithinDayBounds(time) }
             detail.endTimeInSeconds = detail.endTimeInSeconds?.let { time -> ensureTimeWithinDayBounds(time) }

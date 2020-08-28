@@ -3,7 +3,8 @@ package uk.gov.justice.digital.hmpps.csr.api.dto
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
-import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
+import uk.gov.justice.digital.hmpps.csr.api.domain.DetailType
+import uk.gov.justice.digital.hmpps.csr.api.domain.EntityType
 import uk.gov.justice.digital.hmpps.csr.api.model.Detail
 import java.time.Clock
 import java.time.LocalDate
@@ -20,10 +21,11 @@ class DetailDtoTest {
         assertThat(detailDto.quantumId).isEqualTo(quantumId)
         assertThat(detailDto.shiftModified).isEqualTo(shiftModified)
         assertThat(detailDto.shiftDate).isEqualTo(shiftDate)
-        assertThat(detailDto.shiftType).isEqualTo(shiftType)
+        assertThat(detailDto.entityType).isEqualTo(entityType)
         assertThat(detailDto.detailStart).isEqualTo(detailStartTimeInSeconds)
         assertThat(detailDto.detailEnd).isEqualTo(detailEndTimeInSeconds)
         assertThat(detailDto.activity).isEqualTo(activity)
+        assertThat(detailDto.detailType).isEqualTo(detailType)
         assertThat(detailDto.actionType).isEqualTo(actionType)
     }
 
@@ -32,7 +34,8 @@ class DetailDtoTest {
         val detail = Detail(
                 null,
                 null,
-                null,
+                LocalDate.now(),
+                EntityType.SHIFT.value,
                 null,
                 null,
                 null,
@@ -43,11 +46,10 @@ class DetailDtoTest {
 
         assertThat(detailDto.quantumId).isNull()
         assertThat(detailDto.shiftModified).isNull()
-        assertThat(detailDto.shiftDate).isNull()
-        assertThat(detailDto.shiftType).isNull()
         assertThat(detailDto.detailStart).isNull()
         assertThat(detailDto.detailEnd).isNull()
         assertThat(detailDto.activity).isNull()
+        assertThat(detailDto.detailType).isNull()
         assertThat(detailDto.actionType).isNull()
     }
 
@@ -62,10 +64,11 @@ class DetailDtoTest {
         assertThat(first.quantumId).isEqualTo(quantumId)
         assertThat(first.shiftModified).isEqualTo(shiftModified)
         assertThat(first.shiftDate).isEqualTo(shiftDate)
-        assertThat(first.shiftType).isEqualTo(shiftType)
+        assertThat(first.entityType).isEqualTo(entityType)
         assertThat(first.detailStart).isEqualTo(detailStartTimeInSeconds)
         assertThat(first.detailEnd).isEqualTo(detailEndTimeInSeconds)
         assertThat(first.activity).isEqualTo(activity)
+        assertThat(first.detailType).isEqualTo(detailType)
         assertThat(first.actionType).isEqualTo(actionType)
     }
 
@@ -74,7 +77,8 @@ class DetailDtoTest {
         val details = listOf(Detail(
                 null,
                 null,
-                null,
+                LocalDate.now(),
+                EntityType.SHIFT.value,
                 null,
                 null,
                 null,
@@ -88,11 +92,10 @@ class DetailDtoTest {
         val first = detailDtos.first()
         assertThat(first.quantumId).isNull()
         assertThat(first.shiftModified).isNull()
-        assertThat(first.shiftDate).isNull()
-        assertThat(first.shiftType).isNull()
         assertThat(first.detailStart).isNull()
         assertThat(first.detailEnd).isNull()
         assertThat(first.activity).isNull()
+        assertThat(first.detailType).isNull()
         assertThat(first.actionType).isNull()
     }
 
@@ -104,8 +107,9 @@ class DetailDtoTest {
         val shiftDate: LocalDate = LocalDate.now(clock)
         const val detailStartTimeInSeconds = 7200L
         const val detailEndTimeInSeconds = 84500L
-        val shiftType = ShiftType.OVERTIME
+        val entityType = EntityType.OVERTIME
         val actionType = ActionType.EDIT
+        val detailType = DetailType.UNSPECIFIC
         const val activity = "Phone Center"
 
         fun getFullyPopulatedDetail(): Detail {
@@ -114,10 +118,11 @@ class DetailDtoTest {
                     quantumId,
                     shiftModified,
                     shiftDate,
-                    shiftType.value,
+                    entityType.value,
                     detailStartTimeInSeconds,
                     detailEndTimeInSeconds,
                     activity,
+                    detailType.value,
                     actionType.value
             )
         }

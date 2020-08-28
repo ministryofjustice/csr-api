@@ -5,7 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
 import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
-import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
+import uk.gov.justice.digital.hmpps.csr.api.domain.DetailType
+import uk.gov.justice.digital.hmpps.csr.api.domain.EntityType
 import uk.gov.justice.digital.hmpps.csr.api.model.Detail
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -22,11 +23,11 @@ data class DetailDto @JsonCreator constructor(
 
         @ApiModelProperty(value = "Date of shift the detail relates to", example = "2020-08-22")
         @JsonProperty("shiftDate")
-        val shiftDate: LocalDate?,
+        val shiftDate: LocalDate,
 
         @ApiModelProperty(value = "Type of shift the detail relates to", example = "OVERTIME")
-        @JsonProperty("shiftType")
-        val shiftType: ShiftType?,
+        @JsonProperty("entityType")
+        val entityType: EntityType,
 
         @ApiModelProperty(value = "Detail start time in seconds from midnight", example = "6400")
         @JsonProperty("detailStart")
@@ -40,9 +41,14 @@ data class DetailDto @JsonCreator constructor(
         @JsonProperty("activity")
         val activity: String?,
 
+        @ApiModelProperty(value = "Type of notification action", example = "Holiday")
+        @JsonProperty("actionType")
+        val detailType: DetailType?,
+
         @ApiModelProperty(value = "Type of notification action", example = "EDIT")
         @JsonProperty("actionType")
         val actionType: ActionType?
+
 ) {
         companion object {
 
@@ -51,10 +57,11 @@ data class DetailDto @JsonCreator constructor(
                                 it.quantumId,
                                 it.shiftModified,
                                 it.shiftDate,
-                                it.shiftType?.let { type -> ShiftType.from(type) },
+                                EntityType.from(it.entityType),
                                 it.startTimeInSeconds,
                                 it.endTimeInSeconds,
                                 it.activity,
+                                it.detailType?.let { type -> DetailType.from(type) },
                                 it.actionType?.let { type -> ActionType.from(type) }
                         )
                 }
@@ -62,7 +69,5 @@ data class DetailDto @JsonCreator constructor(
                 fun from(details: Collection<Detail>): Collection<DetailDto> {
                         return details.map { from(it) }
                 }
-
-
         }
 }

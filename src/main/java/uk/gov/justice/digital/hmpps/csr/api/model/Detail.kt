@@ -9,15 +9,17 @@ data class Detail(
 
         val shiftModified: LocalDateTime?,
 
-        var shiftDate: LocalDate?,
+        var shiftDate: LocalDate,
 
-        val shiftType: Int?,
+        val entityType: Int,
 
         var startTimeInSeconds: Long?,
 
         var endTimeInSeconds: Long?,
 
         val activity: String?,
+
+        val detailType: Int?,
 
         val actionType: Int?
 )

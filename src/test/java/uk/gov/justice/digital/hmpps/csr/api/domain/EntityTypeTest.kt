@@ -5,19 +5,19 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
-internal class ShiftTypeTest {
+internal class EntityTypeTest {
 
     @Nested
     @DisplayName("Convert from Int")
     inner class CaseInsensitiveFrom {
         @Test
         fun `It should match 0 and Shift`() {
-            assertThat(ShiftType.from(0)).isEqualTo(ShiftType.SHIFT)
+            assertThat(EntityType.from(0)).isEqualTo(EntityType.SHIFT)
         }
 
         @Test
         fun `It should match 1 and Overtime`() {
-            assertThat(ShiftType.from(1)).isEqualTo(ShiftType.OVERTIME)
+            assertThat(EntityType.from(1)).isEqualTo(EntityType.OVERTIME)
         }
 
     }

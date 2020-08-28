@@ -3,7 +3,8 @@ package uk.gov.justice.digital.hmpps.csr.api.model
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
-import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
+import uk.gov.justice.digital.hmpps.csr.api.domain.DetailType
+import uk.gov.justice.digital.hmpps.csr.api.domain.EntityType
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -21,29 +22,31 @@ class DetailTest {
         val shiftDate: LocalDate = LocalDate.now(clock)
         val detailStartTimeInSeconds = 7200L
         val detailEndTimeInSeconds = 84500L
-        val shiftType = ShiftType.OVERTIME
+        val entityType = EntityType.OVERTIME
         val activity = "Phone Center"
+        val detailType = DetailType.UNSPECIFIC
         val actionType = ActionType.EDIT
-
 
         val overtime = Detail(
                 quantumId,
                 shiftModified,
                 shiftDate,
-                shiftType.value,
+                entityType.value,
                 detailStartTimeInSeconds,
                 detailEndTimeInSeconds,
                 activity,
+                detailType.value,
                 actionType.value
         )
 
         assertThat(overtime.quantumId).isEqualTo(quantumId)
         assertThat(overtime.shiftModified).isEqualTo(shiftModified)
         assertThat(overtime.shiftDate).isEqualTo(shiftDate)
-        assertThat(overtime.shiftType).isEqualTo(shiftType.value)
+        assertThat(overtime.entityType).isEqualTo(entityType.value)
         assertThat(overtime.startTimeInSeconds).isEqualTo(detailStartTimeInSeconds)
         assertThat(overtime.endTimeInSeconds).isEqualTo(detailEndTimeInSeconds)
         assertThat(overtime.activity).isEqualTo(activity)
+        assertThat(overtime.detailType).isEqualTo(detailType.value)
         assertThat(overtime.actionType).isEqualTo(actionType.value)
     }
 }
