@@ -41,7 +41,7 @@ internal class DetailTypeTest {
         }
 
         @Test
-        fun `It should match 5 and OnCall`() {
+        fun `It should match 6 and OnCall`() {
             assertThat(DetailType.from(6)).isEqualTo(DetailType.ONCALL)
         }
 
