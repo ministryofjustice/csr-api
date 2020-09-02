@@ -17,16 +17,16 @@ class DetailController(private val detailService: DetailService) {
 
     @ApiOperation(value = "Retrieve all details for a user between two dates")
     @GetMapping("/user/detail")
-    fun getNotificationsByShift(
+    fun getDetailsByUser(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: LocalDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: LocalDate
     ): ResponseEntity<Collection<DetailDto>> {
         return ResponseEntity.ok(detailService.getStaffDetails(from, to))
     }
 
-    @ApiOperation(value = "Retrieve all notifications for a plan unit")
+    @ApiOperation(value = "Retrieve all modified details for a plan unit")
     @GetMapping("planUnit/{planUnit}/detail/modified")
-    fun getNotificationsByShift(@PathVariable planUnit: String): ResponseEntity<Collection<DetailDto>> {
+    fun getModifiedDetailsByPlanUnit(@PathVariable planUnit: String): ResponseEntity<Collection<DetailDto>> {
         return ResponseEntity.ok(detailService.getModifiedDetailByPlanUnit(planUnit))
     }
 
