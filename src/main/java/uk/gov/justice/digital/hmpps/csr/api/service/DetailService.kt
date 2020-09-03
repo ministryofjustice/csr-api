@@ -8,6 +8,8 @@ import uk.gov.justice.digital.hmpps.csr.api.model.Detail
 import uk.gov.justice.digital.hmpps.csr.api.repository.DetailRepository
 import uk.gov.justice.digital.hmpps.csr.api.security.AuthenticationFacade
 import java.time.LocalDate
+import java.time.LocalDateTime
+import kotlin.math.abs
 
 @Service
 @Transactional
@@ -19,12 +21,9 @@ class DetailService(
     fun getStaffDetails(from: LocalDate, to: LocalDate, quantumId: String = authenticationFacade.currentUsername): Collection<DetailDto> {
         log.debug("Fetching shift details for $quantumId")
         val details = detailRepository.getDetails(from, to, quantumId)
-                .map {
-                    putDetailOnCorrectDateTime(it)
-                    it
-                }
         log.info("Found ${details.size} shift details for $quantumId")
-        return DetailDto.from(details)
+
+        return mapToDetailsDto(details)
     }
 
     fun getModifiedDetailByPlanUnit(planUnit: String): Collection<DetailDto> {
@@ -34,45 +33,37 @@ class DetailService(
 
         log.debug("Fetching modified detail for $planUnit")
         val modifiedDetails = detailRepository.getModifiedDetails(planUnit)
-                .map {
-                    putDetailOnCorrectDateTime(it)
-                    it
-                }
         log.info("Found ${modifiedDetails.size} modified details for $planUnit")
 
-        return DetailDto.from(modifiedShifts + modifiedDetails)
+        return mapToDetailsDto(modifiedShifts + modifiedDetails)
     }
 
     companion object {
         private const val FULL_DAY_ACTIVITY = -2_147_483_648L
-        private const val DAY_IN_SECONDS = 86_400L
         private val log = LoggerFactory.getLogger(DetailService::class.java)
 
-        private fun putDetailOnCorrectDateTime(detail: Detail) {
-            if (detail.startTimeInSeconds != null && detail.startTimeInSeconds!! < 0 && detail.startTimeInSeconds!! > FULL_DAY_ACTIVITY) {
-                detail.shiftDate = detail.shiftDate.minusDays(1)
+        private fun mapToDetailsDto(details: Collection<Detail>): Collection<DetailDto> {
+            return details.map {
+                val detailStart = it.startTimeInSeconds?.let { it1 -> calculateDetailDateTime(it.shiftDate, it1) }
+                val detailEnd = it.endTimeInSeconds?.let { it1 -> calculateDetailDateTime(it.shiftDate, it1) }
+                DetailDto.from(it, detailStart, detailEnd)
             }
-            detail.startTimeInSeconds = detail.startTimeInSeconds?.let { time -> ensureTimeWithinDayBounds(time) }
-            detail.endTimeInSeconds = detail.endTimeInSeconds?.let { time -> ensureTimeWithinDayBounds(time) }
         }
 
-        // We shouldn't send times outside of what is supported by LocalTime.ofSecondOfDay()
-        private fun ensureTimeWithinDayBounds(time: Long): Long {
+        private fun calculateDetailDateTime(shiftDate: LocalDate, detailTime: Long): LocalDateTime {
+            val shiftDateTime = shiftDate.atStartOfDay()
+            // If the start value is a negative number the shift detail actually starts the previous day
             return when {
-                time == FULL_DAY_ACTIVITY -> {
-                    0
+                detailTime in (FULL_DAY_ACTIVITY + 1)..-1 -> {
+                    shiftDateTime.minusSeconds(abs(detailTime))
                 }
-                time < 0 -> {
-                    time + DAY_IN_SECONDS
-                }
-                time >= DAY_IN_SECONDS -> {
-                    time - DAY_IN_SECONDS
+                detailTime > 0 -> {
+                    shiftDateTime.plusSeconds(detailTime)
                 }
                 else -> {
-                    time
+                    shiftDateTime
                 }
             }
         }
-
     }
 }
