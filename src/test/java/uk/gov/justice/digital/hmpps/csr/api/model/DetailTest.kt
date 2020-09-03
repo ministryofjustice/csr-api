@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
 import uk.gov.justice.digital.hmpps.csr.api.domain.DetailType
-import uk.gov.justice.digital.hmpps.csr.api.domain.EntityType
+import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -22,7 +22,7 @@ class DetailTest {
         val shiftDate: LocalDate = LocalDate.now(clock)
         val detailStartTimeInSeconds = 7200L
         val detailEndTimeInSeconds = 84500L
-        val entityType = EntityType.OVERTIME
+        val entityType = ShiftType.OVERTIME
         val activity = "Phone Center"
         val detailType = DetailType.UNSPECIFIC
         val actionType = ActionType.EDIT

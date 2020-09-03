@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
 import uk.gov.justice.digital.hmpps.csr.api.domain.DetailType
-import uk.gov.justice.digital.hmpps.csr.api.domain.EntityType
+import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.csr.api.model.Detail
 import uk.gov.justice.digital.hmpps.csr.api.repository.DetailRepository
 import uk.gov.justice.digital.hmpps.csr.api.security.AuthenticationFacade
@@ -50,7 +50,7 @@ internal class DetailServiceTest_ModifiedDetail {
             val returnValue = service.getModifiedDetailByPlanUnit(planUnit)
 
             verify { detailRepository.getModifiedShifts(planUnit) }
-            verify { detailRepository.getModifiedShifts(planUnit) }
+            verify { detailRepository.getModifiedDetails(planUnit) }
 
             assertThat(returnValue).hasSize(1)
         }
@@ -95,7 +95,7 @@ internal class DetailServiceTest_ModifiedDetail {
     inner class ServiceTaskTimeTests {
 
         @Test
-        fun `Should subtract a day when start time less than 0`() {
+        fun `Should subtract time when start time less than 0`() {
             val planUnit = "ABC"
 
             val details = listOf(getValidShiftDetail(-1234L, 456L))
@@ -111,7 +111,7 @@ internal class DetailServiceTest_ModifiedDetail {
             confirmVerified(detailRepository)
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().shiftDate).isEqualTo(LocalDate.now(DetailServiceTest.clock).minusDays(1))
+            assertThat(returnValue.first().detailStart).isEqualTo(LocalDate.now(DetailServiceTest.clock).atStartOfDay().minusSeconds(1234))
         }
 
         @Test
@@ -131,8 +131,7 @@ internal class DetailServiceTest_ModifiedDetail {
             confirmVerified(detailRepository)
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().shiftDate).isEqualTo(LocalDate.now(DetailServiceTest.clock))
-            assertThat(returnValue.first().detailStart).isEqualTo(0)
+            assertThat(returnValue.first().detailStart).isEqualTo(LocalDate.now(DetailServiceTest.clock).atStartOfDay().plusSeconds(0))
         }
 
         @Test
@@ -152,12 +151,11 @@ internal class DetailServiceTest_ModifiedDetail {
             confirmVerified(detailRepository)
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().shiftDate).isEqualTo(LocalDate.now(DetailServiceTest.clock))
-            assertThat(returnValue.first().detailEnd).isEqualTo(0)
+            assertThat(returnValue.first().detailEnd).isEqualTo(LocalDate.now(DetailServiceTest.clock).atStartOfDay().plusSeconds(0))
         }
 
         @Test
-        fun `Should replace start time of 86400 with time minus 86400`() {
+        fun `Should replace start time of 86400 with time plus 86400`() {
             val planUnit = "ABC"
 
             val details = listOf(getValidShiftDetail(86400L, 456L))
@@ -173,8 +171,7 @@ internal class DetailServiceTest_ModifiedDetail {
             confirmVerified(detailRepository)
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().shiftDate).isEqualTo(LocalDate.now(DetailServiceTest.clock))
-            assertThat(returnValue.first().detailStart).isEqualTo(0)
+            assertThat(returnValue.first().detailStart).isEqualTo(LocalDate.now(DetailServiceTest.clock).atStartOfDay().plusSeconds(86400))
         }
 
         @Test
@@ -194,8 +191,7 @@ internal class DetailServiceTest_ModifiedDetail {
             confirmVerified(detailRepository)
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().shiftDate).isEqualTo(LocalDate.now(DetailServiceTest.clock))
-            assertThat(returnValue.first().detailEnd).isEqualTo(0)
+            assertThat(returnValue.first().detailEnd).isEqualTo(LocalDate.now(DetailServiceTest.clock).atStartOfDay().plusSeconds(86400))
         }
 
         @Test
@@ -215,8 +211,7 @@ internal class DetailServiceTest_ModifiedDetail {
             confirmVerified(detailRepository)
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().shiftDate).isEqualTo(LocalDate.now(DetailServiceTest.clock))
-            assertThat(returnValue.first().detailStart).isEqualTo(1)
+            assertThat(returnValue.first().detailStart).isEqualTo(LocalDate.now(DetailServiceTest.clock).atStartOfDay().plusSeconds(86401))
         }
 
         @Test
@@ -236,8 +231,7 @@ internal class DetailServiceTest_ModifiedDetail {
             confirmVerified(detailRepository)
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().shiftDate).isEqualTo(LocalDate.now(DetailServiceTest.clock))
-            assertThat(returnValue.first().detailEnd).isEqualTo(1)
+            assertThat(returnValue.first().detailEnd).isEqualTo(LocalDate.now(DetailServiceTest.clock).atStartOfDay().plusSeconds(86401))
         }
 
         @Test
@@ -254,8 +248,7 @@ internal class DetailServiceTest_ModifiedDetail {
             verify { detailRepository.getModifiedDetails(planUnit) }
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().shiftDate).isEqualTo(LocalDate.now(DetailServiceTest.clock).minusDays(1))
-            assertThat(returnValue.first().detailStart).isEqualTo(86277)
+            assertThat(returnValue.first().detailStart).isEqualTo(LocalDate.now(DetailServiceTest.clock).atStartOfDay().minusSeconds(123))
         }
 
         @Test
@@ -272,8 +265,7 @@ internal class DetailServiceTest_ModifiedDetail {
             verify { detailRepository.getModifiedDetails(planUnit) }
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().shiftDate).isEqualTo(LocalDate.now(DetailServiceTest.clock))
-            assertThat(returnValue.first().detailEnd).isEqualTo(85944)
+            assertThat(returnValue.first().detailEnd).isEqualTo(LocalDate.now(DetailServiceTest.clock).atStartOfDay().minusSeconds(456))
         }
     }
 
@@ -284,7 +276,7 @@ internal class DetailServiceTest_ModifiedDetail {
             val quantumId = "XYZ"
             val shiftModified: LocalDateTime = LocalDateTime.now(clock).minusDays(3)
             val shiftDate: LocalDate = LocalDate.now(clock)
-            val entityType = EntityType.OVERTIME
+            val entityType = ShiftType.OVERTIME
             val actionType = ActionType.EDIT
             val detailType = DetailType.UNSPECIFIC
             val activity = "Phone Center"
