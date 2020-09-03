@@ -26,11 +26,11 @@ data class DetailDto @JsonCreator constructor(
 
         @ApiModelProperty(value = "Detail start date time", example = "2020-08-22T09:15:00")
         @JsonProperty("detailStart")
-        val detailStart: LocalDateTime,
+        val detailStart: LocalDateTime?,
 
         @ApiModelProperty(value = "Detail end date time", example = "2020-08-22T09:15:00")
         @JsonProperty("detailEnd")
-        val detailEnd: LocalDateTime,
+        val detailEnd: LocalDateTime?,
 
         @ApiModelProperty(value = "Detail activity", example = "Canteen watch")
         @JsonProperty("activity")
@@ -47,7 +47,7 @@ data class DetailDto @JsonCreator constructor(
 ) {
         companion object {
 
-                fun from(detail: Detail, detailStart: LocalDateTime, detailEnd: LocalDateTime): DetailDto {
+                fun from(detail: Detail, detailStart: LocalDateTime?, detailEnd: LocalDateTime?): DetailDto {
                         return DetailDto(
                                 detail.quantumId,
                                 detail.shiftModified,
