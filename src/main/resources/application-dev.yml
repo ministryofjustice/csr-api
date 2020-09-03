@@ -1,15 +1,64 @@
 spring:
-  profiles:
-    include: stdout
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration/h2
 
   jpa:
     show-sql: true
+
+  h2:
+    console:
+      enabled: true
 
   security:
     oauth2:
       resourceserver:
         jwt:
           public-key-location: classpath:local-public-key.pub
+
+logging:
+  level:
+    uk.gov: DEBUG
+
+csr:
+  regions:
+    - name: 1
+      url: 'jdbc:h2:mem:csr-api;Mode=Oracle;'
+      username: csr
+      password: dummy
+      driverClassName: org.h2.Driver
+      schema: public
+    - name: 2
+      url: 'jdbc:h2:mem:csr-api;Mode=Oracle;'
+      username: csr
+      password: dummy
+      driverClassName: org.h2.Driver
+      schema: public
+    - name: 3
+      url: 'jdbc:h2:mem:csr-api;Mode=Oracle;'
+      username: csr
+      password: dummy
+      driverClassName: org.h2.Driver
+      schema: public
+    - name: 4
+      url: 'jdbc:h2:mem:csr-api;Mode=Oracle;'
+      username: csr
+      password: dummy
+      driverClassName: org.h2.Driver
+      schema: public
+    - name: 5
+      url: 'jdbc:h2:mem:csr-api;Mode=Oracle;'
+      username: csr
+      password: dummy
+      driverClassName: org.h2.Driver
+      schema: public
+    - name: 6
+      url: 'jdbc:h2:mem:csr-api;Mode=Oracle;'
+      username: csr
+      password: dummy
+      driverClassName: org.h2.Driver
+      schema: public
 
 server:
   shutdown: immediate
