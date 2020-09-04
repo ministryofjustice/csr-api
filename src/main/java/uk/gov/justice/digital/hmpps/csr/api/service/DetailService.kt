@@ -44,8 +44,8 @@ class DetailService(
 
         private fun mapToDetailsDto(details: Collection<Detail>): Collection<DetailDto> {
             return details.map {
-                val detailStart = it.startTimeInSeconds?.let { it1 -> calculateDetailDateTime(it.shiftDate, it1) }
-                val detailEnd = it.endTimeInSeconds?.let { it1 -> calculateDetailDateTime(it.shiftDate, it1) }
+                val detailStart = calculateDetailDateTime(it.shiftDate, it.startTimeInSeconds ?: 0L)
+                val detailEnd = calculateDetailDateTime(it.shiftDate, it.endTimeInSeconds ?: 0L)
                 DetailDto.from(it, detailStart, detailEnd)
             }
         }

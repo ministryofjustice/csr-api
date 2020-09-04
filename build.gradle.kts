@@ -15,7 +15,7 @@ dependencies {
     runtimeOnly("com.h2database:h2:1.4.200")
     runtimeOnly("com.zaxxer:HikariCP:3.4.3")
     runtimeOnly("org.flywaydb:flyway-core:6.3.3")
-    runtimeOnly("com.oracle.database.jdbc:ojdbc8")
+    runtimeOnly("com.oracle.database.jdbc:ojdbc10:19.7.0.0")
 
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
