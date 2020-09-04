@@ -51,7 +51,7 @@ data class DetailDto @JsonCreator constructor(
                         return DetailDto(
                                 detail.quantumId,
                                 detail.shiftModified,
-                                ShiftType.from(detail.entityType),
+                                ShiftType.from(detail.shiftType),
                                 detailStart,
                                 detailEnd,
                                 detail.activity,
