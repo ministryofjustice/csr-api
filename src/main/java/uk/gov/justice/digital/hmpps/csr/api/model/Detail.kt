@@ -11,7 +11,7 @@ data class Detail(
 
         var shiftDate: LocalDate,
 
-        val entityType: Int,
+        val shiftType: Int,
 
         var startTimeInSeconds: Long?,
 

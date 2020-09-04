@@ -19,7 +19,7 @@ class DetailDtoTest {
 
         assertThat(detailDto.quantumId).isEqualTo(quantumId)
         assertThat(detailDto.shiftModified).isEqualTo(shiftModified)
-        assertThat(detailDto.shiftType).isEqualTo(entityType)
+        assertThat(detailDto.shiftType).isEqualTo(shiftType)
         assertThat(detailDto.detailStart).isEqualTo(start)
         assertThat(detailDto.detailEnd).isEqualTo(end)
         assertThat(detailDto.activity).isEqualTo(activity)
@@ -61,7 +61,7 @@ class DetailDtoTest {
         val shiftDate: LocalDate = LocalDate.now(clock)
         const val detailStartTimeInSeconds = 7200L
         const val detailEndTimeInSeconds = 84500L
-        val entityType = ShiftType.OVERTIME
+        val shiftType = ShiftType.OVERTIME
         val actionType = ActionType.EDIT
         val detailType = DetailType.UNSPECIFIC
         const val activity = "Phone Center"
@@ -72,7 +72,7 @@ class DetailDtoTest {
                     quantumId,
                     shiftModified,
                     shiftDate,
-                    entityType.value,
+                    shiftType.value,
                     detailStartTimeInSeconds,
                     detailEndTimeInSeconds,
                     activity,

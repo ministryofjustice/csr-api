@@ -276,7 +276,7 @@ internal class DetailServiceTest_ModifiedDetail {
             val quantumId = "XYZ"
             val shiftModified: LocalDateTime = LocalDateTime.now(clock).minusDays(3)
             val shiftDate: LocalDate = LocalDate.now(clock)
-            val entityType = ShiftType.OVERTIME
+            val shiftType = ShiftType.OVERTIME
             val actionType = ActionType.EDIT
             val detailType = DetailType.UNSPECIFIC
             val activity = "Phone Center"
@@ -285,7 +285,7 @@ internal class DetailServiceTest_ModifiedDetail {
                     quantumId,
                     shiftModified,
                     shiftDate,
-                    entityType.value,
+                    shiftType.value,
                     start,
                     end,
                     activity,

@@ -47,7 +47,7 @@ class DetailRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                     null,
                     null,
                     resultSet.getDate("date").toLocalDate(),
-                    resultSet.getInt("entityType"),
+                    resultSet.getInt("shiftType"),
                     resultSet.getLong("startTime"),
                     resultSet.getLong("endTime"),
                     resultSet.getString("activity"),
@@ -61,7 +61,7 @@ class DetailRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                     resultSet.getString("quantumId"),
                     resultSet.getTimestamp("shiftModified").toLocalDateTime(),
                     resultSet.getDate("date").toLocalDate(),
-                    resultSet.getInt("entityType"),
+                    resultSet.getInt("shiftType"),
                     null,
                     null,
                     null,
@@ -75,7 +75,7 @@ class DetailRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                     resultSet.getString("quantumId"),
                     resultSet.getTimestamp("shiftModified").toLocalDateTime(),
                     resultSet.getDate("date").toLocalDate(),
-                    resultSet.getInt("entityType"),
+                    resultSet.getInt("shiftType"),
                     resultSet.getLong("startTime"),
                     resultSet.getLong("endTime"),
                     resultSet.getString("activity"),
@@ -88,7 +88,7 @@ class DetailRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
         SELECT DISTINCT sched.on_date as date, 
                         sched.task_start as startTime, 
                         sched.task_end as endTime,
-                        CASE sched.level_id  WHEN 4000 THEN 1 ELSE 0 END AS entityType,
+                        CASE sched.level_id  WHEN 4000 THEN 1 ELSE 0 END AS shiftType,
                         DECODE (tk_model.name, NULL, tk_type.name, tk_model.name) as activity 
         FROM tw_schedule sched
                 INNER JOIN sm_user usr ON sched.st_staff_id = usr.obj_id AND usr.obj_type = 3 AND usr.is_deleted = 0
@@ -106,7 +106,7 @@ class DetailRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
             SELECT DISTINCT usr.name AS quantumId, 
                             pro.lastmodified as shiftModified,
                             sched.on_date as date,  
-                            CASE sched.level_id WHEN 4000 THEN 1 ELSE 0 END AS entityType, 
+                            CASE sched.level_id WHEN 4000 THEN 1 ELSE 0 END AS shiftType, 
                             CASE 
                                 WHEN pro.action_type = 47012 THEN 3 -- delete shift 
                                 WHEN pro.action_type = 47001 THEN 2 -- edit shift 
@@ -156,7 +156,7 @@ class DetailRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                                 AND layer = -1 
                                 AND (tw_protocol.on_date BETWEEN (SYSDATE - 1) AND (SYSDATE + 1))) as shiftModified,
                             sched.on_date as date, 
-                            CASE sched.level_id WHEN 4000 THEN 1 ELSE 0 END AS entityType,
+                            CASE sched.level_id WHEN 4000 THEN 1 ELSE 0 END AS shiftType,
                             sched.task_start as startTime, 
                             sched.task_end as endTime, 
                             DECODE (tk_model.name, NULL, tk_type.name, tk_model.name) as activity,
