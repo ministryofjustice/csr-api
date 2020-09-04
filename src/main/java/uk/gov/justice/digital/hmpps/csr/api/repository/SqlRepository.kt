@@ -9,7 +9,7 @@ import java.sql.ResultSet
 import java.time.LocalDate
 
 @Repository
-class DetailRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
+class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
 
     fun getDetails(from: LocalDate, to: LocalDate, quantumId: String): Collection<Detail> {
         return jdbcTemplate.query(

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.csr.api.dto.DetailDto
 import uk.gov.justice.digital.hmpps.csr.api.model.Detail
-import uk.gov.justice.digital.hmpps.csr.api.repository.DetailRepository
+import uk.gov.justice.digital.hmpps.csr.api.repository.SqlRepository
 import uk.gov.justice.digital.hmpps.csr.api.security.AuthenticationFacade
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -14,13 +14,13 @@ import kotlin.math.abs
 @Service
 @Transactional
 class DetailService(
-        private val detailRepository: DetailRepository,
+        private val sqlRepository: SqlRepository,
         private val authenticationFacade: AuthenticationFacade
 ) {
 
     fun getStaffDetails(from: LocalDate, to: LocalDate, quantumId: String = authenticationFacade.currentUsername): Collection<DetailDto> {
         log.debug("Fetching shift details for $quantumId")
-        val details = detailRepository.getDetails(from, to, quantumId)
+        val details = sqlRepository.getDetails(from, to, quantumId)
         log.info("Found ${details.size} shift details for $quantumId")
 
         return mapToDetailsDto(details)
@@ -28,11 +28,11 @@ class DetailService(
 
     fun getModifiedDetailByPlanUnit(planUnit: String): Collection<DetailDto> {
         log.debug("Fetching modified shifts for $planUnit")
-        val modifiedShifts = detailRepository.getModifiedShifts(planUnit)
+        val modifiedShifts = sqlRepository.getModifiedShifts(planUnit)
         log.info("Found ${modifiedShifts.size} modified shifts for $planUnit")
 
         log.debug("Fetching modified detail for $planUnit")
-        val modifiedDetails = detailRepository.getModifiedDetails(planUnit)
+        val modifiedDetails = sqlRepository.getModifiedDetails(planUnit)
         log.info("Found ${modifiedDetails.size} modified details for $planUnit")
 
         return mapToDetailsDto(modifiedShifts + modifiedDetails)

@@ -12,7 +12,7 @@ import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
 import uk.gov.justice.digital.hmpps.csr.api.domain.DetailType
 import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.csr.api.model.Detail
-import uk.gov.justice.digital.hmpps.csr.api.repository.DetailRepository
+import uk.gov.justice.digital.hmpps.csr.api.repository.SqlRepository
 import uk.gov.justice.digital.hmpps.csr.api.security.AuthenticationFacade
 import java.time.Clock
 import java.time.LocalDate
@@ -22,16 +22,16 @@ import java.time.ZoneId
 @ExtendWith(MockKExtension::class)
 @DisplayName("Detail Service tests")
 internal class DetailServiceTest {
-    private val detailRepository: DetailRepository = mockk(relaxUnitFun = true)
+    private val sqlRepository: SqlRepository = mockk(relaxUnitFun = true)
     private val authenticationFacade: AuthenticationFacade = mockk(relaxUnitFun = true)
     private val service = DetailService(
-            detailRepository,
+            sqlRepository,
             authenticationFacade
     )
 
     @BeforeEach
     fun resetAllMocks() {
-        clearMocks(detailRepository)
+        clearMocks(sqlRepository)
         clearMocks(authenticationFacade)
     }
 
@@ -46,13 +46,13 @@ internal class DetailServiceTest {
             val to = LocalDate.now(clock).plusDays(1)
 
             val details = listOf(getValidShiftDetail(123L, 456L))
-            every { detailRepository.getDetails(from, to, quantumId) } returns details
+            every { sqlRepository.getDetails(from, to, quantumId) } returns details
             every { authenticationFacade.currentUsername } returns quantumId
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
-            verify { detailRepository.getDetails(from, to, quantumId) }
-            confirmVerified(detailRepository)
+            verify { sqlRepository.getDetails(from, to, quantumId) }
+            confirmVerified(sqlRepository)
 
             assertThat(returnValue).hasSize(1)
         }
@@ -63,13 +63,13 @@ internal class DetailServiceTest {
             val from = LocalDate.now(clock).minusDays(1)
             val to = LocalDate.now(clock).plusDays(1)
 
-            every { detailRepository.getDetails(from, to, quantumId) } returns listOf()
+            every { sqlRepository.getDetails(from, to, quantumId) } returns listOf()
             every { authenticationFacade.currentUsername } returns quantumId
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
-            verify { detailRepository.getDetails(from, to, quantumId) }
-            confirmVerified(detailRepository)
+            verify { sqlRepository.getDetails(from, to, quantumId) }
+            confirmVerified(sqlRepository)
 
             assertThat(returnValue).hasSize(0)
         }
@@ -87,13 +87,13 @@ internal class DetailServiceTest {
             val to = LocalDate.now(clock).plusDays(1)
 
             val details = listOf(getValidShiftDetail(-1234L, 456L))
-            every { detailRepository.getDetails(from, to, quantumId) } returns details
+            every { sqlRepository.getDetails(from, to, quantumId) } returns details
             every { authenticationFacade.currentUsername } returns quantumId
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
-            verify { detailRepository.getDetails(from, to, quantumId) }
-            confirmVerified(detailRepository)
+            verify { sqlRepository.getDetails(from, to, quantumId) }
+            confirmVerified(sqlRepository)
 
             assertThat(returnValue).hasSize(1)
             assertThat(returnValue.first().detailStart).isEqualTo(LocalDate.now(clock).atStartOfDay().minusSeconds(1234))
@@ -106,13 +106,13 @@ internal class DetailServiceTest {
             val to = LocalDate.now(clock).plusDays(1)
 
             val details = listOf(getValidShiftDetail(-2147483648L, 456L))
-            every { detailRepository.getDetails(from, to, quantumId) } returns details
+            every { sqlRepository.getDetails(from, to, quantumId) } returns details
             every { authenticationFacade.currentUsername } returns quantumId
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
-            verify { detailRepository.getDetails(from, to, quantumId) }
-            confirmVerified(detailRepository)
+            verify { sqlRepository.getDetails(from, to, quantumId) }
+            confirmVerified(sqlRepository)
 
             assertThat(returnValue).hasSize(1)
             assertThat(returnValue.first().detailStart).isEqualTo(LocalDate.now(clock).atStartOfDay())
@@ -125,13 +125,13 @@ internal class DetailServiceTest {
             val to = LocalDate.now(clock).plusDays(1)
 
             val details = listOf(getValidShiftDetail(123L, -2147483648L))
-            every { detailRepository.getDetails(from, to, quantumId) } returns details
+            every { sqlRepository.getDetails(from, to, quantumId) } returns details
             every { authenticationFacade.currentUsername } returns quantumId
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
-            verify { detailRepository.getDetails(from, to, quantumId) }
-            confirmVerified(detailRepository)
+            verify { sqlRepository.getDetails(from, to, quantumId) }
+            confirmVerified(sqlRepository)
 
             assertThat(returnValue).hasSize(1)
             assertThat(returnValue.first().detailEnd).isEqualTo(LocalDate.now(clock).atStartOfDay().minusSeconds(0))
@@ -144,13 +144,13 @@ internal class DetailServiceTest {
             val to = LocalDate.now(clock).plusDays(1)
 
             val details = listOf(getValidShiftDetail(86400L, 456L))
-            every { detailRepository.getDetails(from, to, quantumId) } returns details
+            every { sqlRepository.getDetails(from, to, quantumId) } returns details
             every { authenticationFacade.currentUsername } returns quantumId
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
-            verify { detailRepository.getDetails(from, to, quantumId) }
-            confirmVerified(detailRepository)
+            verify { sqlRepository.getDetails(from, to, quantumId) }
+            confirmVerified(sqlRepository)
 
             assertThat(returnValue).hasSize(1)
             assertThat(returnValue.first().detailStart).isEqualTo(LocalDate.now(clock).atStartOfDay().plusSeconds(86400))
@@ -163,13 +163,13 @@ internal class DetailServiceTest {
             val to = LocalDate.now(clock).plusDays(1)
 
             val details = listOf(getValidShiftDetail(123L, 86400L))
-            every { detailRepository.getDetails(from, to, quantumId) } returns details
+            every { sqlRepository.getDetails(from, to, quantumId) } returns details
             every { authenticationFacade.currentUsername } returns quantumId
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
-            verify { detailRepository.getDetails(from, to, quantumId) }
-            confirmVerified(detailRepository)
+            verify { sqlRepository.getDetails(from, to, quantumId) }
+            confirmVerified(sqlRepository)
 
             assertThat(returnValue).hasSize(1)
             assertThat(returnValue.first().detailEnd).isEqualTo(LocalDate.now(clock).atStartOfDay().plusSeconds(86400))
@@ -182,13 +182,13 @@ internal class DetailServiceTest {
             val to = LocalDate.now(clock).plusDays(1)
 
             val details = listOf(getValidShiftDetail(86401L, 456L))
-            every { detailRepository.getDetails(from, to, quantumId) } returns details
+            every { sqlRepository.getDetails(from, to, quantumId) } returns details
             every { authenticationFacade.currentUsername } returns quantumId
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
-            verify { detailRepository.getDetails(from, to, quantumId) }
-            confirmVerified(detailRepository)
+            verify { sqlRepository.getDetails(from, to, quantumId) }
+            confirmVerified(sqlRepository)
 
             assertThat(returnValue).hasSize(1)
             assertThat(returnValue.first().detailStart).isEqualTo(LocalDate.now(clock).atStartOfDay().plusSeconds(86401))
@@ -201,13 +201,13 @@ internal class DetailServiceTest {
             val to = LocalDate.now(clock).plusDays(1)
 
             val details = listOf(getValidShiftDetail(123L, 86401L))
-            every { detailRepository.getDetails(from, to, quantumId) } returns details
+            every { sqlRepository.getDetails(from, to, quantumId) } returns details
             every { authenticationFacade.currentUsername } returns quantumId
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
-            verify { detailRepository.getDetails(from, to, quantumId) }
-            confirmVerified(detailRepository)
+            verify { sqlRepository.getDetails(from, to, quantumId) }
+            confirmVerified(sqlRepository)
 
             assertThat(returnValue).hasSize(1)
             assertThat(returnValue.first().detailEnd).isEqualTo(LocalDate.now(clock).atStartOfDay().plusSeconds(86401))
@@ -220,13 +220,13 @@ internal class DetailServiceTest {
             val to = LocalDate.now(clock).plusDays(1)
 
             val details = listOf(getValidShiftDetail(-123L, 456L))
-            every { detailRepository.getDetails(from, to, quantumId) } returns details
+            every { sqlRepository.getDetails(from, to, quantumId) } returns details
             every { authenticationFacade.currentUsername } returns quantumId
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
-            verify { detailRepository.getDetails(from, to, quantumId) }
-            confirmVerified(detailRepository)
+            verify { sqlRepository.getDetails(from, to, quantumId) }
+            confirmVerified(sqlRepository)
 
             assertThat(returnValue).hasSize(1)
             assertThat(returnValue.first().detailStart).isEqualTo(LocalDate.now(clock).atStartOfDay().minusSeconds(123))
@@ -239,13 +239,13 @@ internal class DetailServiceTest {
             val to = LocalDate.now(clock).plusDays(1)
 
             val details = listOf(getValidShiftDetail(123L, -456L))
-            every { detailRepository.getDetails(from, to, quantumId) } returns details
+            every { sqlRepository.getDetails(from, to, quantumId) } returns details
             every { authenticationFacade.currentUsername } returns quantumId
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
-            verify { detailRepository.getDetails(from, to, quantumId) }
-            confirmVerified(detailRepository)
+            verify { sqlRepository.getDetails(from, to, quantumId) }
+            confirmVerified(sqlRepository)
 
             assertThat(returnValue).hasSize(1)
             assertThat(returnValue.first().detailEnd).isEqualTo(LocalDate.now(clock).atStartOfDay().minusSeconds(456))
