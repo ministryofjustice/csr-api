@@ -1,6 +1,6 @@
 # Corporate Staff Roster (CSR) API
 This service acts as an anti-corrupton layer from Invision/CSR.
-It aims to remove any idiosyncrasies from the data model, primarily combining ShiftDate (LocatDate) and DetailStart/DetailEnd (Long, relative to midnight) values into a more easily understandable LocalDateTime.
+It aims to remove any idiosyncrasies from the data model, primarily combining ShiftDate (LocatDate) and DetailStart/DetailEnd (Long, seconds relative to midnight) values into a more easily understandable LocalDateTime.
 
 ## Continuous Integration  
 https://app.circleci.com/pipelines/github/ministryofjustice/csr-api
