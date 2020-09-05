@@ -3,10 +3,7 @@ package uk.gov.justice.digital.hmpps.csr.api.service
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
 import uk.gov.justice.digital.hmpps.csr.api.domain.DetailType
@@ -29,47 +26,49 @@ internal class DetailServiceTest {
             authenticationFacade
     )
 
+    private val clock: Clock = Clock.fixed(LocalDate.of(2020, 5, 3).atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
+    private val quantumId = "XYZ"
+    private val shiftDate: LocalDate = LocalDate.now(clock)
+    private val from: LocalDate = shiftDate.minusDays(1)
+    private val to: LocalDate = shiftDate.plusDays(1)
+
     @BeforeEach
     fun resetAllMocks() {
         clearMocks(sqlRepository)
         clearMocks(authenticationFacade)
+
+        every { authenticationFacade.currentUsername } returns quantumId
+    }
+
+    @AfterEach
+    fun confirmVerified() {
+        confirmVerified(sqlRepository)
+        confirmVerified(authenticationFacade)
     }
 
     @Nested
-    @DisplayName("Get Service tests")
-    inner class GetServiceTests {
+    @DisplayName("Get Details")
+    inner class DetailServiceTests {
 
         @Test
         fun `Should get Details`() {
-            val quantumId = "XYZ"
-            val from = LocalDate.now(clock).minusDays(1)
-            val to = LocalDate.now(clock).plusDays(1)
-
             val details = listOf(getValidShiftDetail(123L, 456L))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
-            every { authenticationFacade.currentUsername } returns quantumId
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
             verify { sqlRepository.getDetails(from, to, quantumId) }
-            confirmVerified(sqlRepository)
 
             assertThat(returnValue).hasSize(1)
         }
 
         @Test
         fun `Should get empty Details`() {
-            val quantumId = "XYZ"
-            val from = LocalDate.now(clock).minusDays(1)
-            val to = LocalDate.now(clock).plusDays(1)
-
             every { sqlRepository.getDetails(from, to, quantumId) } returns listOf()
-            every { authenticationFacade.currentUsername } returns quantumId
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
             verify { sqlRepository.getDetails(from, to, quantumId) }
-            confirmVerified(sqlRepository)
 
             assertThat(returnValue).hasSize(0)
         }
@@ -77,91 +76,63 @@ internal class DetailServiceTest {
     }
 
     @Nested
-    @DisplayName("Service Task Time tests")
+    @DisplayName("Get Details Detail Time tests")
     inner class ServiceTaskTimeTests {
 
         @Test
         fun `Should subtract time when start time less than 0`() {
-            val quantumId = "XYZ"
-            val from = LocalDate.now(clock).minusDays(1)
-            val to = LocalDate.now(clock).plusDays(1)
-
             val details = listOf(getValidShiftDetail(-1234L, 456L))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
-            every { authenticationFacade.currentUsername } returns quantumId
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
             verify { sqlRepository.getDetails(from, to, quantumId) }
-            confirmVerified(sqlRepository)
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().detailStart).isEqualTo(LocalDate.now(clock).atStartOfDay().minusSeconds(1234))
+            assertThat(returnValue.first().detailStart).isEqualTo(shiftDate.atStartOfDay().minusSeconds(1234))
         }
 
         @Test
-        fun `Should replace full_day start time with 0`() {
-            val quantumId = "XYZ"
-            val from = LocalDate.now(clock).minusDays(1)
-            val to = LocalDate.now(clock).plusDays(1)
-
+        fun `Should replace start full day magic number with 0`() {
             val details = listOf(getValidShiftDetail(-2147483648L, 456L))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
-            every { authenticationFacade.currentUsername } returns quantumId
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
             verify { sqlRepository.getDetails(from, to, quantumId) }
-            confirmVerified(sqlRepository)
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().detailStart).isEqualTo(LocalDate.now(clock).atStartOfDay())
+            assertThat(returnValue.first().detailStart).isEqualTo(shiftDate.atStartOfDay())
         }
 
         @Test
-        fun `Should replace full_day end time with 0`() {
-            val quantumId = "XYZ"
-            val from = LocalDate.now(clock).minusDays(1)
-            val to = LocalDate.now(clock).plusDays(1)
-
+        fun `Should replace end full day magic number with 0`() {
             val details = listOf(getValidShiftDetail(123L, -2147483648L))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
-            every { authenticationFacade.currentUsername } returns quantumId
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
             verify { sqlRepository.getDetails(from, to, quantumId) }
-            confirmVerified(sqlRepository)
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().detailEnd).isEqualTo(LocalDate.now(clock).atStartOfDay().minusSeconds(0))
+            assertThat(returnValue.first().detailEnd).isEqualTo(shiftDate.atStartOfDay())
         }
 
         @Test
         fun `Should replace start time of 86400 with time plus 86400`() {
-            val quantumId = "XYZ"
-            val from = LocalDate.now(clock).minusDays(1)
-            val to = LocalDate.now(clock).plusDays(1)
-
             val details = listOf(getValidShiftDetail(86400L, 456L))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
-            every { authenticationFacade.currentUsername } returns quantumId
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
             verify { sqlRepository.getDetails(from, to, quantumId) }
-            confirmVerified(sqlRepository)
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().detailStart).isEqualTo(LocalDate.now(clock).atStartOfDay().plusSeconds(86400))
+            assertThat(returnValue.first().detailStart).isEqualTo(shiftDate.atStartOfDay().plusSeconds(86400))
         }
 
         @Test
         fun `Should replace end time of 86400 with time plus 86400`() {
-            val quantumId = "XYZ"
-            val from = LocalDate.now(clock).minusDays(1)
-            val to = LocalDate.now(clock).plusDays(1)
-
             val details = listOf(getValidShiftDetail(123L, 86400L))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
             every { authenticationFacade.currentUsername } returns quantumId
@@ -172,15 +143,11 @@ internal class DetailServiceTest {
             confirmVerified(sqlRepository)
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().detailEnd).isEqualTo(LocalDate.now(clock).atStartOfDay().plusSeconds(86400))
+            assertThat(returnValue.first().detailEnd).isEqualTo(shiftDate.atStartOfDay().plusSeconds(86400))
         }
 
         @Test
-        fun `Should replace start time of 86401 with time minus 86400`() {
-            val quantumId = "XYZ"
-            val from = LocalDate.now(clock).minusDays(1)
-            val to = LocalDate.now(clock).plusDays(1)
-
+        fun `Should add start time of 86401`() {
             val details = listOf(getValidShiftDetail(86401L, 456L))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
             every { authenticationFacade.currentUsername } returns quantumId
@@ -191,15 +158,11 @@ internal class DetailServiceTest {
             confirmVerified(sqlRepository)
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().detailStart).isEqualTo(LocalDate.now(clock).atStartOfDay().plusSeconds(86401))
+            assertThat(returnValue.first().detailStart).isEqualTo(shiftDate.atStartOfDay().plusSeconds(86401))
         }
 
         @Test
-        fun `Should replace end time of 86401 with time minus 86400`() {
-            val quantumId = "XYZ"
-            val from = LocalDate.now(clock).minusDays(1)
-            val to = LocalDate.now(clock).plusDays(1)
-
+        fun `Should add end time of 86401`() {
             val details = listOf(getValidShiftDetail(123L, 86401L))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
             every { authenticationFacade.currentUsername } returns quantumId
@@ -210,15 +173,11 @@ internal class DetailServiceTest {
             confirmVerified(sqlRepository)
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().detailEnd).isEqualTo(LocalDate.now(clock).atStartOfDay().plusSeconds(86401))
+            assertThat(returnValue.first().detailEnd).isEqualTo(shiftDate.atStartOfDay().plusSeconds(86401))
         }
 
         @Test
-        fun `Should add 24H to less than 0 start time`() {
-            val quantumId = "XYZ"
-            val from = LocalDate.now(clock).minusDays(1)
-            val to = LocalDate.now(clock).plusDays(1)
-
+        fun `Should subtract less than 0 start time`() {
             val details = listOf(getValidShiftDetail(-123L, 456L))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
             every { authenticationFacade.currentUsername } returns quantumId
@@ -229,18 +188,13 @@ internal class DetailServiceTest {
             confirmVerified(sqlRepository)
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().detailStart).isEqualTo(LocalDate.now(clock).atStartOfDay().minusSeconds(123))
+            assertThat(returnValue.first().detailStart).isEqualTo(shiftDate.atStartOfDay().minusSeconds(123))
         }
 
         @Test
-        fun `Should add 24H to less than 0 end time`() {
-            val quantumId = "XYZ"
-            val from = LocalDate.now(clock).minusDays(1)
-            val to = LocalDate.now(clock).plusDays(1)
-
+        fun `Should subtract less than 0 end time`() {
             val details = listOf(getValidShiftDetail(123L, -456L))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
-            every { authenticationFacade.currentUsername } returns quantumId
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
@@ -248,35 +202,28 @@ internal class DetailServiceTest {
             confirmVerified(sqlRepository)
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().detailEnd).isEqualTo(LocalDate.now(clock).atStartOfDay().minusSeconds(456))
+            assertThat(returnValue.first().detailEnd).isEqualTo(shiftDate.atStartOfDay().minusSeconds(456))
         }
     }
 
-    companion object {
-        val clock: Clock = Clock.fixed(LocalDate.of(2020, 5, 3).atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
+    private fun getValidShiftDetail(start: Long, end: Long): Detail {
 
-        private fun getValidShiftDetail(start: Long, end: Long): Detail {
+        val shiftModified: LocalDateTime = LocalDateTime.now(clock).minusDays(3)
+        val shiftType = ShiftType.OVERTIME
+        val actionType = ActionType.EDIT
+        val detailType = DetailType.UNSPECIFIC
+        val activity = "Phone Center"
 
-            val quantumId = "XYZ"
-            val shiftModified: LocalDateTime = LocalDateTime.now(clock).minusDays(3)
-            val shiftDate: LocalDate = LocalDate.now(clock)
-            val shiftType = ShiftType.OVERTIME
-            val actionType = ActionType.EDIT
-            val detailType = DetailType.UNSPECIFIC
-            val activity = "Phone Center"
-
-            return Detail(
-                    quantumId,
-                    shiftModified,
-                    shiftDate,
-                    shiftType.value,
-                    start,
-                    end,
-                    activity,
-                    detailType.value,
-                    actionType.value
-            )
-        }
-
+        return Detail(
+                quantumId,
+                shiftModified,
+                shiftDate,
+                shiftType.value,
+                start,
+                end,
+                activity,
+                detailType.value,
+                actionType.value
+        )
     }
 }

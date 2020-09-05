@@ -54,13 +54,13 @@ class DetailDtoTest {
     }
 
     companion object {
-
         private val clock = Clock.fixed(LocalDate.of(2020, 5, 3).atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
+
+        private val shiftDate: LocalDate = LocalDate.now(clock)
+        private const val detailStartTimeInSeconds = 7200L
+        private const val detailEndTimeInSeconds = 84500L
         const val quantumId = "XYZ"
         val shiftModified: LocalDateTime = LocalDateTime.now(clock).minusDays(3)
-        val shiftDate: LocalDate = LocalDate.now(clock)
-        const val detailStartTimeInSeconds = 7200L
-        const val detailEndTimeInSeconds = 84500L
         val shiftType = ShiftType.OVERTIME
         val actionType = ActionType.EDIT
         val detailType = DetailType.UNSPECIFIC

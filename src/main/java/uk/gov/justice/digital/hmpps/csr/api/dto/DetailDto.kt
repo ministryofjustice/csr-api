@@ -45,19 +45,19 @@ data class DetailDto @JsonCreator constructor(
         val actionType: ActionType?
 
 ) {
-        companion object {
+    companion object {
 
-                fun from(detail: Detail, detailStart: LocalDateTime, detailEnd: LocalDateTime): DetailDto {
-                        return DetailDto(
-                                detail.quantumId,
-                                detail.shiftModified,
-                                ShiftType.from(detail.shiftType),
-                                detailStart,
-                                detailEnd,
-                                detail.activity,
-                                detail.detailType?.let { type -> DetailType.from(type) },
-                                detail.actionType?.let { type -> ActionType.from(type) }
-                        )
-                }
+        fun from(detail: Detail, detailStart: LocalDateTime, detailEnd: LocalDateTime): DetailDto {
+            return DetailDto(
+                    detail.quantumId,
+                    detail.shiftModified,
+                    ShiftType.from(detail.shiftType),
+                    detailStart,
+                    detailEnd,
+                    detail.activity,
+                    detail.detailType?.let { type -> DetailType.from(type) },
+                    detail.actionType?.let { type -> ActionType.from(type) }
+            )
         }
+    }
 }
