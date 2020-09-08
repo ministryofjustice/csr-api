@@ -45,8 +45,7 @@ class CsrApiApplication {
     fun regionDataSource(region: Region): DataSource {
         val dataSource = HikariDataSource()
         dataSource.driverClassName = region.driverClassName
-        // Add the URL and the 'schema' (service) together in the connection string
-        dataSource.jdbcUrl = "${region.url}/${region.schema}"
+        dataSource.jdbcUrl = region.url
         dataSource.username = region.username
         dataSource.password = region.password
         return dataSource
