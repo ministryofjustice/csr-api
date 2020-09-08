@@ -46,9 +46,8 @@ class CsrApiApplication {
         val dataSource = HikariDataSource()
         dataSource.driverClassName = region.driverClassName
         dataSource.jdbcUrl = region.url
-        dataSource.schema = region.schema
-        dataSource.addDataSourceProperty("user", region.username)
-        dataSource.addDataSourceProperty("password", region.password)
+        dataSource.username = region.username
+        dataSource.password = region.password
         return dataSource
     }
 

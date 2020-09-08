@@ -31,12 +31,6 @@ env:
         name: {{ template "app.name" . }}
         key: CSR_REGION1_PASSWORD
 
-  - name: CSR_REGION1_SCHEMA
-    valueFrom:
-      secretKeyRef:
-        name: {{ template "app.name" . }}
-        key: CSR_REGION1_SCHEMA
-
   - name: CSR_REGION2_URL
     valueFrom:
       secretKeyRef:
@@ -54,12 +48,6 @@ env:
       secretKeyRef:
         name: {{ template "app.name" . }}
         key: CSR_REGION2_PASSWORD
-
-  - name: CSR_REGION2_SCHEMA
-    valueFrom:
-      secretKeyRef:
-        name: {{ template "app.name" . }}
-        key: CSR_REGION2_SCHEMA
 
   - name: CSR_REGION3_URL
     valueFrom:
@@ -79,12 +67,6 @@ env:
         name: {{ template "app.name" . }}
         key: CSR_REGION3_PASSWORD
 
-  - name: CSR_REGION3_SCHEMA
-    valueFrom:
-      secretKeyRef:
-        name: {{ template "app.name" . }}
-        key: CSR_REGION3_SCHEMA
-
   - name: CSR_REGION4_URL
     valueFrom:
       secretKeyRef:
@@ -102,12 +84,6 @@ env:
       secretKeyRef:
         name: {{ template "app.name" . }}
         key: CSR_REGION4_PASSWORD
-
-  - name: CSR_REGION4_SCHEMA
-    valueFrom:
-      secretKeyRef:
-        name: {{ template "app.name" . }}
-        key: CSR_REGION4_SCHEMA
 
   - name: CSR_REGION5_URL
     valueFrom:
@@ -127,12 +103,6 @@ env:
         name: {{ template "app.name" . }}
         key: CSR_REGION5_PASSWORD
 
-  - name: CSR_REGION5_SCHEMA
-    valueFrom:
-      secretKeyRef:
-        name: {{ template "app.name" . }}
-        key: CSR_REGION5_SCHEMA
-
   - name: CSR_REGION6_URL
     valueFrom:
       secretKeyRef:
@@ -150,12 +120,6 @@ env:
       secretKeyRef:
         name: {{ template "app.name" . }}
         key: CSR_REGION6_PASSWORD
-
-  - name: CSR_REGION6_SCHEMA
-    valueFrom:
-      secretKeyRef:
-        name: {{ template "app.name" . }}
-        key: CSR_REGION6_SCHEMA
 
   - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI
     value: "{{ .Values.env.SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI }}"

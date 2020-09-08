@@ -17,34 +17,28 @@ csr:
       username: ${csr.region1.username}
       password: ${csr.region1.password}
       driverClassName: oracle.jdbc.OracleDriver
-      schema: ${csr.region1.schema}
     - name: 2
       url: ${csr.region2.url}
       username: ${csr.region2.username}
       password: ${csr.region2.password}
       driverClassName: oracle.jdbc.OracleDriver
-      schema: ${csr.region2.schema}
     - name: 3
       url: ${csr.region3.url}
       username: ${csr.region3.username}
       password: ${csr.region3.password}
       driverClassName: oracle.jdbc.OracleDriver
-      schema: ${csr.region3.schema}
     - name: 4
       url: ${csr.region4.url}
       username: ${csr.region4.username}
       password: ${csr.region4.password}
       driverClassName: oracle.jdbc.OracleDriver
-      schema: ${csr.region4.schema}
     - name: 5
       url: ${csr.region5.url}
       username: ${csr.region5.username}
       password: ${csr.region5.password}
       driverClassName: oracle.jdbc.OracleDriver
-      schema: ${csr.region5.schema}
     - name: 6
       url: ${csr.region6.url}
       username: ${csr.region6.username}
       password: ${csr.region6.password}
       driverClassName: oracle.jdbc.OracleDriver
-      schema: ${csr.region6.schema}

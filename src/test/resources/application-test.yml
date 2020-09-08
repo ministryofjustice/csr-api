@@ -46,4 +46,3 @@ csr:
       username: csr
       password: dummy
       driverClassName: org.h2.Driver
-      schema: PUBLIC
