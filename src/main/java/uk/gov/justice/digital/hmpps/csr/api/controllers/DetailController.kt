@@ -21,7 +21,8 @@ class DetailController(private val detailService: DetailService) {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: LocalDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: LocalDate
     ): ResponseEntity<Collection<DetailDto>> {
-        return ResponseEntity.ok(detailService.getStaffDetails(from, to))
+        val details = detailService.getStaffDetails(from, to)
+        return ResponseEntity.ok(details)
     }
 
     @ApiOperation(value = "Retrieve all modified details for a plan unit")

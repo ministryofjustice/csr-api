@@ -6,7 +6,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
-import uk.gov.justice.digital.hmpps.csr.api.domain.DetailType
 import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.csr.api.model.Detail
 import uk.gov.justice.digital.hmpps.csr.api.repository.SqlRepository
@@ -119,7 +118,7 @@ internal class DetailServiceTest {
         }
 
         @Test
-        fun `Should replace start time of 86400 with time plus 86400`() {
+        fun `Should replace start time of 86400 with time plus 0`() {
             val details = listOf(getValidShiftDetail(86400L, 456L))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
 
@@ -128,11 +127,11 @@ internal class DetailServiceTest {
             verify { sqlRepository.getDetails(from, to, quantumId) }
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().detailStart).isEqualTo(shiftDate.atStartOfDay().plusSeconds(86400))
+            assertThat(returnValue.first().detailStart).isEqualTo(shiftDate.atStartOfDay().plusSeconds(0))
         }
 
         @Test
-        fun `Should replace end time of 86400 with time plus 86400`() {
+        fun `Should replace end time of 86400 with time plus 0`() {
             val details = listOf(getValidShiftDetail(123L, 86400L))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
             every { authenticationFacade.currentUsername } returns quantumId
@@ -143,11 +142,11 @@ internal class DetailServiceTest {
             confirmVerified(sqlRepository)
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().detailEnd).isEqualTo(shiftDate.atStartOfDay().plusSeconds(86400))
+            assertThat(returnValue.first().detailEnd).isEqualTo(shiftDate.atStartOfDay().plusSeconds(0))
         }
 
         @Test
-        fun `Should add start time of 86401`() {
+        fun `Should add start time of 86401 as 86401`() {
             val details = listOf(getValidShiftDetail(86401L, 456L))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
             every { authenticationFacade.currentUsername } returns quantumId
@@ -162,7 +161,7 @@ internal class DetailServiceTest {
         }
 
         @Test
-        fun `Should add end time of 86401`() {
+        fun `Should add end time of 86401 as 86401`() {
             val details = listOf(getValidShiftDetail(123L, 86401L))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
             every { authenticationFacade.currentUsername } returns quantumId
@@ -211,7 +210,6 @@ internal class DetailServiceTest {
         val shiftModified: LocalDateTime = LocalDateTime.now(clock).minusDays(3)
         val shiftType = ShiftType.OVERTIME
         val actionType = ActionType.EDIT
-        val detailType = DetailType.UNSPECIFIC
         val activity = "Phone Center"
 
         return Detail(
@@ -222,7 +220,6 @@ internal class DetailServiceTest {
                 start,
                 end,
                 activity,
-                detailType.value,
                 actionType.value
         )
     }

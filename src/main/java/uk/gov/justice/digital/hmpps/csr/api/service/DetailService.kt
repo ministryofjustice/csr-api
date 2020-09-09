@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.csr.api.service
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.csr.api.dto.DetailDto
 import uk.gov.justice.digital.hmpps.csr.api.model.Detail
 import uk.gov.justice.digital.hmpps.csr.api.repository.SqlRepository
@@ -11,11 +10,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Service
-@Transactional
-class DetailService(
-        private val sqlRepository: SqlRepository,
-        private val authenticationFacade: AuthenticationFacade
-) {
+class DetailService(private val sqlRepository: SqlRepository, val authenticationFacade: AuthenticationFacade) {
 
     fun getStaffDetails(from: LocalDate, to: LocalDate, quantumId: String = authenticationFacade.currentUsername): Collection<DetailDto> {
         log.debug("Fetching shift details for $quantumId")
@@ -53,9 +48,11 @@ class DetailService(
         e.g. 04/09/2020T00:00:00 with a detail start of -10 is actually 03/09/2020T23:59:50
      */
     private fun calculateDetailDateTime(shiftDate: LocalDate, detailTime: Long): LocalDateTime {
-        return if (detailTime != FULL_DAY_ACTIVITY) {
+        val normalisedTime = if(detailTime == 86400L) { 0 } else { detailTime }
+
+        return if (normalisedTime != FULL_DAY_ACTIVITY) {
             // plusSeconds allows negative numbers.
-            shiftDate.atStartOfDay().plusSeconds(detailTime)
+            shiftDate.atStartOfDay().plusSeconds(normalisedTime)
         } else {
             shiftDate.atStartOfDay()
         }

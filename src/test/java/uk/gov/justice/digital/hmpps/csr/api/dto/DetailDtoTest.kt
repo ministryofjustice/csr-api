@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.csr.api.dto
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
-import uk.gov.justice.digital.hmpps.csr.api.domain.DetailType
 import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.csr.api.model.Detail
 import java.time.*
@@ -23,7 +22,6 @@ class DetailDtoTest {
         assertThat(detailDto.detailStart).isEqualTo(start)
         assertThat(detailDto.detailEnd).isEqualTo(end)
         assertThat(detailDto.activity).isEqualTo(activity)
-        assertThat(detailDto.detailType).isEqualTo(detailType)
         assertThat(detailDto.actionType).isEqualTo(actionType)
     }
 
@@ -34,7 +32,6 @@ class DetailDtoTest {
                 null,
                 LocalDate.now(),
                 ShiftType.SHIFT.value,
-                null,
                 null,
                 null,
                 null,
@@ -49,7 +46,6 @@ class DetailDtoTest {
         assertThat(detailDto.detailStart).isEqualTo(start)
         assertThat(detailDto.detailEnd).isEqualTo(end)
         assertThat(detailDto.activity).isNull()
-        assertThat(detailDto.detailType).isNull()
         assertThat(detailDto.actionType).isNull()
     }
 
@@ -63,7 +59,6 @@ class DetailDtoTest {
         val shiftModified: LocalDateTime = LocalDateTime.now(clock).minusDays(3)
         val shiftType = ShiftType.OVERTIME
         val actionType = ActionType.EDIT
-        val detailType = DetailType.UNSPECIFIC
         const val activity = "Phone Center"
 
         fun getFullyPopulatedDetail(): Detail {
@@ -76,7 +71,6 @@ class DetailDtoTest {
                     detailStartTimeInSeconds,
                     detailEndTimeInSeconds,
                     activity,
-                    detailType.value,
                     actionType.value
             )
         }

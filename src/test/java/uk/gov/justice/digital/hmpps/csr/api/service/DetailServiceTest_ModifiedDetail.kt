@@ -6,7 +6,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
-import uk.gov.justice.digital.hmpps.csr.api.domain.DetailType
 import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.csr.api.model.Detail
 import uk.gov.justice.digital.hmpps.csr.api.repository.SqlRepository
@@ -142,7 +141,7 @@ internal class DetailServiceTest_ModifiedDetail {
 
         @Test
         fun `Should add start time of 86401`() {
-            val details = listOf(getValidDetail(86400L, 456L))
+            val details = listOf(getValidDetail(86401L, 456L))
             every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
             every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
@@ -152,11 +151,11 @@ internal class DetailServiceTest_ModifiedDetail {
             verify { sqlRepository.getModifiedDetails(planUnit) }
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().detailStart).isEqualTo(shiftDate.atStartOfDay().plusSeconds(86400))
+            assertThat(returnValue.first().detailStart).isEqualTo(shiftDate.atStartOfDay().plusSeconds(86401))
         }
 
         @Test
-        fun `Should replace end time of 86400 with time minus 86400`() {
+        fun `Should replace end time of 86400 with time minus 0`() {
             val details = listOf(getValidDetail(123L, 86400L))
             every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
             every { sqlRepository.getModifiedDetails(planUnit) } returns details
@@ -167,7 +166,7 @@ internal class DetailServiceTest_ModifiedDetail {
             verify { sqlRepository.getModifiedDetails(planUnit) }
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().detailEnd).isEqualTo(shiftDate.atStartOfDay().plusSeconds(86400))
+            assertThat(returnValue.first().detailEnd).isEqualTo(shiftDate.atStartOfDay().plusSeconds(0))
         }
 
         @Test
@@ -239,7 +238,6 @@ internal class DetailServiceTest_ModifiedDetail {
         val shiftModified: LocalDateTime = LocalDateTime.now(clock).minusDays(3)
         val shiftType = ShiftType.OVERTIME
         val actionType = ActionType.EDIT
-        val detailType = DetailType.UNSPECIFIC
         val activity = "Phone Center"
 
         return Detail(
@@ -250,7 +248,6 @@ internal class DetailServiceTest_ModifiedDetail {
                 start,
                 end,
                 activity,
-                detailType.value,
                 actionType.value
         )
     }
