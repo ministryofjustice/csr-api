@@ -63,10 +63,10 @@ The generated documentation for the api can be viewed at http://localhost:8081/s
 ### Health  
   
 - `/ping`: will respond `pong` to all requests.  This should be used by dependent systems to check connectivity to   
-offender assessment service, rather than calling the `/health` endpoint.  
+csr-api, rather than calling the `/health` endpoint.  
 - `/health`: provides information about the application health and its dependencies.  This should only be used  
-by offender assessment service health monitoring (e.g. pager duty) and not other systems who wish to find out the   
-state of offender assessment service.  
+by csr-api health monitoring (e.g. pager duty) and not other systems who wish to find out the   
+state of csr-api.  
 - `/info`: provides information about the version of deployed application.  
   
 #### Health and info Endpoints (curl)  
