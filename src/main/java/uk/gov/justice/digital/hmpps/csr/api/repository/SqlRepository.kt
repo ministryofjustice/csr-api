@@ -86,7 +86,8 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                         DECODE (tk_model.frame_start, NULL, sched.task_start, tk_model.frame_start) as startTime, 
                         DECODE (tk_model.frame_end, NULL, sched.task_end, tk_model.frame_end) as endTime, 
                         CASE sched.level_id  WHEN 4000 THEN 1 ELSE 0 END AS shiftType,
-                        DECODE (tk_model.name, NULL, tk_type.name, tk_model.name) as activity 
+                        DECODE (tk_model.name, NULL, tk_type.name, tk_model.name) as activity,
+tk_model.name
         FROM tw_schedule sched
                 INNER JOIN sm_user usr ON sched.st_staff_id = usr.obj_id AND usr.obj_type = 3 AND usr.is_deleted = 0
                 LEFT JOIN tk_type ON sched.ref_id = tk_type.tk_type_id 
