@@ -46,12 +46,11 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
             Detail(
                     null,
                     null,
-                    resultSet.getDate("date").toLocalDate(),
+                    resultSet.getDate("shiftDate").toLocalDate(),
                     resultSet.getInt("shiftType"),
                     resultSet.getLong("startTime"),
                     resultSet.getLong("endTime"),
                     resultSet.getString("activity"),
-                    resultSet.getInt("detailType"),
                     null
             )
         }
@@ -60,9 +59,8 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
             Detail(
                     resultSet.getString("quantumId"),
                     resultSet.getTimestamp("shiftModified").toLocalDateTime(),
-                    resultSet.getDate("date").toLocalDate(),
+                    resultSet.getDate("shiftDate").toLocalDate(),
                     resultSet.getInt("shiftType"),
-                    null,
                     null,
                     null,
                     null,
@@ -74,38 +72,37 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
             Detail(
                     resultSet.getString("quantumId"),
                     resultSet.getTimestamp("shiftModified").toLocalDateTime(),
-                    resultSet.getDate("date").toLocalDate(),
+                    resultSet.getDate("shiftDate").toLocalDate(),
                     resultSet.getInt("shiftType"),
                     resultSet.getLong("startTime"),
                     resultSet.getLong("endTime"),
                     resultSet.getString("activity"),
-                    null,
                     resultSet.getInt("actionType")
             )
         }
 
         val GET_DETAILS = """
-        SELECT DISTINCT sched.on_date as date, 
-                        sched.task_start as startTime, 
-                        sched.task_end as endTime,
+        SELECT DISTINCT sched.on_date as shiftDate, 
+                        DECODE (tk_model.frame_start, NULL, sched.task_start, tk_model.frame_start) as startTime, 
+                        DECODE (tk_model.frame_end, NULL, sched.task_end, tk_model.frame_end) as endTime, 
                         CASE sched.level_id  WHEN 4000 THEN 1 ELSE 0 END AS shiftType,
                         DECODE (tk_model.name, NULL, tk_type.name, tk_model.name) as activity 
         FROM tw_schedule sched
                 INNER JOIN sm_user usr ON sched.st_staff_id = usr.obj_id AND usr.obj_type = 3 AND usr.is_deleted = 0
                 LEFT JOIN tk_type ON sched.ref_id = tk_type.tk_type_id 
-                LEFT JOIN tk_model ON tk_model.tk_model_id = sched.optional_1 
+                LEFT JOIN tk_model ON tk_model.tk_model_id = sched.optional_1 and tk_model.is_deleted = 0
         WHERE sched.st_staff_id = usr.obj_id
         AND   sched.on_date BETWEEN :from AND :to
         AND   sched.layer = -1
         AND   sched.level_id IN (1000, 4000)
         AND   LOWER(usr.name) = LOWER(:quantumId)
-        ORDER BY date;
+        ORDER BY shiftDate
         """.trimIndent()
 
         val GET_MODIFIED_SHIFTS = """
             SELECT DISTINCT usr.name AS quantumId, 
                             pro.lastmodified as shiftModified,
-                            sched.on_date as date,  
+                            sched.on_date as shiftDate,  
                             CASE sched.level_id WHEN 4000 THEN 1 ELSE 0 END AS shiftType, 
                             CASE 
                                 WHEN pro.action_type = 47012 THEN 3 -- delete shift 

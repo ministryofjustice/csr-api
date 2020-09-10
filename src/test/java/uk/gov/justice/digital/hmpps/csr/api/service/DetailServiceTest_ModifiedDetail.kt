@@ -3,13 +3,9 @@ package uk.gov.justice.digital.hmpps.csr.api.service
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
-import uk.gov.justice.digital.hmpps.csr.api.domain.DetailType
 import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.csr.api.model.Detail
 import uk.gov.justice.digital.hmpps.csr.api.repository.SqlRepository
@@ -29,25 +25,34 @@ internal class DetailServiceTest_ModifiedDetail {
             authenticationFacade
     )
 
+    private val clock: Clock = Clock.fixed(LocalDate.of(2020, 5, 3).atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
+    private val planUnit = "ABC"
+    private val shiftDate: LocalDate = LocalDate.now(clock)
+
     @BeforeEach
     fun resetAllMocks() {
         clearMocks(sqlRepository)
         clearMocks(authenticationFacade)
+
+    }
+
+    @AfterEach
+    fun confirmVerified() {
+        confirmVerified(sqlRepository)
+        confirmVerified(authenticationFacade)
     }
 
     @Nested
-    @DisplayName("Get Notification tests")
-    inner class GetNotificationTests {
+    @DisplayName("Get Modified Detail")
+    inner class GetModifiedDetailTests {
 
         @Test
-        fun `Should get Shift Notifications`() {
-            val planUnit = "ABC"
-
-            val notifications = listOf(getValidShiftDetail())
+        fun `Should get Modified Shifts`() {
+            val notifications = listOf(getValidDetail())
             every { sqlRepository.getModifiedShifts(planUnit) } returns notifications
             every { sqlRepository.getModifiedDetails(planUnit) } returns listOf()
 
-            val returnValue = service.getModifiedDetailByPlanUnit(planUnit)
+            val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
 
             verify { sqlRepository.getModifiedShifts(planUnit) }
             verify { sqlRepository.getModifiedDetails(planUnit) }
@@ -56,14 +61,12 @@ internal class DetailServiceTest_ModifiedDetail {
         }
 
         @Test
-        fun `Should get Shift Detail Notifications`() {
-            val planUnit = "ABC"
-
-            val notifications = listOf(getValidShiftDetail())
+        fun `Should get Modified Details`() {
+            val notifications = listOf(getValidDetail())
             every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
             every { sqlRepository.getModifiedDetails(planUnit) } returns notifications
 
-            val returnValue = service.getModifiedDetailByPlanUnit(planUnit)
+            val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
 
             verify { sqlRepository.getModifiedShifts(planUnit) }
             verify { sqlRepository.getModifiedDetails(planUnit) }
@@ -72,16 +75,13 @@ internal class DetailServiceTest_ModifiedDetail {
         }
 
         @Test
-        fun `Should combine Shift and Shift Detail Notifications`() {
-            val planUnit = "ABC"
+        fun `Should combine Shifts and Details`() {
+            val shiftDetails = listOf(getValidDetail())
+            val detailDetails = listOf(getValidDetail())
+            every { sqlRepository.getModifiedShifts(planUnit) } returns shiftDetails
+            every { sqlRepository.getModifiedDetails(planUnit) } returns detailDetails
 
-            val shiftNotifications = listOf(getValidShiftDetail())
-            val detailNotifications = listOf(getValidShiftDetail())
-
-            every { sqlRepository.getModifiedShifts(planUnit) } returns shiftNotifications
-            every { sqlRepository.getModifiedDetails(planUnit) } returns detailNotifications
-
-            val returnValue = service.getModifiedDetailByPlanUnit(planUnit)
+            val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
 
             verify { sqlRepository.getModifiedShifts(planUnit) }
             verify { sqlRepository.getModifiedDetails(planUnit) }
@@ -91,208 +91,164 @@ internal class DetailServiceTest_ModifiedDetail {
     }
 
     @Nested
-    @DisplayName("Service Task Time tests")
-    inner class ServiceTaskTimeTests {
+    @DisplayName("Service Detail Time tests")
+    inner class ServiceDetailTimeTests {
 
         @Test
         fun `Should subtract time when start time less than 0`() {
-            val planUnit = "ABC"
-
-            val details = listOf(getValidShiftDetail(-1234L, 456L))
+            val details = listOf(getValidDetail(-1234L, 456L))
             every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
             every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-            val returnValue = service.getModifiedDetailByPlanUnit(planUnit)
+            val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
 
             verify { sqlRepository.getModifiedShifts(planUnit) }
             verify { sqlRepository.getModifiedDetails(planUnit) }
 
             assertThat(returnValue).hasSize(1)
-            confirmVerified(sqlRepository)
-
-            assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().detailStart).isEqualTo(LocalDate.now(DetailServiceTest.clock).atStartOfDay().minusSeconds(1234))
+            assertThat(returnValue.first().detailStart).isEqualTo(shiftDate.atStartOfDay().minusSeconds(1234))
         }
 
         @Test
-        fun `Should replace full_day start time with 0`() {
-            val planUnit = "ABC"
-
-            val details = listOf(getValidShiftDetail(-2147483648L, 456L))
+        fun `Should replace start full day magic number with 0`() {
+            val details = listOf(getValidDetail(-2147483648L, 456L))
             every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
             every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-            val returnValue = service.getModifiedDetailByPlanUnit(planUnit)
+            val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
 
             verify { sqlRepository.getModifiedShifts(planUnit) }
             verify { sqlRepository.getModifiedDetails(planUnit) }
 
             assertThat(returnValue).hasSize(1)
-            confirmVerified(sqlRepository)
-
-            assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().detailStart).isEqualTo(LocalDate.now(DetailServiceTest.clock).atStartOfDay().plusSeconds(0))
+            assertThat(returnValue.first().detailStart).isEqualTo(shiftDate.atStartOfDay().plusSeconds(0))
         }
 
         @Test
-        fun `Should replace full_day end time with 0`() {
-            val planUnit = "ABC"
-
-            val details = listOf(getValidShiftDetail(123L, -2147483648L))
+        fun `Should replace end full day magic number with 0`() {
+            val details = listOf(getValidDetail(123L, -2147483648L))
             every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
             every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-            val returnValue = service.getModifiedDetailByPlanUnit(planUnit)
+            val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
 
             verify { sqlRepository.getModifiedShifts(planUnit) }
             verify { sqlRepository.getModifiedDetails(planUnit) }
 
             assertThat(returnValue).hasSize(1)
-            confirmVerified(sqlRepository)
-
-            assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().detailEnd).isEqualTo(LocalDate.now(DetailServiceTest.clock).atStartOfDay().plusSeconds(0))
+            assertThat(returnValue.first().detailEnd).isEqualTo(shiftDate.atStartOfDay().plusSeconds(0))
         }
 
         @Test
-        fun `Should replace start time of 86400 with time plus 86400`() {
-            val planUnit = "ABC"
-
-            val details = listOf(getValidShiftDetail(86400L, 456L))
+        fun `Should add start time of 86401`() {
+            val details = listOf(getValidDetail(86401L, 456L))
             every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
             every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-            val returnValue = service.getModifiedDetailByPlanUnit(planUnit)
+            val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
 
             verify { sqlRepository.getModifiedShifts(planUnit) }
             verify { sqlRepository.getModifiedDetails(planUnit) }
 
             assertThat(returnValue).hasSize(1)
-            confirmVerified(sqlRepository)
-
-            assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().detailStart).isEqualTo(LocalDate.now(DetailServiceTest.clock).atStartOfDay().plusSeconds(86400))
+            assertThat(returnValue.first().detailStart).isEqualTo(shiftDate.atStartOfDay().plusSeconds(86401))
         }
 
         @Test
-        fun `Should replace end time of 86400 with time minus 86400`() {
-            val planUnit = "ABC"
-
-            val details = listOf(getValidShiftDetail(123L, 86400L))
+        fun `Should replace end time of 86400 with time minus 0`() {
+            val details = listOf(getValidDetail(123L, 86400L))
             every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
             every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-            val returnValue = service.getModifiedDetailByPlanUnit(planUnit)
+            val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
 
             verify { sqlRepository.getModifiedShifts(planUnit) }
             verify { sqlRepository.getModifiedDetails(planUnit) }
 
             assertThat(returnValue).hasSize(1)
-            confirmVerified(sqlRepository)
-
-            assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().detailEnd).isEqualTo(LocalDate.now(DetailServiceTest.clock).atStartOfDay().plusSeconds(86400))
+            assertThat(returnValue.first().detailEnd).isEqualTo(shiftDate.atStartOfDay().plusSeconds(0))
         }
 
         @Test
-        fun `Should replace start time of 86401 with time minus 86400`() {
-            val planUnit = "ABC"
-
-            val details = listOf(getValidShiftDetail(86401L, 456L))
+        fun `Should add end time of 86401`() {
+            val details = listOf(getValidDetail(86401L, 456L))
             every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
             every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-            val returnValue = service.getModifiedDetailByPlanUnit(planUnit)
+            val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
 
             verify { sqlRepository.getModifiedShifts(planUnit) }
             verify { sqlRepository.getModifiedDetails(planUnit) }
 
             assertThat(returnValue).hasSize(1)
-            confirmVerified(sqlRepository)
-
-            assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().detailStart).isEqualTo(LocalDate.now(DetailServiceTest.clock).atStartOfDay().plusSeconds(86401))
+            assertThat(returnValue.first().detailStart).isEqualTo(shiftDate.atStartOfDay().plusSeconds(86401))
         }
 
         @Test
         fun `Should replace end time of 86401 with time minus 86400`() {
-            val planUnit = "ABC"
-
-            val details = listOf(getValidShiftDetail(123L, 86401L))
+            val details = listOf(getValidDetail(123L, 86401L))
             every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
             every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-            val returnValue = service.getModifiedDetailByPlanUnit(planUnit)
+            val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
 
             verify { sqlRepository.getModifiedShifts(planUnit) }
             verify { sqlRepository.getModifiedDetails(planUnit) }
 
             assertThat(returnValue).hasSize(1)
-            confirmVerified(sqlRepository)
-
-            assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().detailEnd).isEqualTo(LocalDate.now(DetailServiceTest.clock).atStartOfDay().plusSeconds(86401))
+            assertThat(returnValue.first().detailEnd).isEqualTo(shiftDate.atStartOfDay().plusSeconds(86401))
         }
 
         @Test
-        fun `Should add 24H to less than 0 start time`() {
-            val planUnit = "ABC"
-
-            val details = listOf(getValidShiftDetail(-123L, 456L))
+        fun `Should subtract less than 0 start time`() {
+            val details = listOf(getValidDetail(-123L, 456L))
             every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
             every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-            val returnValue = service.getModifiedDetailByPlanUnit(planUnit)
+            val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
 
             verify { sqlRepository.getModifiedShifts(planUnit) }
             verify { sqlRepository.getModifiedDetails(planUnit) }
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().detailStart).isEqualTo(LocalDate.now(DetailServiceTest.clock).atStartOfDay().minusSeconds(123))
+            assertThat(returnValue.first().detailStart).isEqualTo(shiftDate.atStartOfDay().minusSeconds(123))
         }
 
         @Test
-        fun `Should add 24H to less than 0 end time`() {
-            val planUnit = "ABC"
-
-            val details = listOf(getValidShiftDetail(123L, -456L))
+        fun `Should subtract less than 0 end time`() {
+            val details = listOf(getValidDetail(123L, -456L))
             every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
             every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-            val returnValue = service.getModifiedDetailByPlanUnit(planUnit)
+            val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
 
             verify { sqlRepository.getModifiedShifts(planUnit) }
             verify { sqlRepository.getModifiedDetails(planUnit) }
 
             assertThat(returnValue).hasSize(1)
-            assertThat(returnValue.first().detailEnd).isEqualTo(LocalDate.now(DetailServiceTest.clock).atStartOfDay().minusSeconds(456))
+            assertThat(returnValue.first().detailEnd).isEqualTo(shiftDate.atStartOfDay().minusSeconds(456))
         }
     }
 
-    companion object {
-        private fun getValidShiftDetail(start: Long = 7200L, end: Long = 84500L): Detail {
+    private fun getValidDetail(start: Long = 7200L, end: Long = 84500L): Detail {
 
-            val clock = Clock.fixed(LocalDate.of(2020, 5, 3).atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
-            val quantumId = "XYZ"
-            val shiftModified: LocalDateTime = LocalDateTime.now(clock).minusDays(3)
-            val shiftDate: LocalDate = LocalDate.now(clock)
-            val shiftType = ShiftType.OVERTIME
-            val actionType = ActionType.EDIT
-            val detailType = DetailType.UNSPECIFIC
-            val activity = "Phone Center"
+        val clock = Clock.fixed(LocalDate.of(2020, 5, 3).atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
+        val quantumId = "XYZ"
+        val shiftDate: LocalDate = LocalDate.now(clock)
+        val shiftModified: LocalDateTime = LocalDateTime.now(clock).minusDays(3)
+        val shiftType = ShiftType.OVERTIME
+        val actionType = ActionType.EDIT
+        val activity = "Phone Center"
 
-            return Detail(
-                    quantumId,
-                    shiftModified,
-                    shiftDate,
-                    shiftType.value,
-                    start,
-                    end,
-                    activity,
-                    detailType.value,
-                    actionType.value
-            )
-        }
-
+        return Detail(
+                quantumId,
+                shiftModified,
+                shiftDate,
+                shiftType.value,
+                start,
+                end,
+                activity,
+                actionType.value
+        )
     }
 }

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
 import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
-import uk.gov.justice.digital.hmpps.csr.api.domain.DetailType
 import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.csr.api.model.Detail
 import java.time.LocalDateTime
@@ -36,28 +35,23 @@ data class DetailDto @JsonCreator constructor(
         @JsonProperty("activity")
         val activity: String?,
 
-        @ApiModelProperty(value = "Type of detail", example = "Unspecific")
-        @JsonProperty("detailType")
-        val detailType: DetailType?,
-
         @ApiModelProperty(value = "Type of modification action", example = "EDIT")
         @JsonProperty("actionType")
         val actionType: ActionType?
 
 ) {
-        companion object {
+    companion object {
 
-                fun from(detail: Detail, detailStart: LocalDateTime, detailEnd: LocalDateTime): DetailDto {
-                        return DetailDto(
-                                detail.quantumId,
-                                detail.shiftModified,
-                                ShiftType.from(detail.shiftType),
-                                detailStart,
-                                detailEnd,
-                                detail.activity,
-                                detail.detailType?.let { type -> DetailType.from(type) },
-                                detail.actionType?.let { type -> ActionType.from(type) }
-                        )
-                }
+        fun from(detail: Detail, detailStart: LocalDateTime, detailEnd: LocalDateTime): DetailDto {
+            return DetailDto(
+                    detail.quantumId,
+                    detail.shiftModified,
+                    ShiftType.from(detail.shiftType),
+                    detailStart,
+                    detailEnd,
+                    detail.activity,
+                    detail.actionType?.let { type -> ActionType.from(type) }
+            )
         }
+    }
 }

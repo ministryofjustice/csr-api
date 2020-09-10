@@ -9,7 +9,7 @@ internal class ShiftTypeTest {
 
     @Nested
     @DisplayName("Convert from Int")
-    class CaseInsensitiveFrom {
+    inner class CaseInsensitiveFrom {
         @Test
         fun `It should match 0 and Shift`() {
             assertThat(ShiftType.from(0)).isEqualTo(ShiftType.SHIFT)

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
 import uk.gov.justice.digital.hmpps.csr.api.dto.ErrorResponse
-import javax.persistence.EntityExistsException
 import javax.validation.ValidationException
 
 @RestControllerAdvice(basePackages = ["uk.gov.justice.digital.hmpps.csr.api.controllers"])

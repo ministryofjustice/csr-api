@@ -19,7 +19,5 @@ data class Detail(
 
         val activity: String?,
 
-        val detailType: Int?,
-
         val actionType: Int?
 )
