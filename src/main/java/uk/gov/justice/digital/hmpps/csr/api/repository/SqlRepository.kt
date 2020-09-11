@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Repository
 import uk.gov.justice.digital.hmpps.csr.api.model.Detail
+import uk.gov.justice.digital.hmpps.csr.api.model.TemplateDetail
 import java.sql.ResultSet
 import java.time.LocalDate
 
@@ -37,6 +38,16 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                 MapSqlParameterSource()
                         .addValue("planUnit", planUnit),
                 modifiedDetailsRowMapper
+        )
+    }
+
+    fun getTemplateDetails(modelNames: List<String>): Collection<TemplateDetail> {
+        val values = modelNames.joinToString()
+        return jdbcTemplate.query(
+                GET_TEMPLATE_DETAILS,
+                MapSqlParameterSource()
+                        .addValue("values", values),
+                templateDetailsRowMapper
         )
     }
 
@@ -78,6 +89,16 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                     resultSet.getLong("endTime"),
                     resultSet.getString("activity"),
                     resultSet.getInt("actionType")
+            )
+        }
+
+        val templateDetailsRowMapper: RowMapper<TemplateDetail> = RowMapper { resultSet: ResultSet, _: Int ->
+            TemplateDetail(
+                    resultSet.getLong("detailStart"),
+                    resultSet.getLong("detailEnd"),
+                    resultSet.getBoolean("isRelative"),
+                    resultSet.getString("activity"),
+                    resultSet.getString("modelName")
             )
         }
 
@@ -205,5 +226,19 @@ tk_model.name
                             AND TO_NUMBER(ROUND(sched.task_start/3600, 0)) <= TO_NUMBER(TO_CHAR(SYSDATE, 'HH24'))
                         )
             );""".trimIndent()
+
+        val GET_TEMPLATE_DETAILS = """
+            SELECT tk_modelItem.TASK_START AS startTime,
+                tk_modelItem.TASK_END AS endTime,
+                tk_modelItem.IS_FRAME_RELATIVE AS isRelative,
+                tk_type.NAME AS activity,
+                tk_model.NAME AS modelName
+                FROM tk_modelitem
+            JOIN tk_model ON tk_modelitem.TK_MODEL_ID = tk_model.TK_MODEL_ID
+            JOIN tk_type on tk_type.TK_TYPE_ID = tk_modelitem.TK_TYPE_ID
+            WHERE tk_model.NAME IN (:values)
+                AND tk_model.IS_DELETED = 0
+                AND tk_modelitem.taskstyle = 0;
+            """.trimIndent()
     }
 }
