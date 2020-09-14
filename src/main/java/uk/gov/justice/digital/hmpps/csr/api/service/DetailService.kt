@@ -16,11 +16,14 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
     fun getStaffDetails(from: LocalDate, to: LocalDate, quantumId: String = authenticationFacade.currentUsername): Collection<DetailDto> {
         log.debug("Fetching shift details for $quantumId")
         val details = sqlRepository.getDetails(from, to, quantumId)
+        val templateNames = getTemplatesSet(details).toList()
+        val templates = sqlRepository.getTemplateDetails(templateNames)
 
-        //TODO: add in template data
-        log.info("Found ${details.size} shift details for $quantumId")
+        val mergedDetails = mergeTemplatesIntoDetails(details, templates)
 
-        return mapToDetailsDto(details)
+        log.info("Found ${mergedDetails.size} shift details for $quantumId")
+
+        return mapToDetailsDto(mergedDetails)
     }
 
     fun getModifiedDetailsByPlanUnit(planUnit: String): Collection<DetailDto> {
@@ -67,7 +70,7 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
         }
     }
 
-    private fun getModelNameSet(details: Collection<Detail>): Set<String> {
+    private fun getTemplatesSet(details: Collection<Detail>): Set<String> {
         return details
                 .mapNotNull { it.modelName }
                 .toSet()
@@ -82,7 +85,7 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
                     else {
                         val start = el.startTimeInSeconds
                         val end = el.endTimeInSeconds
-                        val templates = groupedTemplates[el.modelName]?.map {
+                        val selectedTemplates = groupedTemplates[el.modelName]?.map {
                             if (it.isRelative) {
                                 if (start != null) {
                                     it.detailStart += start
@@ -95,7 +98,7 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
                             it
                         }
 
-                        val newDetails = templates?.map {
+                        val newDetails = selectedTemplates?.map {
                             Detail(
                                     el.quantumId,
                                     el.shiftModified,
