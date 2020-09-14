@@ -47,7 +47,6 @@ Flyway will not run and you will also need to provide values for each schema (1-
  CSR_REGION1_URL
  CSR_REGION1_USERNAME
  CSR_REGION1_PASSWORD
- CSR_REGION1_SCHEMA
 ```
 
 ### Additional configuration  
