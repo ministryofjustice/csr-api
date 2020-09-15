@@ -72,20 +72,20 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
 
     private fun getTemplatesSet(details: Collection<Detail>): Set<String> {
         return details
-                .mapNotNull { it.modelName }
+                .mapNotNull { it.templateName }
                 .toSet()
     }
 
     private fun mergeTemplatesIntoDetails(details: Collection<Detail>, templates: Collection<TemplateDetail>): Collection<Detail> {
-        val groupedTemplates = templates.groupBy { it.modelName }
+        val groupedTemplates = templates.groupBy { it.templateName }
 
         return details
                 .fold<Detail, Collection<Detail>>(listOf()) { acc: Collection<Detail>, el: Detail ->
-                    if (el.modelName == null) return acc.plus(el)
+                    if (el.templateName == null) return acc.plus(el)
                     else {
                         val start = el.startTimeInSeconds
                         val end = el.endTimeInSeconds
-                        val selectedTemplates = groupedTemplates[el.modelName]?.map {
+                        val selectedTemplates = groupedTemplates[el.templateName]?.map {
                             if (it.isRelative) {
                                 if (start != null) {
                                     it.detailStart += start
@@ -108,7 +108,7 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
                                     it.detailEnd,
                                     it.detail, //is this the correct value?
                                     el.actionType,
-                                    el.modelName
+                                    el.templateName
                             )
                         }
 

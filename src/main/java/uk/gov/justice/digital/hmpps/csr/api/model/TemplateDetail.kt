@@ -5,5 +5,5 @@ data class TemplateDetail(
         var detailEnd: Long,
         val isRelative: Boolean,
         val detail: String,
-        val modelName: String
+        val templateName: String
 )

@@ -41,8 +41,8 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
         )
     }
 
-    fun getTemplateDetails(modelNames: List<String>): Collection<TemplateDetail> {
-        val values = modelNames.joinToString()
+    fun getTemplateDetails(templateName: List<String>): Collection<TemplateDetail> {
+        val values = templateName.joinToString()
         return jdbcTemplate.query(
                 GET_TEMPLATE_DETAILS,
                 MapSqlParameterSource()
@@ -63,7 +63,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                     resultSet.getLong("endTime"),
                     resultSet.getString("activity"),
                     null,
-                    resultSet.getString("modelName")
+                    resultSet.getString("templateName")
             )
         }
 
@@ -77,7 +77,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                     null,
                     null,
                     resultSet.getInt("actionType"),
-                    resultSet.getString("modelName")
+                    resultSet.getString("templateName")
             )
         }
 
@@ -91,7 +91,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                     resultSet.getLong("endTime"),
                     resultSet.getString("activity"),
                     resultSet.getInt("actionType"),
-                    resultSet.getString("modelName")
+                    resultSet.getString("templateName")
             )
         }
 
@@ -101,7 +101,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                     resultSet.getLong("detailEnd"),
                     resultSet.getBoolean("isRelative"),
                     resultSet.getString("activity"),
-                    resultSet.getString("modelName")
+                    resultSet.getString("templateName")
             )
         }
 
@@ -111,7 +111,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                         DECODE (tk_model.frame_end, NULL, sched.task_end, tk_model.frame_end) as endTime, 
                         CASE sched.level_id  WHEN 4000 THEN 1 ELSE 0 END AS shiftType,
                         DECODE (tk_model.name, NULL, tk_type.name, tk_model.name) as activity,
-                        tk_model.name as modelName
+                        tk_model.name as templateName
         FROM tw_schedule sched
                 INNER JOIN sm_user usr ON sched.st_staff_id = usr.obj_id AND usr.obj_type = 3 AND usr.is_deleted = 0
                 LEFT JOIN tk_type ON sched.ref_id = tk_type.tk_type_id 
@@ -235,7 +235,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                 tk_modelItem.TASK_END AS endTime,
                 tk_modelItem.IS_FRAME_RELATIVE AS isRelative,
                 tk_type.NAME AS activity,
-                tk_model.NAME AS modelName
+                tk_model.NAME AS templateName
                 FROM tk_modelitem
             JOIN tk_model ON tk_modelitem.TK_MODEL_ID = tk_model.TK_MODEL_ID
             JOIN tk_type on tk_type.TK_TYPE_ID = tk_modelitem.TK_TYPE_ID
