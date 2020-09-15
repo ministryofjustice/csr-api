@@ -35,6 +35,7 @@ class DetailDtoTest {
                 null,
                 null,
                 null,
+                null,
                 null
         )
         val start = LocalDate.now(clock).atTime(LocalTime.MIN)
@@ -71,7 +72,8 @@ class DetailDtoTest {
                     detailStartTimeInSeconds,
                     detailEndTimeInSeconds,
                     activity,
-                    actionType.value
+                    actionType.value,
+                    null
             )
         }
     }
