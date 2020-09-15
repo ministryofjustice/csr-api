@@ -47,7 +47,7 @@ internal class DetailServiceTest {
     }
 
     @Nested
-    @DisplayName("Get Details")
+    @DisplayName("Get Staff Details")
     inner class DetailServiceTests {
 
         @Test
@@ -75,6 +75,88 @@ internal class DetailServiceTest {
             verify { sqlRepository.getDetailTemplates(emptyList()) }
 
             assertThat(returnValue).hasSize(0)
+        }
+
+        @Test
+        fun `Should merge details with template with 1 relative relation`() {
+            val detailStart = 123L
+            val detailEnd = 456L
+            val templateStart = 1L
+            val templateEnd = 2L
+            val templateName = "TEMP01"
+            val isRelative = true
+
+            val details = listOf(getValidShiftDetailWithTemplateName(detailStart, detailEnd))
+            val templates = listOf(getValidDetailTemplate(templateStart, templateEnd, isRelative))
+            every { sqlRepository.getDetails(from, to, quantumId) } returns details
+            every { sqlRepository.getDetailTemplates(listOf(templateName)) } returns templates
+
+            val returnValue = service.getStaffDetails(from, to, quantumId)
+
+            verify { sqlRepository.getDetails(from, to, quantumId) }
+            verify { sqlRepository.getDetailTemplates(listOf(templateName)) }
+
+            val returnDetail = returnValue.elementAt(0)
+            val calculatedStart = calculateDetailDateTime(shiftDate, detailStart + templateStart)
+            val calculatedEnd = calculateDetailDateTime(shiftDate, detailEnd + templateEnd)
+
+            assertThat(returnValue).hasSize(1)
+            assertThat(returnDetail.detailStart).isEqualTo(calculatedStart)
+            assertThat(returnDetail.detailEnd).isEqualTo(calculatedEnd)
+        }
+
+        @Test
+        fun `Should merge details with template with 1 non relative relation`() {
+            val detailStart = 123L
+            val detailEnd = 456L
+            val templateStart = 1L
+            val templateEnd = 2L
+            val templateName = "TEMP01"
+            val isRelative = false
+
+            val details = listOf(getValidShiftDetailWithTemplateName(detailStart, detailEnd))
+            val templates = listOf(getValidDetailTemplate(templateStart, templateEnd, isRelative))
+            every { sqlRepository.getDetails(from, to, quantumId) } returns details
+            every { sqlRepository.getDetailTemplates(listOf(templateName)) } returns templates
+
+            val returnValue = service.getStaffDetails(from, to, quantumId)
+
+            verify { sqlRepository.getDetails(from, to, quantumId) }
+            verify { sqlRepository.getDetailTemplates(listOf(templateName)) }
+
+            val returnDetail = returnValue.elementAt(0)
+            val calculatedStart = calculateDetailDateTime(shiftDate, templateStart)
+            val calculatedEnd = calculateDetailDateTime(shiftDate, templateEnd)
+
+            assertThat(returnValue).hasSize(1)
+            assertThat(returnDetail.detailStart).isEqualTo(calculatedStart)
+            assertThat(returnDetail.detailEnd).isEqualTo(calculatedEnd)
+        }
+
+        @Test
+        fun `Should merge details with templates with multiple entries`() {
+            val detailStart = 123L
+            val detailEnd = 456L
+            val templateStart = 1L
+            val templateEnd = 2L
+            val templateName = "TEMP01"
+            val isRelative = false
+
+            val details = listOf(getValidShiftDetailWithTemplateName(detailStart, detailEnd))
+            val templates = listOf(
+                    getValidDetailTemplate(templateStart, templateEnd, isRelative),
+                    getValidDetailTemplate(templateStart, templateEnd, isRelative),
+                    getValidDetailTemplate(templateStart, templateEnd, isRelative)
+            )
+            every { sqlRepository.getDetails(from, to, quantumId) } returns details
+            every { sqlRepository.getDetailTemplates(listOf(templateName)) } returns templates
+
+            val returnValue = service.getStaffDetails(from, to, quantumId)
+
+            verify { sqlRepository.getDetails(from, to, quantumId) }
+            verify { sqlRepository.getDetailTemplates(listOf(templateName)) }
+
+            assertThat(returnValue).hasSize(3)
         }
 
     }
@@ -251,7 +333,7 @@ internal class DetailServiceTest {
         val shiftType = ShiftType.OVERTIME
         val actionType = ActionType.EDIT
         val activity = "Phone Center"
-        val templateName = "TEM01"
+        val templateName = "TEMP01"
 
         return Detail(
                 quantumId,
@@ -264,6 +346,24 @@ internal class DetailServiceTest {
                 actionType.value,
                 templateName
         )
+    }
+
+    private fun getValidDetailTemplate(start: Long, end: Long, isRelative: Boolean): DetailTemplate {
+        val activity = "Phone Center"
+        val templateName = "TEMP01"
+
+        return DetailTemplate(
+                start,
+                end,
+                isRelative,
+                activity,
+                templateName
+        )
+    }
+
+    private fun calculateDetailDateTime(shiftDate: LocalDate, detailTime: Long): LocalDateTime {
+        // plusSeconds allows negative numbers.
+        return shiftDate.atStartOfDay().plusSeconds(detailTime)
     }
 
 }
