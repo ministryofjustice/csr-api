@@ -8,7 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
 import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.csr.api.model.Detail
-import uk.gov.justice.digital.hmpps.csr.api.model.TemplateDetail
+import uk.gov.justice.digital.hmpps.csr.api.model.DetailTemplate
 import uk.gov.justice.digital.hmpps.csr.api.repository.SqlRepository
 import uk.gov.justice.digital.hmpps.csr.api.security.AuthenticationFacade
 import java.time.Clock
@@ -54,12 +54,12 @@ internal class DetailServiceTest {
         fun `Should get Details`() {
             val details = listOf(getValidShiftDetail(123L, 456L))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
-            every { sqlRepository.getTemplateDetails(emptyList()) } returns emptyList<TemplateDetail>()
+            every { sqlRepository.getDetailTemplates(emptyList()) } returns emptyList<DetailTemplate>()
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
             verify { sqlRepository.getDetails(from, to, quantumId) }
-            verify { sqlRepository.getTemplateDetails(emptyList()) }
+            verify { sqlRepository.getDetailTemplates(emptyList()) }
 
             assertThat(returnValue).hasSize(1)
         }
@@ -67,12 +67,12 @@ internal class DetailServiceTest {
         @Test
         fun `Should get empty Details`() {
             every { sqlRepository.getDetails(from, to, quantumId) } returns listOf()
-            every { sqlRepository.getTemplateDetails(emptyList()) } returns emptyList<TemplateDetail>()
+            every { sqlRepository.getDetailTemplates(emptyList()) } returns emptyList<DetailTemplate>()
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
             verify { sqlRepository.getDetails(from, to, quantumId) }
-            verify { sqlRepository.getTemplateDetails(emptyList()) }
+            verify { sqlRepository.getDetailTemplates(emptyList()) }
 
             assertThat(returnValue).hasSize(0)
         }
@@ -87,12 +87,12 @@ internal class DetailServiceTest {
         fun `Should subtract time when start time less than 0`() {
             val details = listOf(getValidShiftDetail(-1234L, 456L))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
-            every { sqlRepository.getTemplateDetails(emptyList()) } returns emptyList<TemplateDetail>()
+            every { sqlRepository.getDetailTemplates(emptyList()) } returns emptyList<DetailTemplate>()
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
             verify { sqlRepository.getDetails(from, to, quantumId) }
-            verify { sqlRepository.getTemplateDetails(emptyList()) }
+            verify { sqlRepository.getDetailTemplates(emptyList()) }
 
             assertThat(returnValue).hasSize(1)
             assertThat(returnValue.first().detailStart).isEqualTo(shiftDate.atStartOfDay().minusSeconds(1234))
@@ -102,12 +102,12 @@ internal class DetailServiceTest {
         fun `Should replace start full day magic number with 0`() {
             val details = listOf(getValidShiftDetail(-2147483648L, 456L))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
-            every { sqlRepository.getTemplateDetails(emptyList()) } returns emptyList<TemplateDetail>()
+            every { sqlRepository.getDetailTemplates(emptyList()) } returns emptyList<DetailTemplate>()
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
             verify { sqlRepository.getDetails(from, to, quantumId) }
-            verify { sqlRepository.getTemplateDetails(emptyList()) }
+            verify { sqlRepository.getDetailTemplates(emptyList()) }
 
             assertThat(returnValue).hasSize(1)
             assertThat(returnValue.first().detailStart).isEqualTo(shiftDate.atStartOfDay())
@@ -117,12 +117,12 @@ internal class DetailServiceTest {
         fun `Should replace end full day magic number with 0`() {
             val details = listOf(getValidShiftDetail(123L, -2147483648L))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
-            every { sqlRepository.getTemplateDetails(emptyList()) } returns emptyList<TemplateDetail>()
+            every { sqlRepository.getDetailTemplates(emptyList()) } returns emptyList<DetailTemplate>()
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
             verify { sqlRepository.getDetails(from, to, quantumId) }
-            verify { sqlRepository.getTemplateDetails(emptyList()) }
+            verify { sqlRepository.getDetailTemplates(emptyList()) }
 
             assertThat(returnValue).hasSize(1)
             assertThat(returnValue.first().detailEnd).isEqualTo(shiftDate.atStartOfDay())
@@ -132,12 +132,12 @@ internal class DetailServiceTest {
         fun `Should replace start time of 86400 with time plus 0`() {
             val details = listOf(getValidShiftDetail(86400L, 456L))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
-            every { sqlRepository.getTemplateDetails(emptyList()) } returns emptyList<TemplateDetail>()
+            every { sqlRepository.getDetailTemplates(emptyList()) } returns emptyList<DetailTemplate>()
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
             verify { sqlRepository.getDetails(from, to, quantumId) }
-            verify { sqlRepository.getTemplateDetails(emptyList()) }
+            verify { sqlRepository.getDetailTemplates(emptyList()) }
 
             assertThat(returnValue).hasSize(1)
             assertThat(returnValue.first().detailStart).isEqualTo(shiftDate.atStartOfDay().plusSeconds(0))
@@ -148,13 +148,13 @@ internal class DetailServiceTest {
             val details = listOf(getValidShiftDetail(123L, 86400L))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
             every { authenticationFacade.currentUsername } returns quantumId
-            every { sqlRepository.getTemplateDetails(emptyList()) } returns emptyList<TemplateDetail>()
+            every { sqlRepository.getDetailTemplates(emptyList()) } returns emptyList<DetailTemplate>()
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
 
             verify { sqlRepository.getDetails(from, to, quantumId) }
-            verify { sqlRepository.getTemplateDetails(emptyList()) }
+            verify { sqlRepository.getDetailTemplates(emptyList()) }
 
             assertThat(returnValue).hasSize(1)
             assertThat(returnValue.first().detailEnd).isEqualTo(shiftDate.atStartOfDay().plusSeconds(0))
@@ -165,12 +165,12 @@ internal class DetailServiceTest {
             val details = listOf(getValidShiftDetail(86401L, 456L))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
             every { authenticationFacade.currentUsername } returns quantumId
-            every { sqlRepository.getTemplateDetails(emptyList()) } returns emptyList<TemplateDetail>()
+            every { sqlRepository.getDetailTemplates(emptyList()) } returns emptyList<DetailTemplate>()
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
             verify { sqlRepository.getDetails(from, to, quantumId) }
-            verify { sqlRepository.getTemplateDetails(emptyList()) }
+            verify { sqlRepository.getDetailTemplates(emptyList()) }
 
             assertThat(returnValue).hasSize(1)
             assertThat(returnValue.first().detailStart).isEqualTo(shiftDate.atStartOfDay().plusSeconds(86401))
@@ -181,12 +181,12 @@ internal class DetailServiceTest {
             val details = listOf(getValidShiftDetail(123L, 86401L))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
             every { authenticationFacade.currentUsername } returns quantumId
-            every { sqlRepository.getTemplateDetails(emptyList()) } returns emptyList<TemplateDetail>()
+            every { sqlRepository.getDetailTemplates(emptyList()) } returns emptyList<DetailTemplate>()
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
             verify { sqlRepository.getDetails(from, to, quantumId) }
-            verify { sqlRepository.getTemplateDetails(emptyList()) }
+            verify { sqlRepository.getDetailTemplates(emptyList()) }
 
             assertThat(returnValue).hasSize(1)
             assertThat(returnValue.first().detailEnd).isEqualTo(shiftDate.atStartOfDay().plusSeconds(86401))
@@ -197,12 +197,12 @@ internal class DetailServiceTest {
             val details = listOf(getValidShiftDetail(-123L, 456L))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
             every { authenticationFacade.currentUsername } returns quantumId
-            every { sqlRepository.getTemplateDetails(emptyList()) } returns emptyList<TemplateDetail>()
+            every { sqlRepository.getDetailTemplates(emptyList()) } returns emptyList<DetailTemplate>()
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
             verify { sqlRepository.getDetails(from, to, quantumId) }
-            verify { sqlRepository.getTemplateDetails(emptyList()) }
+            verify { sqlRepository.getDetailTemplates(emptyList()) }
 
             assertThat(returnValue).hasSize(1)
             assertThat(returnValue.first().detailStart).isEqualTo(shiftDate.atStartOfDay().minusSeconds(123))
@@ -212,12 +212,12 @@ internal class DetailServiceTest {
         fun `Should subtract less than 0 end time`() {
             val details = listOf(getValidShiftDetail(123L, -456L))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
-            every { sqlRepository.getTemplateDetails(emptyList()) } returns emptyList<TemplateDetail>()
+            every { sqlRepository.getDetailTemplates(emptyList()) } returns emptyList<DetailTemplate>()
 
             val returnValue = service.getStaffDetails(from, to, quantumId)
 
             verify { sqlRepository.getDetails(from, to, quantumId) }
-            verify { sqlRepository.getTemplateDetails(emptyList()) }
+            verify { sqlRepository.getDetailTemplates(emptyList()) }
 
             assertThat(returnValue).hasSize(1)
             assertThat(returnValue.first().detailEnd).isEqualTo(shiftDate.atStartOfDay().minusSeconds(456))
@@ -243,4 +243,27 @@ internal class DetailServiceTest {
                 null
         )
     }
+
+
+    private fun getValidShiftDetailWithTemplateName(start: Long, end: Long): Detail {
+
+        val shiftModified: LocalDateTime = LocalDateTime.now(clock).minusDays(3)
+        val shiftType = ShiftType.OVERTIME
+        val actionType = ActionType.EDIT
+        val activity = "Phone Center"
+        val templateName = "TEM01"
+
+        return Detail(
+                quantumId,
+                shiftModified,
+                shiftDate,
+                shiftType.value,
+                start,
+                end,
+                activity,
+                actionType.value,
+                templateName
+        )
+    }
+
 }

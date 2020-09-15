@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Repository
 import uk.gov.justice.digital.hmpps.csr.api.model.Detail
-import uk.gov.justice.digital.hmpps.csr.api.model.TemplateDetail
+import uk.gov.justice.digital.hmpps.csr.api.model.DetailTemplate
 import java.sql.ResultSet
 import java.time.LocalDate
 
@@ -41,13 +41,13 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
         )
     }
 
-    fun getTemplateDetails(templateName: List<String>): Collection<TemplateDetail> {
+    fun getDetailTemplates(templateName: List<String>): Collection<DetailTemplate> {
         val values = templateName.joinToString()
         return jdbcTemplate.query(
-                GET_TEMPLATE_DETAILS,
+                GET_DETAIL_TEMPLATES,
                 MapSqlParameterSource()
                         .addValue("values", values),
-                templateDetailsRowMapper
+                detailsTemplateRowMapper
         )
     }
 
@@ -95,8 +95,8 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
             )
         }
 
-        val templateDetailsRowMapper: RowMapper<TemplateDetail> = RowMapper { resultSet: ResultSet, _: Int ->
-            TemplateDetail(
+        val detailsTemplateRowMapper: RowMapper<DetailTemplate> = RowMapper { resultSet: ResultSet, _: Int ->
+            DetailTemplate(
                     resultSet.getLong("detailStart"),
                     resultSet.getLong("detailEnd"),
                     resultSet.getBoolean("isRelative"),
@@ -230,7 +230,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                         )
             );""".trimIndent()
 
-        val GET_TEMPLATE_DETAILS = """
+        val GET_DETAIL_TEMPLATES = """
             SELECT tk_modelItem.TASK_START AS startTime,
                 tk_modelItem.TASK_END AS endTime,
                 tk_modelItem.IS_FRAME_RELATIVE AS isRelative,

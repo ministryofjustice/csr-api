@@ -4,7 +4,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.csr.api.dto.DetailDto
 import uk.gov.justice.digital.hmpps.csr.api.model.Detail
-import uk.gov.justice.digital.hmpps.csr.api.model.TemplateDetail
+import uk.gov.justice.digital.hmpps.csr.api.model.DetailTemplate
 import uk.gov.justice.digital.hmpps.csr.api.repository.SqlRepository
 import uk.gov.justice.digital.hmpps.csr.api.security.AuthenticationFacade
 import java.time.LocalDate
@@ -17,7 +17,7 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
         log.debug("Fetching shift details for $quantumId")
         val details = sqlRepository.getDetails(from, to, quantumId)
         val templateNames = getTemplatesSet(details).toList()
-        val templates = sqlRepository.getTemplateDetails(templateNames)
+        val templates = sqlRepository.getDetailTemplates(templateNames)
 
         val mergedDetails = mergeTemplatesIntoDetails(details, templates)
 
@@ -76,7 +76,7 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
                 .toSet()
     }
 
-    private fun mergeTemplatesIntoDetails(details: Collection<Detail>, templates: Collection<TemplateDetail>): Collection<Detail> {
+    private fun mergeTemplatesIntoDetails(details: Collection<Detail>, templates: Collection<DetailTemplate>): Collection<Detail> {
         val groupedTemplates = templates.groupBy { it.templateName }
 
         return details
@@ -106,7 +106,7 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
                                     el.shiftType,
                                     it.detailStart,
                                     it.detailEnd,
-                                    it.detail, //is this the correct value?
+                                    it.activity,
                                     el.actionType,
                                     el.templateName
                             )
