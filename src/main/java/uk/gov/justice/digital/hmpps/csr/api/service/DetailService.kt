@@ -35,7 +35,6 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
         log.debug("Fetching modified shifts for $planUnit")
         val modifiedShifts = sqlRepository.getModifiedShifts(planUnit)
 
-        //TODO: add in template data
         log.info("Found ${modifiedShifts.size} modified shifts for $planUnit")
 
         log.debug("Fetching modified detail for $planUnit")
