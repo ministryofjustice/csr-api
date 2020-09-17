@@ -17,9 +17,14 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
         log.debug("Fetching shift details for $quantumId")
         val details = sqlRepository.getDetails(from, to, quantumId)
         val templateNames = getTemplatesSet(details).toList()
-        val templates = sqlRepository.getDetailTemplates(templateNames)
+        val templates = if(templateNames.any()) {
+             sqlRepository.getDetailTemplates(templateNames)
+        } else {
+            listOf()
+        }
 
         val mergedDetails = mergeTemplatesIntoDetails(details, templates)
+
 
         log.info("Found ${mergedDetails.size} shift details for $quantumId")
 
@@ -81,42 +86,39 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
 
         return details
                 .fold<Detail, Collection<Detail>>(listOf()) { acc: Collection<Detail>, el: Detail ->
-                    if (el.templateName == null) return acc.plus(el)
+                    if (el.templateName == null) {
+                        acc.plus(el)
+                    }
                     else {
-                        val start = el.startTimeInSeconds
-                        val end = el.endTimeInSeconds
-                        val selectedTemplates = groupedTemplates[el.templateName]?.map {
-                            if (it.isRelative) {
-                                if (start != null) {
-                                    it.detailStart += start
-                                }
-
-                                if (end != null) {
-                                    it.detailEnd += end
-                                }
+                        val newDetails = groupedTemplates[el.templateName]?.map {
+                            var start = el.startTimeInSeconds
+                            var end = el.startTimeInSeconds
+                            if (it.isRelative && start != null && end != null) {
+                                start += it.detailStart
+                                end += it.detailEnd
+                            } else {
+                                start = it.detailStart
+                                end = it.detailEnd
                             }
-                            it
-                        }
-
-                        val newDetails = selectedTemplates?.map {
                             Detail(
                                     el.quantumId,
                                     el.shiftModified,
                                     el.shiftDate,
                                     el.shiftType,
-                                    it.detailStart,
-                                    it.detailEnd,
+                                    start,
+                                    end,
                                     it.activity,
                                     el.actionType,
                                     el.templateName
                             )
                         }
 
-                        return if (newDetails != null)
+                        if (newDetails != null) {
                             acc.plus(newDetails)
+                        }
                         else {
                             log.warn("Detail template could not be merged")
-                            acc
+                            acc.plus(el)
                         }
                     }
                 }

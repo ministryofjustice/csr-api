@@ -41,12 +41,11 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
         )
     }
 
-    fun getDetailTemplates(templateName: List<String>): Collection<DetailTemplate> {
-        val values = templateName.joinToString()
+    fun getDetailTemplates(templateNames: List<String>): Collection<DetailTemplate> {
         return jdbcTemplate.query(
                 GET_DETAIL_TEMPLATES,
                 MapSqlParameterSource()
-                        .addValue("values", values),
+                        .addValue("values", templateNames),
                 detailsTemplateRowMapper
         )
     }
@@ -77,7 +76,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                     null,
                     null,
                     resultSet.getInt("actionType"),
-                    resultSet.getString("templateName")
+                    null
             )
         }
 
@@ -91,14 +90,14 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                     resultSet.getLong("endTime"),
                     resultSet.getString("activity"),
                     resultSet.getInt("actionType"),
-                    resultSet.getString("templateName")
+                    null
             )
         }
 
         val detailsTemplateRowMapper: RowMapper<DetailTemplate> = RowMapper { resultSet: ResultSet, _: Int ->
             DetailTemplate(
-                    resultSet.getLong("detailStart"),
-                    resultSet.getLong("detailEnd"),
+                    resultSet.getLong("startTime"),
+                    resultSet.getLong("endTime"),
                     resultSet.getBoolean("isRelative"),
                     resultSet.getString("activity"),
                     resultSet.getString("templateName")
@@ -109,7 +108,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
         SELECT DISTINCT sched.on_date as shiftDate, 
                         DECODE (tk_model.frame_start, NULL, sched.task_start, tk_model.frame_start) as startTime, 
                         DECODE (tk_model.frame_end, NULL, sched.task_end, tk_model.frame_end) as endTime, 
-                        CASE sched.level_id  WHEN 4000 THEN 1 ELSE 0 END AS shiftType,
+                        DECODE (sched.level_id, 4000, 1, 0) as shiftType,
                         DECODE (tk_model.name, NULL, tk_type.name, tk_model.name) as activity,
                         tk_model.name as templateName
         FROM tw_schedule sched
@@ -121,7 +120,6 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
         AND   sched.layer = -1
         AND   sched.level_id IN (1000, 4000)
         AND   LOWER(usr.name) = LOWER(:quantumId)
-        ORDER BY shiftDate
         """.trimIndent()
 
         val GET_MODIFIED_SHIFTS = """
@@ -168,7 +166,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                     AND pro.lastmodified >= (SYSDATE - 1) 
                     AND (pro.on_date BETWEEN (SYSDATE - 1) 
                         AND (SYSDATE + 130)
-                );""".trimIndent()
+                )""".trimIndent()
 
         val GET_MODIFIED_DETAILS = """
             SELECT DISTINCT usr.name AS quantumId, 
@@ -228,7 +226,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                             -- task start time must be within x hrs from now
                             AND TO_NUMBER(ROUND(sched.task_start/3600, 0)) <= TO_NUMBER(TO_CHAR(SYSDATE, 'HH24'))
                         )
-            );""".trimIndent()
+            )""".trimIndent()
 
         val GET_DETAIL_TEMPLATES = """
             SELECT tk_modelItem.TASK_START AS startTime,
@@ -241,7 +239,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
             JOIN tk_type on tk_type.TK_TYPE_ID = tk_modelitem.TK_TYPE_ID
             WHERE tk_model.NAME IN (:values)
                 AND tk_model.IS_DELETED = 0
-                AND tk_modelitem.taskstyle = 0;
+                AND tk_modelitem.taskstyle = 0
             """.trimIndent()
     }
 }
