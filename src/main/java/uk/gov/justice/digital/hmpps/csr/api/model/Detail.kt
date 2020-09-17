@@ -19,5 +19,7 @@ data class Detail(
 
         val activity: String?,
 
-        val actionType: Int?
+        val actionType: Int?,
+
+        val templateName: String?
 )

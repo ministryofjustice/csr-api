@@ -4,6 +4,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.csr.api.dto.DetailDto
 import uk.gov.justice.digital.hmpps.csr.api.model.Detail
+import uk.gov.justice.digital.hmpps.csr.api.model.DetailTemplate
 import uk.gov.justice.digital.hmpps.csr.api.repository.SqlRepository
 import uk.gov.justice.digital.hmpps.csr.api.security.AuthenticationFacade
 import java.time.LocalDate
@@ -15,14 +16,25 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
     fun getStaffDetails(from: LocalDate, to: LocalDate, quantumId: String = authenticationFacade.currentUsername): Collection<DetailDto> {
         log.debug("Fetching shift details for $quantumId")
         val details = sqlRepository.getDetails(from, to, quantumId)
-        log.info("Found ${details.size} shift details for $quantumId")
+        val templateNames = getTemplatesSet(details).toList()
+        val templates = if(templateNames.any()) {
+             sqlRepository.getDetailTemplates(templateNames)
+        } else {
+            listOf()
+        }
 
-        return mapToDetailsDto(details)
+        val mergedDetails = mergeTemplatesIntoDetails(details, templates)
+
+
+        log.info("Found ${mergedDetails.size} shift details for $quantumId")
+
+        return mapToDetailsDto(mergedDetails)
     }
 
     fun getModifiedDetailsByPlanUnit(planUnit: String): Collection<DetailDto> {
         log.debug("Fetching modified shifts for $planUnit")
         val modifiedShifts = sqlRepository.getModifiedShifts(planUnit)
+
         log.info("Found ${modifiedShifts.size} modified shifts for $planUnit")
 
         log.debug("Fetching modified detail for $planUnit")
@@ -48,7 +60,11 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
         e.g. 04/09/2020T00:00:00 with a detail start of -10 is actually 03/09/2020T23:59:50
      */
     private fun calculateDetailDateTime(shiftDate: LocalDate, detailTime: Long): LocalDateTime {
-        val normalisedTime = if(detailTime == 86400L) { 0 } else { detailTime }
+        val normalisedTime = if (detailTime == 86400L) {
+            0
+        } else {
+            detailTime
+        }
 
         return if (normalisedTime != FULL_DAY_ACTIVITY) {
             // plusSeconds allows negative numbers.
@@ -56,6 +72,56 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
         } else {
             shiftDate.atStartOfDay()
         }
+    }
+
+    private fun getTemplatesSet(details: Collection<Detail>): Set<String> {
+        return details
+                .mapNotNull { it.templateName }
+                .toSet()
+    }
+
+    private fun mergeTemplatesIntoDetails(details: Collection<Detail>, templates: Collection<DetailTemplate>): Collection<Detail> {
+        val groupedTemplates = templates.groupBy { it.templateName }
+
+        return details
+                .fold<Detail, Collection<Detail>>(listOf()) { acc: Collection<Detail>, el: Detail ->
+                    if (el.templateName == null) {
+                        acc.plus(el)
+                    }
+                    else {
+                        val newDetails = groupedTemplates[el.templateName]?.map {
+                            var start = el.startTimeInSeconds
+                            var end = el.startTimeInSeconds
+                            if (it.isRelative && start != null && end != null) {
+                                start += it.detailStart
+                                end += it.detailEnd
+                            } else {
+                                start = it.detailStart
+                                end = it.detailEnd
+                            }
+                            Detail(
+                                    el.quantumId,
+                                    el.shiftModified,
+                                    el.shiftDate,
+                                    el.shiftType,
+                                    start,
+                                    end,
+                                    it.activity,
+                                    el.actionType,
+                                    el.templateName
+                            )
+                        }
+
+                        if (newDetails != null) {
+                            acc.plus(newDetails)
+                        }
+                        else {
+                            log.warn("Detail template could not be merged")
+                            acc.plus(el)
+                        }
+                    }
+                }
+
     }
 
     companion object {

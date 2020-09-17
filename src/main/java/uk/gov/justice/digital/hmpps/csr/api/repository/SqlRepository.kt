@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Repository
 import uk.gov.justice.digital.hmpps.csr.api.model.Detail
+import uk.gov.justice.digital.hmpps.csr.api.model.DetailTemplate
 import java.sql.ResultSet
 import java.time.LocalDate
 
@@ -40,6 +41,15 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
         )
     }
 
+    fun getDetailTemplates(templateNames: List<String>): Collection<DetailTemplate> {
+        return jdbcTemplate.query(
+                GET_DETAIL_TEMPLATES,
+                MapSqlParameterSource()
+                        .addValue("values", templateNames),
+                detailsTemplateRowMapper
+        )
+    }
+
     companion object {
 
         val detailsRowMapper: RowMapper<Detail> = RowMapper { resultSet: ResultSet, _: Int ->
@@ -51,7 +61,8 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                     resultSet.getLong("startTime"),
                     resultSet.getLong("endTime"),
                     resultSet.getString("activity"),
-                    null
+                    null,
+                    resultSet.getString("templateName")
             )
         }
 
@@ -64,7 +75,8 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                     null,
                     null,
                     null,
-                    resultSet.getInt("actionType")
+                    resultSet.getInt("actionType"),
+                    null
             )
         }
 
@@ -77,7 +89,18 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                     resultSet.getLong("startTime"),
                     resultSet.getLong("endTime"),
                     resultSet.getString("activity"),
-                    resultSet.getInt("actionType")
+                    resultSet.getInt("actionType"),
+                    null
+            )
+        }
+
+        val detailsTemplateRowMapper: RowMapper<DetailTemplate> = RowMapper { resultSet: ResultSet, _: Int ->
+            DetailTemplate(
+                    resultSet.getLong("startTime"),
+                    resultSet.getLong("endTime"),
+                    resultSet.getBoolean("isRelative"),
+                    resultSet.getString("activity"),
+                    resultSet.getString("templateName")
             )
         }
 
@@ -85,8 +108,9 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
         SELECT DISTINCT sched.on_date as shiftDate, 
                         DECODE (tk_model.frame_start, NULL, sched.task_start, tk_model.frame_start) as startTime, 
                         DECODE (tk_model.frame_end, NULL, sched.task_end, tk_model.frame_end) as endTime, 
-                        CASE sched.level_id  WHEN 4000 THEN 1 ELSE 0 END AS shiftType,
-                        DECODE (tk_model.name, NULL, tk_type.name, tk_model.name) as activity 
+                        DECODE (sched.level_id, 4000, 1, 0) as shiftType,
+                        DECODE (tk_model.name, NULL, tk_type.name, tk_model.name) as activity,
+                        tk_model.name as templateName
         FROM tw_schedule sched
                 INNER JOIN sm_user usr ON sched.st_staff_id = usr.obj_id AND usr.obj_type = 3 AND usr.is_deleted = 0
                 LEFT JOIN tk_type ON sched.ref_id = tk_type.tk_type_id 
@@ -96,7 +120,6 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
         AND   sched.layer = -1
         AND   sched.level_id IN (1000, 4000)
         AND   LOWER(usr.name) = LOWER(:quantumId)
-        ORDER BY shiftDate
         """.trimIndent()
 
         val GET_MODIFIED_SHIFTS = """
@@ -143,7 +166,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                     AND pro.lastmodified >= (SYSDATE - 1) 
                     AND (pro.on_date BETWEEN (SYSDATE - 1) 
                         AND (SYSDATE + 130)
-                );""".trimIndent()
+                )""".trimIndent()
 
         val GET_MODIFIED_DETAILS = """
             SELECT DISTINCT usr.name AS quantumId, 
@@ -203,6 +226,20 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                             -- task start time must be within x hrs from now
                             AND TO_NUMBER(ROUND(sched.task_start/3600, 0)) <= TO_NUMBER(TO_CHAR(SYSDATE, 'HH24'))
                         )
-            );""".trimIndent()
+            )""".trimIndent()
+
+        val GET_DETAIL_TEMPLATES = """
+            SELECT tk_modelItem.TASK_START AS startTime,
+                tk_modelItem.TASK_END AS endTime,
+                tk_modelItem.IS_FRAME_RELATIVE AS isRelative,
+                tk_type.NAME AS activity,
+                tk_model.NAME AS templateName
+                FROM tk_modelitem
+            JOIN tk_model ON tk_modelitem.TK_MODEL_ID = tk_model.TK_MODEL_ID
+            JOIN tk_type on tk_type.TK_TYPE_ID = tk_modelitem.TK_TYPE_ID
+            WHERE tk_model.NAME IN (:values)
+                AND tk_model.IS_DELETED = 0
+                AND tk_modelitem.taskstyle = 0
+            """.trimIndent()
     }
 }

@@ -24,6 +24,7 @@ class DetailTest {
         val shiftType = ShiftType.OVERTIME
         val activity = "Phone Center"
         val actionType = ActionType.EDIT
+        val templateName = null
 
         val overtime = Detail(
                 quantumId,
@@ -33,7 +34,8 @@ class DetailTest {
                 detailStartTimeInSeconds,
                 detailEndTimeInSeconds,
                 activity,
-                actionType.value
+                actionType.value,
+                templateName
         )
 
         assertThat(overtime.quantumId).isEqualTo(quantumId)
@@ -44,6 +46,7 @@ class DetailTest {
         assertThat(overtime.endTimeInSeconds).isEqualTo(detailEndTimeInSeconds)
         assertThat(overtime.activity).isEqualTo(activity)
         assertThat(overtime.actionType).isEqualTo(actionType.value)
+        assertThat(overtime.templateName).isEqualTo(templateName)
     }
 }
 

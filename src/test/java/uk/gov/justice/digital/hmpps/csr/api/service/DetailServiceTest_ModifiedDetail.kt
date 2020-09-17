@@ -248,7 +248,8 @@ internal class DetailServiceTest_ModifiedDetail {
                 start,
                 end,
                 activity,
-                actionType.value
+                actionType.value,
+                null
         )
     }
 }
