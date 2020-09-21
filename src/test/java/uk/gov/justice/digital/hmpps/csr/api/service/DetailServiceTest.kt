@@ -81,8 +81,8 @@ internal class DetailServiceTest {
             val templateName = "TEMP01"
             val isRelative = true
 
-            val details = listOf(getValidShiftDetailWithTemplateName(detailStart, detailEnd))
-            val templates = listOf(getValidDetailTemplate(templateStart, templateEnd, isRelative))
+            val details = listOf(getValidShiftDetailWithTemplateName(detailStart, detailEnd, templateName))
+            val templates = listOf(getValidDetailTemplate(templateStart, templateEnd, isRelative, templateName))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
             every { sqlRepository.getDetailTemplates(listOf(templateName)) } returns templates
 
@@ -109,8 +109,8 @@ internal class DetailServiceTest {
             val templateName = "TEMP01"
             val isRelative = false
 
-            val details = listOf(getValidShiftDetailWithTemplateName(detailStart, detailEnd))
-            val templates = listOf(getValidDetailTemplate(templateStart, templateEnd, isRelative))
+            val details = listOf(getValidShiftDetailWithTemplateName(detailStart, detailEnd, templateName))
+            val templates = listOf(getValidDetailTemplate(templateStart, templateEnd, isRelative, templateName))
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
             every { sqlRepository.getDetailTemplates(listOf(templateName)) } returns templates
 
@@ -129,7 +129,7 @@ internal class DetailServiceTest {
         }
 
         @Test
-        fun `Should merge details with templates with multiple entries`() {
+        fun `Should merge one detail with template of multiple entries`() {
             val detailStart = 123L
             val detailEnd = 456L
             val templateStart = 1L
@@ -137,11 +137,11 @@ internal class DetailServiceTest {
             val templateName = "TEMP01"
             val isRelative = true
 
-            val details = listOf(getValidShiftDetailWithTemplateName(detailStart, detailEnd))
+            val details = listOf(getValidShiftDetailWithTemplateName(detailStart, detailEnd, templateName))
             val templates = listOf(
-                    getValidDetailTemplate(templateStart, templateEnd, isRelative),
-                    getValidDetailTemplate(templateStart, templateEnd, isRelative),
-                    getValidDetailTemplate(templateStart, templateEnd, isRelative)
+                    getValidDetailTemplate(templateStart, templateEnd, isRelative, templateName),
+                    getValidDetailTemplate(templateStart, templateEnd, isRelative, templateName),
+                    getValidDetailTemplate(templateStart, templateEnd, isRelative, templateName)
             )
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
             every { sqlRepository.getDetailTemplates(listOf(templateName)) } returns templates
@@ -159,19 +159,19 @@ internal class DetailServiceTest {
         }
 
         @Test
-        fun `Multiple merged details with a mixture of isRelative calculate durations correctly`() {
+        fun `Should merge one detail with template of multiple entries of varying isRelative value`() {
             val detailStart = 123L
             val detailEnd = 456L
             val templateStart = 1L
             val templateEnd = 2L
             val templateName = "TEMP01"
 
-            val details = listOf(getValidShiftDetailWithTemplateName(detailStart, detailEnd))
+            val details = listOf(getValidShiftDetailWithTemplateName(detailStart, detailEnd, templateName))
             val templates = listOf(
-                    getValidDetailTemplate(templateStart, templateEnd, true),
-                    getValidDetailTemplate(templateStart, templateEnd, false),
-                    getValidDetailTemplate(templateStart, templateEnd, false),
-                    getValidDetailTemplate(templateStart, templateEnd, true)
+                    getValidDetailTemplate(templateStart, templateEnd, true, templateName),
+                    getValidDetailTemplate(templateStart, templateEnd, false, templateName),
+                    getValidDetailTemplate(templateStart, templateEnd, false, templateName),
+                    getValidDetailTemplate(templateStart, templateEnd, true, templateName)
             )
             every { sqlRepository.getDetails(from, to, quantumId) } returns details
             every { sqlRepository.getDetailTemplates(listOf(templateName)) } returns templates
@@ -188,6 +188,54 @@ internal class DetailServiceTest {
             assertThat(returnValue.elementAt(1).detailStart).isEqualTo(nonRelativeStart)
             assertThat(returnValue.elementAt(2).detailStart).isEqualTo(nonRelativeStart)
             assertThat(returnValue.elementAt(3).detailStart).isEqualTo(relativeStart)
+        }
+
+        @Test
+
+        fun `Should merge multiple details with templates of multiple entries`() {
+            val detailStart1 = 123L
+            val detailEnd1 = 456L
+            val detailStart2 = 12L
+            val detailEnd2 = 45L
+
+            val templateStart = 1L
+            val templateEnd = 2L
+            val templateName1 = "TEMP01"
+            val templateName2 = "TEMP02"
+
+            val details = listOf(
+                    getValidShiftDetailWithTemplateName(detailStart1, detailEnd1, templateName1),
+                    getValidShiftDetailWithTemplateName(detailStart2, detailEnd2, templateName2)
+            )
+            val templates = listOf(
+                    getValidDetailTemplate(templateStart, templateEnd, true, templateName1),
+                    getValidDetailTemplate(templateStart, templateEnd, false, templateName1),
+                    getValidDetailTemplate(templateStart, templateEnd, false, templateName1),
+                    getValidDetailTemplate(templateStart, templateEnd, true, templateName1),
+                    getValidDetailTemplate(templateStart, templateEnd, true, templateName2),
+                    getValidDetailTemplate(templateStart, templateEnd, true, templateName2),
+                    getValidDetailTemplate(templateStart, templateEnd, false, templateName2)
+            )
+
+            every { sqlRepository.getDetails(from, to, quantumId) } returns details
+            every { sqlRepository.getDetailTemplates(listOf(templateName1, templateName2)) } returns templates
+
+            val returnValue = service.getStaffDetails(from, to, quantumId)
+            val relativeStart1 = calculateDetailDateTime(shiftDate, detailStart1 + templateStart)
+            val relativeStart2 = calculateDetailDateTime(shiftDate, detailStart2 + templateStart)
+            val nonRelativeStart = calculateDetailDateTime(shiftDate, templateStart)
+
+            verify { sqlRepository.getDetails(from, to, quantumId) }
+            verify { sqlRepository.getDetailTemplates(listOf(templateName1, templateName2)) }
+
+            assertThat(returnValue).hasSize(7)
+            assertThat(returnValue.elementAt(0).detailStart).isEqualTo(relativeStart1)
+            assertThat(returnValue.elementAt(1).detailStart).isEqualTo(nonRelativeStart)
+            assertThat(returnValue.elementAt(2).detailStart).isEqualTo(nonRelativeStart)
+            assertThat(returnValue.elementAt(3).detailStart).isEqualTo(relativeStart1)
+            assertThat(returnValue.elementAt(4).detailStart).isEqualTo(relativeStart2)
+            assertThat(returnValue.elementAt(5).detailStart).isEqualTo(relativeStart2)
+            assertThat(returnValue.elementAt(6).detailStart).isEqualTo(nonRelativeStart)
         }
 
     }
@@ -340,13 +388,12 @@ internal class DetailServiceTest {
     }
 
 
-    private fun getValidShiftDetailWithTemplateName(start: Long, end: Long): Detail {
+    private fun getValidShiftDetailWithTemplateName(start: Long, end: Long, templateName: String): Detail {
 
         val shiftModified: LocalDateTime = LocalDateTime.now(clock).minusDays(3)
         val shiftType = ShiftType.OVERTIME
         val actionType = ActionType.EDIT
         val activity = "Phone Center"
-        val templateName = "TEMP01"
 
         return Detail(
                 quantumId,
@@ -361,9 +408,8 @@ internal class DetailServiceTest {
         )
     }
 
-    private fun getValidDetailTemplate(start: Long, end: Long, isRelative: Boolean): DetailTemplate {
+    private fun getValidDetailTemplate(start: Long, end: Long, isRelative: Boolean, templateName: String): DetailTemplate {
         val activity = "Phone Center"
-        val templateName = "TEMP01"
 
         return DetailTemplate(
                 start,
