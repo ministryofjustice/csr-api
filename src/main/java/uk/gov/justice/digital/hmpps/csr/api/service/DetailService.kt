@@ -15,7 +15,8 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
 
     fun getStaffDetails(from: LocalDate, to: LocalDate, quantumId: String = authenticationFacade.currentUsername): Collection<DetailDto> {
         log.debug("Fetching shift details for $quantumId")
-        val details = sqlRepository.getDetails(from, to, quantumId)
+        // We must pad the from so that we don't miss night shift ends that start in the previous month (if we search for 01/10/20 - 31/10/20 for example)
+        val details = sqlRepository.getDetails(from.minusDays(1), to, quantumId)
         val templateNames = getTemplatesSet(details).toList()
         val templates = if(templateNames.any()) {
              sqlRepository.getDetailTemplates(templateNames)
