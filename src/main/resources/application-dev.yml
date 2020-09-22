@@ -35,30 +35,6 @@ csr:
       password: dummy
       driverClassName: org.h2.Driver
       schema: PUBLIC
-    - name: 3
-      url: 'jdbc:h2:mem:csr-api;Mode=Oracle;'
-      username: csr
-      password: dummy
-      driverClassName: org.h2.Driver
-      schema: PUBLIC
-    - name: 4
-      url: 'jdbc:h2:mem:csr-api;Mode=Oracle;'
-      username: csr
-      password: dummy
-      driverClassName: org.h2.Driver
-      schema: PUBLIC
-    - name: 5
-      url: 'jdbc:h2:mem:csr-api;Mode=Oracle;'
-      username: csr
-      password: dummy
-      driverClassName: org.h2.Driver
-      schema: PUBLIC
-    - name: 6
-      url: 'jdbc:h2:mem:csr-api;Mode=Oracle;'
-      username: csr
-      password: dummy
-      driverClassName: org.h2.Driver
-      schema: PUBLIC
 
 server:
   shutdown: immediate

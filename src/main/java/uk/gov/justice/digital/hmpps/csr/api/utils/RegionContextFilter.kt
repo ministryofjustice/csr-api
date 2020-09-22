@@ -12,6 +12,8 @@ class RegionContextFilter : Filter {
     @Throws(IOException::class, ServletException::class)
     override fun doFilter(servletRequest: ServletRequest, servletResponse: ServletResponse, filterChain: FilterChain) {
         val httpServletRequest = servletRequest as HttpServletRequest
+        // Read in the region header and set a threadlocal value
+        // for use in looking up the correct datasource
         val region: String? = httpServletRequest.getHeader("X-Region")
         RegionContext.setRegion(region)
         filterChain.doFilter(httpServletRequest, servletResponse)

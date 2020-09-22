@@ -13,9 +13,9 @@ data class Detail(
 
         val shiftType: Int,
 
-        var startTimeInSeconds: Long?,
+        val startTimeInSeconds: Long?,
 
-        var endTimeInSeconds: Long?,
+        val endTimeInSeconds: Long?,
 
         val activity: String?,
 
