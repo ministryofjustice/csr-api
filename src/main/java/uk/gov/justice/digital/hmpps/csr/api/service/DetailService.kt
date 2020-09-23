@@ -15,19 +15,17 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
 
     fun getStaffDetails(from: LocalDate, to: LocalDate, quantumId: String = authenticationFacade.currentUsername): Collection<DetailDto> {
         log.debug("Fetching shift details for $quantumId")
-        // We must pad the from so that we don't miss night shift ends that start in the previous month (if we search for 01/10/20 - 31/10/20 for example)
+        // We must pad the 'from' so that we don't miss night shift ends that start the day before our from-to range.
         val details = sqlRepository.getDetails(from.minusDays(1), to, quantumId)
-        val templateNames = getTemplatesSet(details).toList()
-        val templates = if(templateNames.any()) {
-             sqlRepository.getDetailTemplates(templateNames)
-        } else {
-            listOf()
-        }
+        log.debug("Found ${details.size} shift details for $quantumId")
 
+        // Some details are created from a template and we don't get the complete time or activity data
+        // so we need to get a list of templates in our results and fetch the template data separately.
+        val templates = getTemplates(details.mapNotNull { it.templateName }.distinct())
+
+        // We merge details that refer to templates with the data from the template.
         val mergedDetails = mergeTemplatesIntoDetails(details, templates)
-
-
-        log.info("Found ${mergedDetails.size} shift details for $quantumId")
+        log.info("Returning ${mergedDetails.size} shift details for $quantumId")
 
         return mapToDetailsDto(mergedDetails)
     }
@@ -43,6 +41,17 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
         log.info("Found ${modifiedDetails.size} modified details for $planUnit")
 
         return mapToDetailsDto(modifiedShifts + modifiedDetails)
+    }
+
+    private fun getTemplates(templateNames : Collection<String>) : Collection<DetailTemplate> {
+        log.debug("Fetching templates: $templateNames")
+        val templates = if(templateNames.any()) {
+            sqlRepository.getDetailTemplates(templateNames)
+        } else {
+            setOf()
+        }
+        log.debug("Found ${templates.size}: templates")
+        return templates
     }
 
     private fun mapToDetailsDto(details: Collection<Detail>): Collection<DetailDto> {
@@ -75,30 +84,30 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
         }
     }
 
-    private fun getTemplatesSet(details: Collection<Detail>): Set<String> {
-        return details
-                .mapNotNull { it.templateName }
-                .toSet()
-    }
-
     private fun mergeTemplatesIntoDetails(details: Collection<Detail>, templates: Collection<DetailTemplate>): Collection<Detail> {
         val groupedTemplates = templates.groupBy { it.templateName }
 
         return details
-                .fold<Detail, Collection<Detail>>(listOf()) { acc: Collection<Detail>, el: Detail ->
+                .fold(listOf()) { acc: Collection<Detail>, el: Detail ->
+                    // If the detail doesn't refer to a template, add it and continue
                     if (el.templateName == null) {
                         acc.plus(el)
                     }
                     else {
+                        /*
+                         Details that refer to templates still have a start and end time
+                         One detail might be replaced by multiple template rows
+                         Some row's times are relative to the detail start time
+                         and some are not (usually Breaks).
+                         If the times are relative we need to change them to absolute values
+                         before constructing each replacement detail
+                         */
                         val newDetails = groupedTemplates[el.templateName]?.map {
-                            var start = el.startTimeInSeconds
-                            var end = el.startTimeInSeconds
-                            if (it.isRelative && start != null && end != null) {
-                                start += it.detailStart
-                                end += it.detailEnd
-                            } else {
-                                start = it.detailStart
-                                end = it.detailEnd
+                            var start = it.detailStart
+                            var end = it.detailEnd
+                            if (it.isRelative && el.startTimeInSeconds != null) {
+                                start += el.startTimeInSeconds
+                                end += el.startTimeInSeconds
                             }
                             Detail(
                                     el.quantumId,
@@ -113,6 +122,7 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
                             )
                         }
 
+                        // Add the new details instead of the detail that references the template
                         if (newDetails != null) {
                             acc.plus(newDetails)
                         }

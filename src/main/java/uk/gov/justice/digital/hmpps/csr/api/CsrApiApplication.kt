@@ -33,7 +33,12 @@ class CsrApiApplication {
     @Bean
     fun dataSource(): DataSource {
         val dataSource: AbstractRoutingDataSource = RegionAwareRoutingSource()
-
+        /*
+        Read the region array in from application properties
+        and construct datasources mapped to region names
+        We then pass in the region as a header with the request
+        and use this to select the right datasource
+        */
         val targetDataSources = regionData.regions.map {
             it.name to regionDataSource(it)
         }

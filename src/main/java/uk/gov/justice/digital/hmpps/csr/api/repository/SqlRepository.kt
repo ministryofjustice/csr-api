@@ -41,7 +41,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
         )
     }
 
-    fun getDetailTemplates(templateNames: List<String>): Collection<DetailTemplate> {
+    fun getDetailTemplates(templateNames: Collection<String>): Collection<DetailTemplate> {
         return jdbcTemplate.query(
                 GET_DETAIL_TEMPLATES,
                 MapSqlParameterSource()

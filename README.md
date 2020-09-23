@@ -5,8 +5,6 @@ It aims to remove any idiosyncrasies from the data model, primarily combining Sh
 ## Continuous Integration  
 https://app.circleci.com/pipelines/github/ministryofjustice/csr-api
 
-## Running locally  
-  
 ### Prerequisites  
 * Java JDK 11+  
 * An editor/IDE
@@ -35,10 +33,10 @@ SPRING_PROFILES_ACTIVE=dev
 java -jar build/libs/csr-api-<yyyy-mm-dd>.jar  
 ```  
 
-### Start the application with Oracle database  
-This configuration can be changed to use a VM Oracle database using the spring boot profile `oracle`.  On the command line run:
+### Start the application with Oracle database and dev (as in dev/preprod/prod) auth service  
+This configuration can be changed to use a VM Oracle database using the spring boot profile `oracle-local`.  On the command line run:
   ```  
-SPRING_PROFILES_ACTIVE=oracle 
+SPRING_PROFILES_ACTIVE=oracle-local 
 java -jar build/libs/csr-api-<yyyy-mm-dd>.jar  
 ```  
 Flyway will not run and you will also need to provide values for each schema (1-6) like so:
@@ -49,12 +47,37 @@ Flyway will not run and you will also need to provide values for each schema (1-
  CSR_REGION1_PASSWORD
 ```
 
+```
+ jdbc:oracle:thin:@localhost:1521/schema
+ username
+ password
+```
+
+You will also need to port forward to the dev database, this can be done using the port-forward-pod.
+
+```
+kubectl \
+  -n csr-api-dev \
+  run port-forward-pod \
+  --generator=run-pod/v1 \
+  --image=ministryofjustice/port-forward \
+  --port=1521 \
+  --env="REMOTE_HOST=<<<IP_ADDRESS>>>" \
+  --env="LOCAL_PORT=1521" \
+  --env="REMOTE_PORT=1521"
+  
+kubectl \
+  -n csr-api-dev \
+  port-forward \
+  port-forward-pod 1521:1521
+```
+
 ### Additional configuration  
 The application is configurable with conventional Spring parameters.  
 The Spring documentation can be found here: https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html  
   
 #### Default port  
-By default the application starts on port '8081'.   To override, set server.port (e.g. `SERVER_PORT=8099 java -jar build/libs/csr-api-<yyyy-mm-dd>.jar` )  
+By default the application starts on port '8081'. To override, set server.port (e.g. `SERVER_PORT=8099 java -jar build/libs/csr-api-<yyyy-mm-dd>.jar` )  
   
 ### Documentation  
 The generated documentation for the api can be viewed at http://localhost:8081/swagger-ui.html  
