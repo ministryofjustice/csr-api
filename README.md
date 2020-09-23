@@ -53,7 +53,7 @@ Flyway will not run and you will also need to provide values for each schema (1-
  password
 ```
 
-You will also need to port forward to the dev database possibly using the port-forward-pod.
+You will also need to port forward to the dev database, this can be done using the port-forward-pod.
 
 ```
 kubectl \

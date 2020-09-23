@@ -19,7 +19,7 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
         val details = sqlRepository.getDetails(from.minusDays(1), to, quantumId)
         log.debug("Found ${details.size} shift details for $quantumId")
 
-        // Some details are created from a template and we don't get the full time data
+        // Some details are created from a template and we don't get the complete time or activity data
         // so we need to get a list of templates in our results and fetch the template data separately.
         val templates = getTemplates(details.mapNotNull { it.templateName }.distinct())
 
