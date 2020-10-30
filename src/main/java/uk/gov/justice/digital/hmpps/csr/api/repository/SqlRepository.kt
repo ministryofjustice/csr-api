@@ -148,7 +148,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                             FROM pu_planunit 
                             WHERE is_deleted = 0 
                             AND lower(:planUnit) NOT LIKE '%virtual%' 
-                            AND lower(:planUnit) LIKE lower(p_planunit) || '%' ) 
+                            AND lower(:planUnit) LIKE lower(pu_planunit.p_planunit) || '%' ) 
                             -- Staff assignment must be valid prior to current date (exclude date = 01-JAN-00 because 00 = 1900!) 
                         AND (floor(st_planunit.valid_from - (SYSDATE - 1)) <= 0 
                             AND to_char(st_planunit.valid_from,'YY') > 0) 
@@ -160,7 +160,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                             FROM pu_planunit 
                             WHERE is_deleted = 0 
                             AND lower(:planUnit) NOT LIKE '%virtual%' 
-                            AND lower(:planUnit) LIKE lower(p_planunit) || '%' ) 
+                            AND lower(:planUnit) LIKE lower(pu_planunit.p_planunit) || '%' ) 
                     AND sched.LAYER = -1 -- TOP LAYER 
                     AND sched.level_id IN(1000, 4000) -- detail and time recording lines 
                     AND pro.lastmodified >= (SYSDATE - 1) 
@@ -197,7 +197,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                             FROM pu_planunit 
                             WHERE is_deleted = 0 
                             AND lower(name) NOT LIKE '%virtual%' 
-                            AND lower(name) LIKE LOWER(p_planunit) || '%' ) 
+                            AND lower(name) LIKE LOWER(pu_planunit.p_planunit) || '%' ) 
                             -- Staff assignment must be valid prior to current date (exclude date = 01-JAN-00 because 00 = 1900!) 
                         AND (FLOOR(st_planunit.valid_from - (SYSDATE - 1)) <= 0 
                             AND TO_CHAR(st_planunit.valid_from,'YY') > 0) 
@@ -209,7 +209,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                             FROM pu_planunit 
                             WHERE is_deleted = 0 
                             AND lower(name) NOT LIKE '%virtual%' 
-                            AND lower(name) LIKE lower(p_planunit) || '%' ) 
+                            AND lower(name) LIKE lower(pu_planunit.p_planunit) || '%' ) 
                     AND sched.LAYER = -1 -- TOP LAYER 
                     AND sched.level_id IN(1000, 4000) -- detail and time recording lines 
                     AND sched.sched_lastmodified >= (SYSDATE - 1)
