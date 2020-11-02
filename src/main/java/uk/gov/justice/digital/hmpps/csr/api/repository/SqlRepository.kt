@@ -147,8 +147,8 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                         (SELECT pu_planunit_id 
                             FROM pu_planunit 
                             WHERE is_deleted = 0 
-                            AND lower(:planUnit) NOT LIKE '%virtual%' 
-                            AND lower(:planUnit) LIKE lower(:planUnit) || '%' ) 
+                            AND lower(pu_planunit.name) NOT LIKE '%virtual%' 
+                            AND lower(pu_planunit.name) LIKE lower(:planUnit) || '%' ) 
                             -- Staff assignment must be valid prior to current date (exclude date = 01-JAN-00 because 00 = 1900!) 
                         AND (floor(st_planunit.valid_from - (SYSDATE - 1)) <= 0 
                             AND to_char(st_planunit.valid_from,'YY') > 0) 
@@ -159,8 +159,8 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                         (SELECT pu_planunit_id 
                             FROM pu_planunit 
                             WHERE is_deleted = 0 
-                            AND lower(:planUnit) NOT LIKE '%virtual%' 
-                            AND lower(:planUnit) LIKE lower(:planUnit) || '%' ) 
+                            AND lower(pu_planunit.name) NOT LIKE '%virtual%' 
+                            AND lower(pu_planunit.name) LIKE lower(:planUnit) || '%' ) 
                     AND sched.LAYER = -1 -- TOP LAYER 
                     AND sched.level_id IN(1000, 4000) -- detail and time recording lines 
                     AND pro.lastmodified >= (SYSDATE - 1) 
@@ -180,7 +180,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                             sched.task_start as startTime, 
                             sched.task_end as endTime, 
                             DECODE (tk_model.name, NULL, tk_type.name, tk_model.name) as activity,
-                             2 AS actionType -- edit shift 
+                            2 AS actionType
             FROM tw_schedule sched 
                 INNER JOIN sm_user usr ON sched.st_staff_id = usr.obj_id AND usr.obj_type = 3 AND usr.is_deleted = 0 
                 LEFT JOIN tk_type ON sched.ref_id = tk_type.tk_type_id 
@@ -196,8 +196,8 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                         (SELECT pu_planunit_id 
                             FROM pu_planunit 
                             WHERE is_deleted = 0 
-                            AND lower(name) NOT LIKE '%virtual%' 
-                            AND lower(name) LIKE LOWER(:planUnit) || '%' ) 
+                            AND lower(pu_planunit.name) NOT LIKE '%virtual%' 
+                            AND lower(pu_planunit.name) LIKE LOWER(:planUnit) || '%' ) 
                             -- Staff assignment must be valid prior to current date (exclude date = 01-JAN-00 because 00 = 1900!) 
                         AND (FLOOR(st_planunit.valid_from - (SYSDATE - 1)) <= 0 
                             AND TO_CHAR(st_planunit.valid_from,'YY') > 0) 
@@ -208,8 +208,8 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                         (SELECT pu_planunit_id 
                             FROM pu_planunit 
                             WHERE is_deleted = 0 
-                            AND lower(name) NOT LIKE '%virtual%' 
-                            AND lower(name) LIKE lower(:planUnit) || '%' ) 
+                            AND lower(pu_planunit.name) NOT LIKE '%virtual%' 
+                            AND lower(pu_planunit.name) LIKE lower(:planUnit) || '%' ) 
                     AND sched.LAYER = -1 -- TOP LAYER 
                     AND sched.level_id IN(1000, 4000) -- detail and time recording lines 
                     AND sched.sched_lastmodified >= (SYSDATE - 1)
