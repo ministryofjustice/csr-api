@@ -89,7 +89,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                     resultSet.getLong("startTime"),
                     resultSet.getLong("endTime"),
                     resultSet.getString("activity"),
-                    resultSet.getInt("actionType"),
+                    2,
                     null
             )
         }
@@ -179,8 +179,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                             CASE sched.level_id WHEN 4000 THEN 1 ELSE 0 END AS shiftType,
                             sched.task_start as startTime, 
                             sched.task_end as endTime, 
-                            DECODE (tk_model.name, NULL, tk_type.name, tk_model.name) as activity,
-                            2 AS actionType
+                            DECODE (tk_model.name, NULL, tk_type.name, tk_model.name) as activity
             FROM tw_schedule sched 
                 INNER JOIN sm_user usr ON sched.st_staff_id = usr.obj_id AND usr.obj_type = 3 AND usr.is_deleted = 0 
                 LEFT JOIN tk_type ON sched.ref_id = tk_type.tk_type_id 
@@ -226,7 +225,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                             -- task start time must be within x hrs from now
                             AND TO_NUMBER(ROUND(sched.task_start/3600, 0)) <= TO_NUMBER(TO_CHAR(SYSDATE, 'HH24'))
                         )
-            )""".trimIndent()
+                )""".trimIndent()
 
         val GET_DETAIL_TEMPLATES = """
             SELECT tk_modelItem.TASK_START AS startTime,
