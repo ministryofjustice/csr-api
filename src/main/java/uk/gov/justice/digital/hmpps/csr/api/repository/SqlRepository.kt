@@ -180,7 +180,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                             sched.task_start as startTime, 
                             sched.task_end as endTime, 
                             DECODE (tk_model.name, NULL, tk_type.name, tk_model.name) as activity,
-                             2 AS actionType, -- edit shift 
+                             2 AS actionType -- edit shift 
             FROM tw_schedule sched 
                 INNER JOIN sm_user usr ON sched.st_staff_id = usr.obj_id AND usr.obj_type = 3 AND usr.is_deleted = 0 
                 LEFT JOIN tk_type ON sched.ref_id = tk_type.tk_type_id 
