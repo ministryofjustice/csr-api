@@ -177,7 +177,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                                 AND layer = -1 
                                 AND (tw_protocol.on_date BETWEEN (SYSDATE - 1) AND (SYSDATE + 1))
                             ) as shiftModified,
-                            sched.on_date as date, 
+                            sched.on_date as shiftDate, 
                             CASE sched.level_id WHEN 4000 THEN 1 ELSE 0 END AS shiftType,
                             sched.task_start as startTime, 
                             sched.task_end as endTime, 
