@@ -165,7 +165,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                     AND sched.level_id IN(1000, 4000) -- detail and time recording lines 
                     AND pro.lastmodified >= (SYSDATE - 1) 
                     AND (pro.on_date BETWEEN (SYSDATE - 1) 
-                        AND (SYSDATE + 130)
+                        AND (SYSDATE + 60)
                 )""".trimIndent()
 
         val GET_MODIFIED_DETAILS = """
