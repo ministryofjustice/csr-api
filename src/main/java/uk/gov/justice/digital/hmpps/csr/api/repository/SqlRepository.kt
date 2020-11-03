@@ -214,7 +214,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                                                 FROM pu_planunit 
                                                 WHERE is_deleted = 0 
                                                 AND lower(pu_planunit.name) NOT LIKE '%virtual%' 
-                                                AND lower(pu_planunit.name) LIKE lower(:planUnit) || '%' ) 
+                                                AND lower(pu_planunit.name) LIKE lower(:planUnit) || '%'
 
                                             )
                 AND sched.on_date <= (SYSDATE + 1)
