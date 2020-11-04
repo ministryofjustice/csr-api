@@ -2,7 +2,7 @@
 # Declare variables to be passed into your templates.
 
 replicaCount: 2
-maxReplicaCount: 4
+maxReplicaCount: 2
 
 image:
   repository: quay.io/hmpps/csr-api
@@ -23,6 +23,6 @@ ingress:
   path: /
 
 env:
-  JAVA_OPTS: "-Xmx1536m"
+  JAVA_OPTS: "-Xmx1024m"
   SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "https://sign-in.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json"
   OAUTH_ROOT_URL: "https://sign-in.hmpps.service.justice.gov.uk/auth"
