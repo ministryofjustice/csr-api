@@ -123,7 +123,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
         """.trimIndent()
 
         val GET_MODIFIED_SHIFTS = """
-            SELECT DISTINCT usr.name AS quantumId, 
+            SELECT usr.name AS quantumId, 
                             pro.lastmodified as shiftModified,
                             sched.on_date as shiftDate,  
                             CASE sched.level_id WHEN 4000 THEN 1 ELSE 0 END AS shiftType, 
@@ -147,29 +147,32 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                         (SELECT pu_planunit_id 
                             FROM pu_planunit 
                             WHERE is_deleted = 0 
-                            AND lower(pu_planunit.name) NOT LIKE '%virtual%' 
-                            AND lower(pu_planunit.name) LIKE lower(:planUnit) || '%' ) 
-                            -- Staff assignment must be valid prior to current date (exclude date = 01-JAN-00 because 00 = 1900!) 
-                        AND (floor(st_planunit.valid_from - (SYSDATE - 1)) <= 0 
-                            AND to_char(st_planunit.valid_from,'YY') > 0) 
-                        AND st_planunit.valid_to > SYSDATE 
-                        AND st_planunit.priority = 1 
-                        AND st_staff.is_deleted = 0) 
-                    AND sched.pu_planunit_id IN 
-                        (SELECT pu_planunit_id 
-                            FROM pu_planunit 
-                            WHERE is_deleted = 0 
-                            AND lower(pu_planunit.name) NOT LIKE '%virtual%' 
-                            AND lower(pu_planunit.name) LIKE lower(:planUnit) || '%' ) 
-                    AND sched.LAYER = -1 -- TOP LAYER 
-                    AND sched.level_id IN(1000, 4000) -- detail and time recording lines 
-                    AND pro.lastmodified >= (SYSDATE - 1) 
-                    AND (pro.on_date BETWEEN (SYSDATE - 1) 
-                        AND (SYSDATE + 60)
-                )""".trimIndent()
+                            AND pu_planunit.name NOT LIKE '%irtual)' 
+                            AND pu_planunit.name LIKE :planUnit || '%' 
+                        ) 
+                    -- Staff assignment must be valid prior to current date (exclude date = 01-JAN-00 because 00 = 1900!) 
+                    AND st_planunit.valid_from <= SYSDATE
+                    AND st_planunit.valid_to > SYSDATE
+                    AND to_char(st_planunit.valid_from,'YY') > 0
+                    AND st_planunit.priority = 1 
+                    AND st_staff.is_deleted = 0
+                ) 
+                AND sched.pu_planunit_id IN 
+                    (SELECT pu_planunit_id 
+                        FROM pu_planunit 
+                        WHERE is_deleted = 0 
+                        AND pu_planunit.name NOT LIKE '%irtual)' 
+                        AND pu_planunit.name LIKE :planUnit || '%' 
+                    ) 
+                AND sched.LAYER = -1 -- TOP LAYER 
+                AND sched.level_id IN(1000, 4000) -- detail and time recording lines 
+                AND pro.lastmodified >= (SYSDATE - 1) 
+                AND pro.on_date >= (SYSDATE - 1) 
+                AND pro.on_date < (SYSDATE + 10)
+                """.trimIndent()
 
         val GET_MODIFIED_DETAILS = """
-            SELECT DISTINCT usr.name AS quantumId, 
+            SELECT usr.name AS quantumId, 
                             (
                                 SELECT MAX(tw_protocol.lastmodified)
                                 FROM tw_protocol 
@@ -199,8 +202,8 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                                                             SELECT pu_planunit_id 
                                                             FROM pu_planunit 
                                                             WHERE is_deleted = 0 
-                                                            AND lower(pu_planunit.name) NOT LIKE '%virtual%' 
-                                                            AND lower(pu_planunit.name) LIKE LOWER(:planUnit) || '%' 
+                                                            AND pu_planunit.name NOT LIKE '%irtual)' 
+                                                            AND pu_planunit.name LIKE :planUnit || '%' 
                                                          ) 
                                         -- Staff assignment must be valid prior to current date (exclude date = 01-JAN-00 because 00 = 1900!) 
                                         AND (FLOOR(st_planunit.valid_from - (SYSDATE - 1)) <= 0 AND TO_CHAR(st_planunit.valid_from,'YY') > 0) 
@@ -213,8 +216,8 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                                                 SELECT pu_planunit_id 
                                                 FROM pu_planunit 
                                                 WHERE is_deleted = 0 
-                                                AND lower(pu_planunit.name) NOT LIKE '%virtual%' 
-                                                AND lower(pu_planunit.name) LIKE lower(:planUnit) || '%'
+                                                AND pu_planunit.name NOT LIKE '%irtual)' 
+                                                AND pu_planunit.name LIKE :planUnit || '%'
 
                                             )
                 AND sched.on_date <= (SYSDATE + 1)
