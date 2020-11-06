@@ -180,7 +180,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
 
         val GET_MODIFIED_DETAILS = """
             SELECT DISTINCT sched.on_date as shiftDate,
-                            sched_st_staff_id,
+                            sched.st_staff_id,
                             usr.name AS quantumId, 
                             sched.task_start as startTime, 
                             sched.task_end as endTime, 
