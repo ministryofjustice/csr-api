@@ -127,7 +127,7 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
                             acc.plus(newDetails)
                         }
                         else {
-                            log.warn("Detail template could not be merged")
+                            log.warn("Detail template could not be merged: ${el.templateName}")
                             acc.plus(el)
                         }
                     }
