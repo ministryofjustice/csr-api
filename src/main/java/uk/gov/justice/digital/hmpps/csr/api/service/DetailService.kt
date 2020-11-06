@@ -31,12 +31,12 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
     }
 
     fun getModifiedDetailsByPlanUnit(planUnit: String): Collection<DetailDto> {
-        log.debug("Fetching modified shifts for $planUnit")
+        log.info("Fetching modified shifts for $planUnit")
         val modifiedShifts = sqlRepository.getModifiedShifts(planUnit)
 
         log.info("Found ${modifiedShifts.size} modified shifts for $planUnit")
 
-        log.debug("Fetching modified detail for $planUnit")
+        log.info("Fetching modified detail for $planUnit")
         val modifiedDetails = sqlRepository.getModifiedDetails(planUnit)
         log.info("Found ${modifiedDetails.size} modified details for $planUnit")
 
@@ -127,7 +127,7 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
                             acc.plus(newDetails)
                         }
                         else {
-                            log.warn("Detail template could not be merged")
+                            log.warn("Detail template could not be merged: ${el.templateName}")
                             acc.plus(el)
                         }
                     }

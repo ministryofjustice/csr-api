@@ -14,12 +14,15 @@ ingress:
   annotations:
     kubernetes.io/ingress.class: "nginx"
     certmanager.k8s.io/cluster-issuer: letsencrypt-production
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "360"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "360"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "360"
   hosts:
-    - host: csr-api-prprod.aks-dev-1.studio-hosting.service.justice.gov.uk
+    - host: csr-api-prprod.aks-live-1.studio-hosting.service.justice.gov.uk
       cert_secret: csr-api-prprod-tls-secret
   path: /
 
 env:
-  JAVA_OPTS: "-Xmx512m"
+  JAVA_OPTS: "-Xmx1024m"
   SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json"
   OAUTH_ROOT_URL: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth"
