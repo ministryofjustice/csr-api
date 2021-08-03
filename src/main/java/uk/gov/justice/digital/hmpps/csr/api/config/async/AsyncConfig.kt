@@ -7,11 +7,11 @@ import java.util.concurrent.Executor
 
 @Configuration
 class AsyncConfig : AsyncConfigurerSupport() {
-    override fun getAsyncExecutor(): Executor {
-        val executor = ThreadPoolTaskExecutor()
-        executor.threadNamePrefix = "RegionAwareTaskExecutor-"
-        executor.setTaskDecorator(RegionAwareTaskDecorator())
-        executor.initialize()
-        return executor
-    }
+  override fun getAsyncExecutor(): Executor {
+    val executor = ThreadPoolTaskExecutor()
+    executor.threadNamePrefix = "RegionAwareTaskExecutor-"
+    executor.setTaskDecorator(RegionAwareTaskDecorator())
+    executor.initialize()
+    return executor
+  }
 }

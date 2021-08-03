@@ -12,99 +12,99 @@ import java.time.LocalDate
 @Repository
 class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
 
-    fun getDetails(from: LocalDate, to: LocalDate, quantumId: String): Collection<Detail> {
-        return jdbcTemplate.query(
-                GET_DETAILS,
-                MapSqlParameterSource()
-                        .addValue("from", from)
-                        .addValue("to", to)
-                        .addValue("quantumId", quantumId),
-                detailsRowMapper
-        )
+  fun getDetails(from: LocalDate, to: LocalDate, quantumId: String): Collection<Detail> {
+    return jdbcTemplate.query(
+      GET_DETAILS,
+      MapSqlParameterSource()
+        .addValue("from", from)
+        .addValue("to", to)
+        .addValue("quantumId", quantumId),
+      detailsRowMapper
+    )
+  }
+
+  fun getModifiedShifts(planUnit: String): Collection<Detail> {
+    return jdbcTemplate.query(
+      GET_MODIFIED_SHIFTS,
+      MapSqlParameterSource()
+        .addValue("planUnit", planUnit),
+      modifiedShiftsRowMapper
+    )
+  }
+
+  fun getModifiedDetails(planUnit: String): Collection<Detail> {
+    return jdbcTemplate.query(
+      GET_MODIFIED_DETAILS,
+      MapSqlParameterSource()
+        .addValue("planUnit", planUnit),
+      modifiedDetailsRowMapper
+    )
+  }
+
+  fun getDetailTemplates(templateNames: Collection<String>): Collection<DetailTemplate> {
+    return jdbcTemplate.query(
+      GET_DETAIL_TEMPLATES,
+      MapSqlParameterSource()
+        .addValue("values", templateNames),
+      detailsTemplateRowMapper
+    )
+  }
+
+  companion object {
+
+    val detailsRowMapper: RowMapper<Detail> = RowMapper { resultSet: ResultSet, _: Int ->
+      Detail(
+        null,
+        null,
+        resultSet.getDate("shiftDate").toLocalDate(),
+        resultSet.getInt("shiftType"),
+        resultSet.getLong("startTime"),
+        resultSet.getLong("endTime"),
+        resultSet.getString("activity"),
+        null,
+        resultSet.getString("templateName")
+      )
     }
 
-    fun getModifiedShifts(planUnit: String): Collection<Detail> {
-        return jdbcTemplate.query(
-                GET_MODIFIED_SHIFTS,
-                MapSqlParameterSource()
-                        .addValue("planUnit", planUnit),
-                modifiedShiftsRowMapper
-        )
+    val modifiedShiftsRowMapper: RowMapper<Detail> = RowMapper { resultSet: ResultSet, _: Int ->
+      Detail(
+        resultSet.getString("quantumId"),
+        resultSet.getTimestamp("shiftModified").toLocalDateTime(),
+        resultSet.getDate("shiftDate").toLocalDate(),
+        resultSet.getInt("shiftType"),
+        null,
+        null,
+        null,
+        resultSet.getInt("actionType"),
+        null
+      )
     }
 
-    fun getModifiedDetails(planUnit: String): Collection<Detail> {
-        return jdbcTemplate.query(
-                GET_MODIFIED_DETAILS,
-                MapSqlParameterSource()
-                        .addValue("planUnit", planUnit),
-                modifiedDetailsRowMapper
-        )
+    val modifiedDetailsRowMapper: RowMapper<Detail> = RowMapper { resultSet: ResultSet, _: Int ->
+      Detail(
+        resultSet.getString("quantumId"),
+        resultSet.getTimestamp("shiftModified").toLocalDateTime(),
+        resultSet.getDate("shiftDate").toLocalDate(),
+        resultSet.getInt("shiftType"),
+        resultSet.getLong("startTime"),
+        resultSet.getLong("endTime"),
+        resultSet.getString("activity"),
+        2,
+        null
+      )
     }
 
-    fun getDetailTemplates(templateNames: Collection<String>): Collection<DetailTemplate> {
-        return jdbcTemplate.query(
-                GET_DETAIL_TEMPLATES,
-                MapSqlParameterSource()
-                        .addValue("values", templateNames),
-                detailsTemplateRowMapper
-        )
+    val detailsTemplateRowMapper: RowMapper<DetailTemplate> = RowMapper { resultSet: ResultSet, _: Int ->
+      DetailTemplate(
+        resultSet.getLong("startTime"),
+        resultSet.getLong("endTime"),
+        resultSet.getBoolean("isRelative"),
+        resultSet.getString("activity"),
+        resultSet.getString("templateName")
+      )
     }
 
-    companion object {
-
-        val detailsRowMapper: RowMapper<Detail> = RowMapper { resultSet: ResultSet, _: Int ->
-            Detail(
-                    null,
-                    null,
-                    resultSet.getDate("shiftDate").toLocalDate(),
-                    resultSet.getInt("shiftType"),
-                    resultSet.getLong("startTime"),
-                    resultSet.getLong("endTime"),
-                    resultSet.getString("activity"),
-                    null,
-                    resultSet.getString("templateName")
-            )
-        }
-
-        val modifiedShiftsRowMapper: RowMapper<Detail> = RowMapper { resultSet: ResultSet, _: Int ->
-            Detail(
-                    resultSet.getString("quantumId"),
-                    resultSet.getTimestamp("shiftModified").toLocalDateTime(),
-                    resultSet.getDate("shiftDate").toLocalDate(),
-                    resultSet.getInt("shiftType"),
-                    null,
-                    null,
-                    null,
-                    resultSet.getInt("actionType"),
-                    null
-            )
-        }
-
-        val modifiedDetailsRowMapper: RowMapper<Detail> = RowMapper { resultSet: ResultSet, _: Int ->
-            Detail(
-                    resultSet.getString("quantumId"),
-                    resultSet.getTimestamp("shiftModified").toLocalDateTime(),
-                    resultSet.getDate("shiftDate").toLocalDate(),
-                    resultSet.getInt("shiftType"),
-                    resultSet.getLong("startTime"),
-                    resultSet.getLong("endTime"),
-                    resultSet.getString("activity"),
-                    2,
-                    null
-            )
-        }
-
-        val detailsTemplateRowMapper: RowMapper<DetailTemplate> = RowMapper { resultSet: ResultSet, _: Int ->
-            DetailTemplate(
-                    resultSet.getLong("startTime"),
-                    resultSet.getLong("endTime"),
-                    resultSet.getBoolean("isRelative"),
-                    resultSet.getString("activity"),
-                    resultSet.getString("templateName")
-            )
-        }
-
-        val GET_DETAILS = """
+    val GET_DETAILS = """
         SELECT DISTINCT sched.on_date as shiftDate, 
                         DECODE (tk_model.frame_start, NULL, sched.task_start, tk_model.frame_start) as startTime, 
                         DECODE (tk_model.frame_end, NULL, sched.task_end, tk_model.frame_end) as endTime, 
@@ -120,9 +120,9 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
         AND   sched.layer = -1
         AND   sched.level_id IN (1000, 4000)
         AND   LOWER(usr.name) = LOWER(:quantumId)
-        """.trimIndent()
+    """.trimIndent()
 
-        val GET_MODIFIED_SHIFTS = """
+    val GET_MODIFIED_SHIFTS = """
             SELECT DISTINCT pro.st_staff_id,
             
                 usr.name AS quantumId, 
@@ -176,9 +176,9 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
             
             AND pro.lastmodified >= (SYSDATE - 1) 
             AND (pro.on_date BETWEEN (SYSDATE - 1) AND (SYSDATE + 10))
-            """.trimIndent()
+    """.trimIndent()
 
-        val GET_MODIFIED_DETAILS = """
+    val GET_MODIFIED_DETAILS = """
             SELECT DISTINCT sched.on_date as shiftDate,
                             sched.st_staff_id,
                             usr.name AS quantumId, 
@@ -250,9 +250,9 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
 
                 AND sched.LAYER = -1 -- TOP LAYER
                 AND sched.level_id IN(1000, 4000) -- detail and time recording lines
-                """.trimIndent()
+    """.trimIndent()
 
-        val GET_DETAIL_TEMPLATES = """
+    val GET_DETAIL_TEMPLATES = """
             SELECT tk_modelItem.TASK_START AS startTime,
                 tk_modelItem.TASK_END AS endTime,
                 tk_modelItem.IS_FRAME_RELATIVE AS isRelative,
@@ -264,6 +264,6 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
             WHERE tk_model.NAME IN (:values)
                 AND tk_model.IS_DELETED = 0
                 AND tk_modelitem.taskstyle = 0
-            """.trimIndent()
-    }
+    """.trimIndent()
+  }
 }

@@ -11,14 +11,14 @@ version.BuildInfo{Version:"v3.0.1", GitCommit:"7c22ef9ce89e0ebeb7125ba2ebf7d421f
 
 - Ensure a TLS cert for your intended hostname is configured and ready, see section below.
 
-### Useful helm (v3) commands:
+### Useful helm (v3) commands:
 
 __Test chart template rendering:__
 
 This will out the fully rendered kubernetes resources in raw yaml.
 
 ```sh
-helm template [path to chart] --values=values-dev.yaml --values=secrets-example.yaml
+helm template [path to chart] --values=values-dev.yaml
 ```
 
 __List releases:__
@@ -51,7 +51,6 @@ helm upgrade [release name] [path to chart]. \
   --dry-run \
   --namespace [namespace] \
   --values values-dev.yaml \
-  --values example-secrets.yaml
 ```
 
 ### Ingress TLS certificate

@@ -1,28 +1,12 @@
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+---
+generic-service:
+  replicaCount: 1
 
-replicaCount: 1
-maxReplicaCount: 1
+  ingress:
+    host: csr-api-dev.aks-dev-1.studio-hosting.service.justice.gov.uk
+    tlsSecretName: csr-api-dev-tls-secret
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-production
 
-image:
-  repository: quay.io/hmpps/csr-api
-  tag: latest
-  port: 8080
-
-ingress:
-  enabled: true
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
-    certmanager.k8s.io/cluster-issuer: letsencrypt-production
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "360"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "360"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "360"
-  hosts:
-    - host: csr-api-dev.aks-dev-1.studio-hosting.service.justice.gov.uk
-      cert_secret: csr-api-dev-tls-secret
-  path: /
-
-env:
-  JAVA_OPTS: "-Xmx1024m"
-  SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json"
-  OAUTH_ROOT_URL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
+  env:
+    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json"

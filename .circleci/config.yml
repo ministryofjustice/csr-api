@@ -1,12 +1,17 @@
 version: 2.1
 
 orbs:
-  owasp: entur/owasp@0.0.10
-  hmpps: ministryofjustice/hmpps@1.1.2
+  hmpps: ministryofjustice/hmpps@3.8
+
+executors:
+  validator:
+    docker:
+      - image: cimg/openjdk:16.0-browsers
+    working_directory: ~/app
 
 jobs:
   validate:
-    executor: hmpps/java
+    executor: validator
     steps:
       - checkout
       - restore_cache:
@@ -52,6 +57,8 @@ workflows:
             branches:
               only:
                 - main
+          context:
+            - hmpps-common-vars
           requires:
             - validate
             - helm_lint
@@ -63,7 +70,9 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_preprod
           env: "preprod"
-          context: csr-api-preprod
+          context:
+            - csr-api-preprod
+            - hmpps-common-vars
           requires:
             - request-preprod-approval
       - request-prod-approval:
@@ -74,7 +83,9 @@ workflows:
           name: deploy_prod
           env: "prod"
           slack_notification: true
-          context: csr-api-prod
+          context:
+            - csr-api-prod
+            - hmpps-common-vars
           requires:
             - request-prod-approval
 
@@ -87,5 +98,13 @@ workflows:
               only:
                 - main
     jobs:
-      - owasp/gradle_owasp_dependency_check:
-          executor: hmpps/java
+      - hmpps/gradle_owasp_dependency_check:
+          context:
+            - hmpps-common-vars
+      - hmpps/trivy_latest_scan:
+          context:
+            - hmpps-common-vars
+      - hmpps/veracode_policy_scan:
+          context:
+            - hmpps-common-vars
+            - veracode-credentials

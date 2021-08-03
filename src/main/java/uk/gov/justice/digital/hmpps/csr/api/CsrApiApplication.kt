@@ -21,56 +21,55 @@ import uk.gov.justice.digital.hmpps.csr.api.utils.region.Region
 import uk.gov.justice.digital.hmpps.csr.api.utils.region.Regions
 import javax.sql.DataSource
 
-
 @SpringBootApplication
 @EnableAsync
 @EnableConfigurationProperties
 class CsrApiApplication {
 
-    @Autowired
-    lateinit var regionData: Regions
+  @Autowired
+  lateinit var regionData: Regions
 
-    @Bean
-    fun dataSource(): DataSource {
-        val dataSource: AbstractRoutingDataSource = RegionAwareRoutingSource()
-        /*
-        Read the region array in from application properties
-        and construct datasources mapped to region names
-        We then pass in the region as a header with the request
-        and use this to select the right datasource
-        */
-        val targetDataSources = regionData.regions.map {
-            it.name to regionDataSource(it)
-        }
-
-        dataSource.setTargetDataSources(targetDataSources.toMap())
-        return dataSource
+  @Bean
+  fun dataSource(): DataSource {
+    val dataSource: AbstractRoutingDataSource = RegionAwareRoutingSource()
+    /*
+    Read the region array in from application properties
+    and construct datasources mapped to region names
+    We then pass in the region as a header with the request
+    and use this to select the right datasource
+    */
+    val targetDataSources = regionData.regions.map {
+      it.name to regionDataSource(it)
     }
 
-    fun regionDataSource(region: Region): DataSource {
-        val dataSource = HikariDataSource()
-        dataSource.driverClassName = region.driverClassName
-        dataSource.jdbcUrl = region.url
-        dataSource.username = region.username
-        dataSource.password = region.password
-        return dataSource
-    }
+    dataSource.setTargetDataSources(targetDataSources.toMap())
+    return dataSource
+  }
 
-    @Bean
-    @Primary
-    fun objectMapper(): ObjectMapper? {
-        return ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-                .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-                .setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
-                .registerModules(Jdk8Module(), JavaTimeModule(), KotlinModule())
-    }
+  fun regionDataSource(region: Region): DataSource {
+    val dataSource = HikariDataSource()
+    dataSource.driverClassName = region.driverClassName
+    dataSource.jdbcUrl = region.url
+    dataSource.username = region.username
+    dataSource.password = region.password
+    return dataSource
+  }
 
-    companion object {
-        @JvmStatic
-        fun main(args: Array<String>) {
-            SpringApplication.run(CsrApiApplication::class.java, *args)
-        }
+  @Bean
+  @Primary
+  fun objectMapper(): ObjectMapper? {
+    return ObjectMapper()
+      .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+      .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+      .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+      .setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
+      .registerModules(Jdk8Module(), JavaTimeModule(), KotlinModule())
+  }
+
+  companion object {
+    @JvmStatic
+    fun main(args: Array<String>) {
+      SpringApplication.run(CsrApiApplication::class.java, *args)
     }
+  }
 }
