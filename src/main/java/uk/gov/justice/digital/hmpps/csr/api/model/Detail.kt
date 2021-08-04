@@ -5,21 +5,21 @@ import java.time.LocalDateTime
 
 data class Detail(
 
-        val quantumId: String?,
+  val quantumId: String?,
 
-        val shiftModified: LocalDateTime?,
+  val shiftModified: LocalDateTime?,
 
-        var shiftDate: LocalDate,
+  var shiftDate: LocalDate,
 
-        val shiftType: Int,
+  val shiftType: Int,
 
-        val startTimeInSeconds: Long?,
+  val startTimeInSeconds: Long?,
 
-        val endTimeInSeconds: Long?,
+  val endTimeInSeconds: Long?,
 
-        val activity: String?,
+  val activity: String?,
 
-        val actionType: Int?,
+  val actionType: Int?,
 
-        val templateName: String?
+  val templateName: String?
 )

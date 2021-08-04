@@ -6,7 +6,7 @@ It aims to remove any idiosyncrasies from the data model, primarily combining Sh
 https://app.circleci.com/pipelines/github/ministryofjustice/csr-api
 
 ### Prerequisites  
-* Java JDK 11+  
+* Java JDK 16+  
 * An editor/IDE
 * Gradle  
 * Docker  
