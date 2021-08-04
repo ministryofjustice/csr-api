@@ -12,9 +12,10 @@ generic-service:
     annotations:
       kubernetes.io/ingress.class: "nginx"
       certmanager.k8s.io/cluster-issuer: letsencrypt-production
-      nginx.ingress.kubernetes.io/proxy-connect-timeout: "360"
-      nginx.ingress.kubernetes.io/proxy-send-timeout: "360"
-      nginx.ingress.kubernetes.io/proxy-read-timeout: "360"
+# set timeouts to slightly less than the 10m set in cmd-api
+      nginx.ingress.kubernetes.io/proxy-connect-timeout: "595"
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "595"
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "595"
     path: /
 
   livenessProbe:
