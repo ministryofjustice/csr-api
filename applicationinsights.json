@@ -1,6 +1,6 @@
 {
   "role": {
-    "name": "cmd-api"
+    "name": "csr-api"
   },
   "customDimensions": {
     "service.version": "${BUILD_NUMBER}"
