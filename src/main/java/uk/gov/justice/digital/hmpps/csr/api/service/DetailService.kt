@@ -1,5 +1,12 @@
 package uk.gov.justice.digital.hmpps.csr.api.service
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.csr.api.dto.DetailDto
@@ -12,6 +19,13 @@ import java.time.LocalDateTime
 
 @Service
 class DetailService(private val sqlRepository: SqlRepository, val authenticationFacade: AuthenticationFacade) {
+
+  val objectMapper: ObjectMapper = ObjectMapper()
+    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+    .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+    .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+    .setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
+    .registerModules(Jdk8Module(), JavaTimeModule(), KotlinModule())
 
   fun getStaffDetails(
     from: LocalDate,
@@ -34,17 +48,33 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
     return mapToDetailsDto(mergedDetails)
   }
 
-  fun getModifiedDetailsByPlanUnit(planUnit: String): Collection<DetailDto> {
+  fun getModifiedByPlanUnit(planUnit: String): Collection<DetailDto> {
+    val modifiedShifts = getModifiedShiftsByPlanUnit(planUnit)
+    val modifiedDetails = getModifiedDetailsByPlanUnit(planUnit)
+
+    return modifiedShifts + modifiedDetails
+  }
+
+  fun getModifiedShiftsByPlanUnit(planUnit: String): Collection<DetailDto> {
     log.info("Fetching modified shifts for $planUnit")
+    val shiftStartTime = System.currentTimeMillis()
+
     val modifiedShifts = sqlRepository.getModifiedShifts(planUnit)
 
-    log.info("Found ${modifiedShifts.size} modified shifts for $planUnit")
+    log.info("Found ${modifiedShifts.size} modified shifts for $planUnit, time taken ${(System.currentTimeMillis() - shiftStartTime) / 1000.0}s")
+    val json = objectMapper.writeValueAsString(modifiedShifts)
+    log.info("Return body size is ${json.length}")
+    return mapToDetailsDto(modifiedShifts)
+  }
 
+  fun getModifiedDetailsByPlanUnit(planUnit: String): Collection<DetailDto> {
     log.info("Fetching modified detail for $planUnit")
-    val modifiedDetails = sqlRepository.getModifiedDetails(planUnit)
-    log.info("Found ${modifiedDetails.size} modified details for $planUnit")
+    val detailStartTime = System.currentTimeMillis()
 
-    return mapToDetailsDto(modifiedShifts + modifiedDetails)
+    val modifiedDetails = sqlRepository.getModifiedDetails(planUnit)
+
+    log.info("Found ${modifiedDetails.size} modified details for $planUnit, time taken ${(System.currentTimeMillis() - detailStartTime) / 1000.0}s")
+    return mapToDetailsDto(modifiedDetails)
   }
 
   private fun getTemplates(templateNames: Collection<String>): Collection<DetailTemplate> {

@@ -16,17 +16,17 @@ import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import uk.gov.justice.digital.hmpps.csr.api.utils.JwtAuthenticationHelper
+import uk.gov.justice.digital.hmpps.csr.api.utils.JwtAuthHelper
 import java.time.Duration
 
 @ExtendWith(SpringExtension::class)
-@Import(JwtAuthenticationHelper::class, ClientTrackingTelemetryModule::class)
+@Import(JwtAuthHelper::class, ClientTrackingTelemetryModule::class)
 @ContextConfiguration(initializers = [ConfigFileApplicationContextInitializer::class])
 @ActiveProfiles("test")
 
 class ClientTrackingTelemetryModuleTest(
   @Autowired val clientTrackingTelemetryModule: ClientTrackingTelemetryModule,
-  @Autowired val jwtAuthenticationHelper: JwtAuthenticationHelper
+  @Autowired val jwtAuthHelper: JwtAuthHelper
 ) {
 
   @BeforeEach
@@ -65,7 +65,7 @@ class ClientTrackingTelemetryModuleTest(
   }
 
   private fun createJwt(user: String?, roles: List<String>, duration: Long): String =
-    jwtAuthenticationHelper.createJwt(
+    jwtAuthHelper.createJwt(
       subject = user,
       roles = roles,
       scope = listOf("read", "write"),

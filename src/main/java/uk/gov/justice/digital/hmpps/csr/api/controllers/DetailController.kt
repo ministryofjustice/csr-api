@@ -29,9 +29,22 @@ class DetailController(private val detailService: DetailService) {
     return ResponseEntity.ok(details)
   }
 
+  @Deprecated(message = "Please use the two /updated endpoints instead and combine the result lists")
   @ApiOperation(value = "Retrieve all modified details for a plan unit")
   @GetMapping("planUnit/{planUnit}/details/modified")
-  fun getModifiedDetailsByPlanUnit(@PathVariable planUnit: String): ResponseEntity<Collection<DetailDto>> {
+  fun getModifiedByPlanUnit(@PathVariable planUnit: String): ResponseEntity<Collection<DetailDto>> {
+    return ResponseEntity.ok(detailService.getModifiedByPlanUnit(planUnit))
+  }
+
+  @ApiOperation(value = "Retrieve all modified shifts for a plan unit")
+  @GetMapping("planUnit/{planUnit}/shifts/updated")
+  fun getModifiedShiftByPlanUnit(@PathVariable planUnit: String): ResponseEntity<Collection<DetailDto>> {
+    return ResponseEntity.ok(detailService.getModifiedShiftsByPlanUnit(planUnit))
+  }
+
+  @ApiOperation(value = "Retrieve all modified details for a plan unit")
+  @GetMapping("planUnit/{planUnit}/details/updated")
+  fun getModifiedDetailByPlanUnit(@PathVariable planUnit: String): ResponseEntity<Collection<DetailDto>> {
     return ResponseEntity.ok(detailService.getModifiedDetailsByPlanUnit(planUnit))
   }
 }

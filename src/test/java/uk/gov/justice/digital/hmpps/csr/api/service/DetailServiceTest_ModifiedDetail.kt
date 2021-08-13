@@ -60,7 +60,7 @@ internal class DetailServiceTest_ModifiedDetail {
       every { sqlRepository.getModifiedShifts(planUnit) } returns notifications
       every { sqlRepository.getModifiedDetails(planUnit) } returns listOf()
 
-      val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
+      val returnValue = service.getModifiedByPlanUnit(planUnit)
 
       verify { sqlRepository.getModifiedShifts(planUnit) }
       verify { sqlRepository.getModifiedDetails(planUnit) }
@@ -74,7 +74,7 @@ internal class DetailServiceTest_ModifiedDetail {
       every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
       every { sqlRepository.getModifiedDetails(planUnit) } returns notifications
 
-      val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
+      val returnValue = service.getModifiedByPlanUnit(planUnit)
 
       verify { sqlRepository.getModifiedShifts(planUnit) }
       verify { sqlRepository.getModifiedDetails(planUnit) }
@@ -89,7 +89,7 @@ internal class DetailServiceTest_ModifiedDetail {
       every { sqlRepository.getModifiedShifts(planUnit) } returns shiftDetails
       every { sqlRepository.getModifiedDetails(planUnit) } returns detailDetails
 
-      val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
+      val returnValue = service.getModifiedByPlanUnit(planUnit)
 
       verify { sqlRepository.getModifiedShifts(planUnit) }
       verify { sqlRepository.getModifiedDetails(planUnit) }
@@ -108,7 +108,7 @@ internal class DetailServiceTest_ModifiedDetail {
       every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
       every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-      val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
+      val returnValue = service.getModifiedByPlanUnit(planUnit)
 
       verify { sqlRepository.getModifiedShifts(planUnit) }
       verify { sqlRepository.getModifiedDetails(planUnit) }
@@ -123,7 +123,7 @@ internal class DetailServiceTest_ModifiedDetail {
       every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
       every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-      val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
+      val returnValue = service.getModifiedByPlanUnit(planUnit)
 
       verify { sqlRepository.getModifiedShifts(planUnit) }
       verify { sqlRepository.getModifiedDetails(planUnit) }
@@ -138,7 +138,7 @@ internal class DetailServiceTest_ModifiedDetail {
       every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
       every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-      val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
+      val returnValue = service.getModifiedByPlanUnit(planUnit)
 
       verify { sqlRepository.getModifiedShifts(planUnit) }
       verify { sqlRepository.getModifiedDetails(planUnit) }
@@ -153,7 +153,7 @@ internal class DetailServiceTest_ModifiedDetail {
       every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
       every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-      val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
+      val returnValue = service.getModifiedByPlanUnit(planUnit)
 
       verify { sqlRepository.getModifiedShifts(planUnit) }
       verify { sqlRepository.getModifiedDetails(planUnit) }
@@ -168,7 +168,7 @@ internal class DetailServiceTest_ModifiedDetail {
       every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
       every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-      val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
+      val returnValue = service.getModifiedByPlanUnit(planUnit)
 
       verify { sqlRepository.getModifiedShifts(planUnit) }
       verify { sqlRepository.getModifiedDetails(planUnit) }
@@ -183,7 +183,7 @@ internal class DetailServiceTest_ModifiedDetail {
       every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
       every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-      val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
+      val returnValue = service.getModifiedByPlanUnit(planUnit)
 
       verify { sqlRepository.getModifiedShifts(planUnit) }
       verify { sqlRepository.getModifiedDetails(planUnit) }
@@ -198,7 +198,7 @@ internal class DetailServiceTest_ModifiedDetail {
       every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
       every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-      val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
+      val returnValue = service.getModifiedByPlanUnit(planUnit)
 
       verify { sqlRepository.getModifiedShifts(planUnit) }
       verify { sqlRepository.getModifiedDetails(planUnit) }
@@ -213,7 +213,7 @@ internal class DetailServiceTest_ModifiedDetail {
       every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
       every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-      val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
+      val returnValue = service.getModifiedByPlanUnit(planUnit)
 
       verify { sqlRepository.getModifiedShifts(planUnit) }
       verify { sqlRepository.getModifiedDetails(planUnit) }
@@ -228,7 +228,7 @@ internal class DetailServiceTest_ModifiedDetail {
       every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
       every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-      val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
+      val returnValue = service.getModifiedByPlanUnit(planUnit)
 
       verify { sqlRepository.getModifiedShifts(planUnit) }
       verify { sqlRepository.getModifiedDetails(planUnit) }
