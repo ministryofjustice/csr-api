@@ -48,7 +48,7 @@ class DetailResourceTest : ResourceTest() {
       .isOk
       .expectBodyList(DetailDto.javaClass)
       .hasSize(0)
-      // TODO need to populate h2 db tables to get results
+    // TODO need to populate h2 db tables to get results
   }
 
   // @Test

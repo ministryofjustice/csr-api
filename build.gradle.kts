@@ -49,7 +49,10 @@ dependencies {
   testImplementation("com.tngtech.java:junit-dataprovider:1.13.1")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.27.0")
   testImplementation("io.github.http-builder-ng:http-builder-ng-apache:1.0.4")
+  testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("com.ninja-squad:springmockk:3.0.1")
+  testImplementation("org.awaitility:awaitility-kotlin:4.1.0")
+
   testImplementation("io.jsonwebtoken:jjwt:0.9.1")
 }
 
