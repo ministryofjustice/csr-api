@@ -108,10 +108,10 @@ class SwaggerConfiguration(@Autowired val applicationContext: ApplicationContext
     val vendorExtensions: MutableCollection<VendorExtension<*>> = ArrayList()
     vendorExtensions.add(vendorExtension)
     return ApiInfo(
-      "HMPPS CMD- API Documentation",
-      "Reference data API for CMD.",
+      "HMPPS CSR-API Documentation",
+      "CSR data API for CMD.",
       buildProperties.version,
-      "https://gateway.nomis-api.service.justice.gov.uk/auth/terms",
+      "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/terms",
       contactInfo(),
       "MIT", "https://opensource.org/licenses/MIT", vendorExtensions
     )

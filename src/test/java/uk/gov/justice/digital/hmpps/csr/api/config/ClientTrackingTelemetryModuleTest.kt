@@ -8,25 +8,21 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer
-import org.springframework.context.annotation.Import
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpHeaders
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import uk.gov.justice.digital.hmpps.csr.api.utils.JwtAuthenticationHelper
+import uk.gov.justice.digital.hmpps.csr.api.utils.JwtAuthHelper
 import java.time.Duration
 
 @ExtendWith(SpringExtension::class)
-@Import(JwtAuthenticationHelper::class, ClientTrackingTelemetryModule::class)
-@ContextConfiguration(initializers = [ConfigFileApplicationContextInitializer::class])
 @ActiveProfiles("test")
-
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ClientTrackingTelemetryModuleTest(
   @Autowired val clientTrackingTelemetryModule: ClientTrackingTelemetryModule,
-  @Autowired val jwtAuthenticationHelper: JwtAuthenticationHelper
+  @Autowired val jwtAuthHelper: JwtAuthHelper
 ) {
 
   @BeforeEach
@@ -65,7 +61,7 @@ class ClientTrackingTelemetryModuleTest(
   }
 
   private fun createJwt(user: String?, roles: List<String>, duration: Long): String =
-    jwtAuthenticationHelper.createJwt(
+    jwtAuthHelper.createJwt(
       subject = user,
       roles = roles,
       scope = listOf("read", "write"),
