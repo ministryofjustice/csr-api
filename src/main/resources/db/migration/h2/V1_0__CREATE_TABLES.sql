@@ -56,12 +56,6 @@ CREATE TABLE IF NOT EXISTS pu_planunit
     pu_planunit_id VARCHAR NOT NULL,
     is_deleted     INT     NOT NULL,
     name           VARCHAR NOT NULL
---     SHORTNAME      VARCHAR NOT NULL,
---     COLOR          INT     NOT NULL,
---     RASTER         INT     NOT NULL,
---     PARENT_ID      INT     NOT NULL,
---     NUM_WORKPLACES INT     NOT NULL,
---     LO_TIMEZONE_ID INT     NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS st_planunit
