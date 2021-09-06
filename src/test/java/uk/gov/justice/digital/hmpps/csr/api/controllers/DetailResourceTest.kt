@@ -1,7 +1,13 @@
 package uk.gov.justice.digital.hmpps.csr.api.controllers
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.boot.test.json.BasicJsonTester
+import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
+import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.csr.api.dto.DetailDto
+import java.time.LocalDateTime
+import java.time.Month
 
 class DetailResourceTest : ResourceTest() {
 
@@ -10,34 +16,11 @@ class DetailResourceTest : ResourceTest() {
     private val SYSTEM_READ_ONLY_ROLE = listOf("ROLE_SYSTEM_READ_ONLY")
   }
 
-  @Test
-  fun testOldDetails() {
-    webTestClient.get()
-      .uri {
-        it.path("/planUnit/{planUnit}/details/modified")
-          .build("Frankland")
-      }
-      .headers(setAuthorisation(roles = SYSTEM_ROLE))
-      .exchange()
-      .expectStatus()
-      .isOk
-      .expectBodyList(DetailDto.javaClass)
-      .hasSize(0)
-  }
-
-  // @Test
-  fun testOldDetails_unauthorised() {
-    webTestClient.get()
-      .uri("/planUnit/somewhere/details/modified")
-      .headers(setAuthorisation(roles = SYSTEM_READ_ONLY_ROLE))
-      .exchange()
-      .expectStatus()
-      .isForbidden
-  }
+  val jsonTester = BasicJsonTester(this::class.java)
 
   @Test
   fun testShifts() {
-    webTestClient.get()
+    val response = webTestClient.get()
       .uri {
         it.path("/planUnit/{planUnit}/shifts/updated")
           .build("Frankland")
@@ -46,9 +29,65 @@ class DetailResourceTest : ResourceTest() {
       .exchange()
       .expectStatus()
       .isOk
-      .expectBodyList(DetailDto.javaClass)
-      .hasSize(0)
-    // TODO need to populate h2 db tables to get results
+      .expectBodyList(DetailDto::class.java)
+      .returnResult()
+
+    assertThat(response.responseBody).containsExactlyInAnyOrder(
+      DetailDto(
+        "a_1152",
+        LocalDateTime.of(2099, Month.AUGUST, 21, 0, 0),
+        shiftType = ShiftType.SHIFT,
+        detailStart = LocalDateTime.of(2021, Month.SEPTEMBER, 6, 0, 0),
+        detailEnd = LocalDateTime.of(2021, Month.SEPTEMBER, 6, 0, 0),
+        activity = null,
+        actionType = ActionType.ADD
+      ),
+      DetailDto(
+        "a_1152",
+        LocalDateTime.of(2099, Month.AUGUST, 21, 0, 0),
+        shiftType = ShiftType.SHIFT,
+        detailStart = LocalDateTime.of(2021, Month.SEPTEMBER, 7, 0, 0),
+        detailEnd = LocalDateTime.of(2021, Month.SEPTEMBER, 7, 0, 0),
+        activity = null,
+        actionType = ActionType.ADD
+      ),
+      DetailDto(
+        "a_1154",
+        LocalDateTime.of(2099, Month.AUGUST, 21, 0, 0),
+        shiftType = ShiftType.SHIFT,
+        detailStart = LocalDateTime.of(2021, Month.SEPTEMBER, 6, 0, 0),
+        detailEnd = LocalDateTime.of(2021, Month.SEPTEMBER, 6, 0, 0),
+        activity = null,
+        actionType = ActionType.DELETE
+      ),
+      DetailDto(
+        "a_1155",
+        LocalDateTime.of(2099, Month.AUGUST, 21, 0, 0),
+        shiftType = ShiftType.SHIFT,
+        detailStart = LocalDateTime.of(2021, Month.SEPTEMBER, 6, 0, 0),
+        detailEnd = LocalDateTime.of(2021, Month.SEPTEMBER, 6, 0, 0),
+        activity = null,
+        actionType = ActionType.EDIT
+      ),
+      DetailDto(
+        "a_1156",
+        LocalDateTime.of(2099, Month.AUGUST, 21, 0, 0),
+        shiftType = ShiftType.SHIFT,
+        detailStart = LocalDateTime.of(2021, Month.SEPTEMBER, 6, 0, 0),
+        detailEnd = LocalDateTime.of(2021, Month.SEPTEMBER, 6, 0, 0),
+        activity = null,
+        actionType = ActionType.DELETE
+      ),
+      DetailDto(
+        "a_1157",
+        LocalDateTime.of(2099, Month.AUGUST, 21, 0, 0),
+        shiftType = ShiftType.SHIFT,
+        detailStart = LocalDateTime.of(2021, Month.SEPTEMBER, 6, 0, 0),
+        detailEnd = LocalDateTime.of(2021, Month.SEPTEMBER, 6, 0, 0),
+        activity = null,
+        actionType = ActionType.DELETE
+      ),
+    )
   }
 
   // @Test
@@ -72,7 +111,7 @@ class DetailResourceTest : ResourceTest() {
       .exchange()
       .expectStatus()
       .isOk
-      .expectBodyList(DetailDto.javaClass)
+      .expectBodyList(DetailDto::class.java)
       .hasSize(0)
   }
 

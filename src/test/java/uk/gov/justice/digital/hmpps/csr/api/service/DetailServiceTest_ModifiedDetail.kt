@@ -58,12 +58,10 @@ internal class DetailServiceTest_ModifiedDetail {
     fun `Should get Modified Shifts`() {
       val notifications = listOf(getValidDetail())
       every { sqlRepository.getModifiedShifts(planUnit) } returns notifications
-      every { sqlRepository.getModifiedDetails(planUnit) } returns listOf()
 
-      val returnValue = service.getModifiedByPlanUnit(planUnit)
+      val returnValue = service.getModifiedShiftsByPlanUnit(planUnit)
 
       verify { sqlRepository.getModifiedShifts(planUnit) }
-      verify { sqlRepository.getModifiedDetails(planUnit) }
 
       assertThat(returnValue).hasSize(1)
     }
@@ -71,30 +69,13 @@ internal class DetailServiceTest_ModifiedDetail {
     @Test
     fun `Should get Modified Details`() {
       val notifications = listOf(getValidDetail())
-      every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
       every { sqlRepository.getModifiedDetails(planUnit) } returns notifications
 
-      val returnValue = service.getModifiedByPlanUnit(planUnit)
+      val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
 
-      verify { sqlRepository.getModifiedShifts(planUnit) }
       verify { sqlRepository.getModifiedDetails(planUnit) }
 
       assertThat(returnValue).hasSize(1)
-    }
-
-    @Test
-    fun `Should combine Shifts and Details`() {
-      val shiftDetails = listOf(getValidDetail())
-      val detailDetails = listOf(getValidDetail())
-      every { sqlRepository.getModifiedShifts(planUnit) } returns shiftDetails
-      every { sqlRepository.getModifiedDetails(planUnit) } returns detailDetails
-
-      val returnValue = service.getModifiedByPlanUnit(planUnit)
-
-      verify { sqlRepository.getModifiedShifts(planUnit) }
-      verify { sqlRepository.getModifiedDetails(planUnit) }
-
-      assertThat(returnValue).hasSize(2)
     }
   }
 
@@ -105,12 +86,10 @@ internal class DetailServiceTest_ModifiedDetail {
     @Test
     fun `Should subtract time when start time less than 0`() {
       val details = listOf(getValidDetail(-1234L, 456L))
-      every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
       every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-      val returnValue = service.getModifiedByPlanUnit(planUnit)
+      val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
 
-      verify { sqlRepository.getModifiedShifts(planUnit) }
       verify { sqlRepository.getModifiedDetails(planUnit) }
 
       assertThat(returnValue).hasSize(1)
@@ -120,12 +99,10 @@ internal class DetailServiceTest_ModifiedDetail {
     @Test
     fun `Should replace start full day magic number with 0`() {
       val details = listOf(getValidDetail(-2147483648L, 456L))
-      every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
       every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-      val returnValue = service.getModifiedByPlanUnit(planUnit)
+      val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
 
-      verify { sqlRepository.getModifiedShifts(planUnit) }
       verify { sqlRepository.getModifiedDetails(planUnit) }
 
       assertThat(returnValue).hasSize(1)
@@ -135,12 +112,10 @@ internal class DetailServiceTest_ModifiedDetail {
     @Test
     fun `Should replace end full day magic number with 0`() {
       val details = listOf(getValidDetail(123L, -2147483648L))
-      every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
       every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-      val returnValue = service.getModifiedByPlanUnit(planUnit)
+      val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
 
-      verify { sqlRepository.getModifiedShifts(planUnit) }
       verify { sqlRepository.getModifiedDetails(planUnit) }
 
       assertThat(returnValue).hasSize(1)
@@ -150,12 +125,10 @@ internal class DetailServiceTest_ModifiedDetail {
     @Test
     fun `Should add start time of 86401`() {
       val details = listOf(getValidDetail(86401L, 456L))
-      every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
       every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-      val returnValue = service.getModifiedByPlanUnit(planUnit)
+      val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
 
-      verify { sqlRepository.getModifiedShifts(planUnit) }
       verify { sqlRepository.getModifiedDetails(planUnit) }
 
       assertThat(returnValue).hasSize(1)
@@ -165,12 +138,10 @@ internal class DetailServiceTest_ModifiedDetail {
     @Test
     fun `Should replace end time of 86400 with time minus 0`() {
       val details = listOf(getValidDetail(123L, 86400L))
-      every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
       every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-      val returnValue = service.getModifiedByPlanUnit(planUnit)
+      val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
 
-      verify { sqlRepository.getModifiedShifts(planUnit) }
       verify { sqlRepository.getModifiedDetails(planUnit) }
 
       assertThat(returnValue).hasSize(1)
@@ -180,12 +151,10 @@ internal class DetailServiceTest_ModifiedDetail {
     @Test
     fun `Should add end time of 86401`() {
       val details = listOf(getValidDetail(86401L, 456L))
-      every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
       every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-      val returnValue = service.getModifiedByPlanUnit(planUnit)
+      val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
 
-      verify { sqlRepository.getModifiedShifts(planUnit) }
       verify { sqlRepository.getModifiedDetails(planUnit) }
 
       assertThat(returnValue).hasSize(1)
@@ -195,12 +164,10 @@ internal class DetailServiceTest_ModifiedDetail {
     @Test
     fun `Should replace end time of 86401 with time minus 86400`() {
       val details = listOf(getValidDetail(123L, 86401L))
-      every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
       every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-      val returnValue = service.getModifiedByPlanUnit(planUnit)
+      val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
 
-      verify { sqlRepository.getModifiedShifts(planUnit) }
       verify { sqlRepository.getModifiedDetails(planUnit) }
 
       assertThat(returnValue).hasSize(1)
@@ -210,12 +177,10 @@ internal class DetailServiceTest_ModifiedDetail {
     @Test
     fun `Should subtract less than 0 start time`() {
       val details = listOf(getValidDetail(-123L, 456L))
-      every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
       every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-      val returnValue = service.getModifiedByPlanUnit(planUnit)
+      val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
 
-      verify { sqlRepository.getModifiedShifts(planUnit) }
       verify { sqlRepository.getModifiedDetails(planUnit) }
 
       assertThat(returnValue).hasSize(1)
@@ -225,12 +190,10 @@ internal class DetailServiceTest_ModifiedDetail {
     @Test
     fun `Should subtract less than 0 end time`() {
       val details = listOf(getValidDetail(123L, -456L))
-      every { sqlRepository.getModifiedShifts(planUnit) } returns listOf()
       every { sqlRepository.getModifiedDetails(planUnit) } returns details
 
-      val returnValue = service.getModifiedByPlanUnit(planUnit)
+      val returnValue = service.getModifiedDetailsByPlanUnit(planUnit)
 
-      verify { sqlRepository.getModifiedShifts(planUnit) }
       verify { sqlRepository.getModifiedDetails(planUnit) }
 
       assertThat(returnValue).hasSize(1)
