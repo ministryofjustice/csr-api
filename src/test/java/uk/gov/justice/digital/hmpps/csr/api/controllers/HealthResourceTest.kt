@@ -17,7 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 
 class HealthResourceTest(@Autowired val testRestTemplate: TestRestTemplate) {
 
-  val jsonTester = BasicJsonTester(this.javaClass)
+  val jsonTester = BasicJsonTester(this::class.java)
 
   @Test
   fun `Ping test`() {

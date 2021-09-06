@@ -48,13 +48,6 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
     return mapToDetailsDto(mergedDetails)
   }
 
-  fun getModifiedByPlanUnit(planUnit: String): Collection<DetailDto> {
-    val modifiedShifts = getModifiedShiftsByPlanUnit(planUnit)
-    val modifiedDetails = getModifiedDetailsByPlanUnit(planUnit)
-
-    return modifiedShifts + modifiedDetails
-  }
-
   fun getModifiedShiftsByPlanUnit(planUnit: String): Collection<DetailDto> {
     log.info("Fetching modified shifts for $planUnit")
     val shiftStartTime = System.currentTimeMillis()

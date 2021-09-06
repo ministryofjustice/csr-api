@@ -128,16 +128,14 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                 usr.name AS quantumId, 
                 pro.lastmodified AS shiftModified,
                 pro.on_date AS shiftDate,
-                sched.pu_planunit_id,
                 
-                CASE sched.level_id WHEN 4000 THEN 1 ELSE 0 END AS shiftType, 
+                CASE pro.level_id WHEN 4000 THEN 1 ELSE 0 END AS shiftType, 
                 CASE WHEN pro.action_type = 47012 THEN 3 -- delete shift 
                      WHEN pro.action_type = 47001 THEN 2 -- edit shift 
                      WHEN pro.action_type IN(47006, 47015) THEN 1 -- add shift 
                 ELSE 0 
                 END AS actionType 
             FROM tw_protocol pro
-                INNER JOIN TW_SCHEDULE sched ON pro.ST_STAFF_ID = sched.ST_STAFF_ID AND pro.LAYER = sched.LAYER AND pro.LEVEL_ID = sched.LEVEL_ID
                 INNER JOIN sm_user usr ON pro.ST_STAFF_ID = usr.OBJ_ID AND usr.OBJ_TYPE = 3 AND usr.IS_DELETED = 0
                          
             -- 1. Staff must be currently allocated to the planning unit
@@ -158,21 +156,14 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                                                                                     AND LOWER(pu_planunit.name) LIKE LOWER(:planUnit) || '%' 
                                                                                 ) 
                                             -- must be valid prior to current date (exclude date = 01-JAN-00 because 00 = 1900!) 
-                                            AND (FLOOR(st_planunit.valid_from  - (SYSDATE - 1)) <= 0 AND TO_CHAR(st_planunit.valid_from,'YY') > 0)
+                                            AND (st_planunit.valid_from < SYSDATE - 1 AND TO_CHAR(st_planunit.valid_from,'YY') > 0)
                                             AND st_planunit.valid_to > SYSDATE
                                             
                                             AND st_planunit.priority = 1 
                                             AND st_staff.is_deleted = 0
                                         ) 
-            AND sched.pu_planunit_id IN (
-                                            SELECT pu_planunit_id 
-                                            FROM pu_planunit 
-                                            WHERE is_deleted = 0 
-                                            AND pu_planunit.name NOT LIKE '%irtual)' 
-                                            AND LOWER(pu_planunit.name) LIKE LOWER(:planUnit) || '%'
-                                        ) 
             AND pro.LAYER = -1 -- TOP LAYER 
-            AND sched.level_id IN(1000, 4000) -- shift and time recording lines 
+            AND pro.level_id IN(1000, 4000) -- shift and time recording lines 
             
             AND pro.lastmodified >= (SYSDATE - 1) 
             AND (pro.on_date BETWEEN (SYSDATE - 1) AND (SYSDATE + 10))
