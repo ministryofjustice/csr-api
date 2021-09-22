@@ -1,7 +1,7 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.3.7"
-  kotlin("plugin.spring") version "1.5.21"
-  kotlin("plugin.jpa") version "1.5.21"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.3.8"
+  kotlin("plugin.spring") version "1.5.31"
+  kotlin("plugin.jpa") version "1.5.31"
 }
 
 allOpen {
@@ -22,7 +22,7 @@ dependencies {
   runtimeOnly("com.h2database:h2")
   runtimeOnly("com.zaxxer:HikariCP")
   runtimeOnly("org.flywaydb:flyway-core")
-  runtimeOnly("com.oracle.database.jdbc:ojdbc10:19.11.0.0")
+  runtimeOnly("com.oracle.database.jdbc:ojdbc10:19.12.0.0")
 
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -34,9 +34,9 @@ dependencies {
   implementation("io.springfox:springfox-swagger2:2.9.2")
   implementation("io.springfox:springfox-swagger-ui:2.9.2")
   implementation("org.apache.commons:commons-lang3:3.12.0")
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.4")
-  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.4")
-  implementation("com.nimbusds:nimbus-jose-jwt:9.12")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.5")
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.5")
+  implementation("com.nimbusds:nimbus-jose-jwt:9.14")
   implementation("com.google.guava:guava:30.1.1-jre")
 
   testAnnotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
@@ -47,7 +47,7 @@ dependencies {
   }
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.tngtech.java:junit-dataprovider:1.13.1")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.27.0")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.28.0")
   testImplementation("io.github.http-builder-ng:http-builder-ng-apache:1.0.4")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("com.ninja-squad:springmockk:3.0.1")
