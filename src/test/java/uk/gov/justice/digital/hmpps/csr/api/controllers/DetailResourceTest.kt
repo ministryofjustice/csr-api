@@ -6,7 +6,9 @@ import org.springframework.boot.test.json.BasicJsonTester
 import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
 import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.csr.api.dto.DetailDto
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.Month
 
 class DetailResourceTest : ResourceTest() {
@@ -14,6 +16,7 @@ class DetailResourceTest : ResourceTest() {
   companion object {
     private val SYSTEM_ROLE = listOf("ROLE_SYSTEM_USER")
     private val SYSTEM_READ_ONLY_ROLE = listOf("ROLE_SYSTEM_READ_ONLY")
+    private val TODAY_START = LocalDateTime.of(LocalDate.now(), LocalTime.MIN)
   }
 
   val jsonTester = BasicJsonTester(this::class.java)
@@ -37,8 +40,8 @@ class DetailResourceTest : ResourceTest() {
         "a_1152",
         LocalDateTime.of(2099, Month.AUGUST, 21, 0, 0),
         shiftType = ShiftType.SHIFT,
-        detailStart = LocalDateTime.of(2021, Month.SEPTEMBER, 6, 0, 0),
-        detailEnd = LocalDateTime.of(2021, Month.SEPTEMBER, 6, 0, 0),
+        detailStart = TODAY_START,
+        detailEnd = TODAY_START,
         activity = null,
         actionType = ActionType.ADD
       ),
@@ -46,8 +49,8 @@ class DetailResourceTest : ResourceTest() {
         "a_1152",
         LocalDateTime.of(2099, Month.AUGUST, 21, 0, 0),
         shiftType = ShiftType.SHIFT,
-        detailStart = LocalDateTime.of(2021, Month.SEPTEMBER, 7, 0, 0),
-        detailEnd = LocalDateTime.of(2021, Month.SEPTEMBER, 7, 0, 0),
+        detailStart = TODAY_START.plusDays(1),
+        detailEnd = TODAY_START.plusDays(1),
         activity = null,
         actionType = ActionType.ADD
       ),
@@ -55,8 +58,8 @@ class DetailResourceTest : ResourceTest() {
         "a_1154",
         LocalDateTime.of(2099, Month.AUGUST, 21, 0, 0),
         shiftType = ShiftType.SHIFT,
-        detailStart = LocalDateTime.of(2021, Month.SEPTEMBER, 6, 0, 0),
-        detailEnd = LocalDateTime.of(2021, Month.SEPTEMBER, 6, 0, 0),
+        detailStart = TODAY_START,
+        detailEnd = TODAY_START,
         activity = null,
         actionType = ActionType.DELETE
       ),
@@ -64,8 +67,8 @@ class DetailResourceTest : ResourceTest() {
         "a_1155",
         LocalDateTime.of(2099, Month.AUGUST, 21, 0, 0),
         shiftType = ShiftType.SHIFT,
-        detailStart = LocalDateTime.of(2021, Month.SEPTEMBER, 6, 0, 0),
-        detailEnd = LocalDateTime.of(2021, Month.SEPTEMBER, 6, 0, 0),
+        detailStart = TODAY_START,
+        detailEnd = TODAY_START,
         activity = null,
         actionType = ActionType.EDIT
       ),
@@ -73,8 +76,8 @@ class DetailResourceTest : ResourceTest() {
         "a_1156",
         LocalDateTime.of(2099, Month.AUGUST, 21, 0, 0),
         shiftType = ShiftType.SHIFT,
-        detailStart = LocalDateTime.of(2021, Month.SEPTEMBER, 6, 0, 0),
-        detailEnd = LocalDateTime.of(2021, Month.SEPTEMBER, 6, 0, 0),
+        detailStart = TODAY_START,
+        detailEnd = TODAY_START,
         activity = null,
         actionType = ActionType.DELETE
       ),
@@ -82,8 +85,8 @@ class DetailResourceTest : ResourceTest() {
         "a_1157",
         LocalDateTime.of(2099, Month.AUGUST, 21, 0, 0),
         shiftType = ShiftType.SHIFT,
-        detailStart = LocalDateTime.of(2021, Month.SEPTEMBER, 6, 0, 0),
-        detailEnd = LocalDateTime.of(2021, Month.SEPTEMBER, 6, 0, 0),
+        detailStart = TODAY_START,
+        detailEnd = TODAY_START,
         activity = null,
         actionType = ActionType.DELETE
       ),
