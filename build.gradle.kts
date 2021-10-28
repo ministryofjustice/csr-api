@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.3.9"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.3.12"
   kotlin("plugin.spring") version "1.5.31"
   kotlin("plugin.jpa") version "1.5.31"
 }
@@ -34,8 +34,8 @@ dependencies {
   implementation("io.springfox:springfox-swagger2:2.9.2")
   implementation("io.springfox:springfox-swagger-ui:2.9.2")
   implementation("org.apache.commons:commons-lang3:3.12.0")
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.5")
-  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.5")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0")
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.0")
   implementation("com.nimbusds:nimbus-jose-jwt:9.15.2")
   implementation("com.google.guava:guava:31.0.1-jre")
 
@@ -51,7 +51,7 @@ dependencies {
   testImplementation("io.github.http-builder-ng:http-builder-ng-apache:1.0.4")
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("com.ninja-squad:springmockk:3.0.1")
-  testImplementation("org.awaitility:awaitility-kotlin:4.1.0")
+  testImplementation("org.awaitility:awaitility-kotlin:4.1.1")
 
   testImplementation("io.jsonwebtoken:jjwt:0.9.1")
 }
