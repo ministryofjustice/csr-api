@@ -77,3 +77,11 @@ generic-service:
       CSR_REGION6_URL: CSR_REGION6_URL
       CSR_REGION6_USERNAME: CSR_REGION6_USERNAME
       CSR_REGION6_PASSWORD: CSR_REGION6_PASSWORD
+  
+  resources:
+    requests:
+      cpu: 10m
+      memory: 640Mi
+    limits:
+      cpu: 2000m
+      memory: 1240Mi
