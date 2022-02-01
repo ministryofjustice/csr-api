@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.csr.api.controllers
 
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiOperation
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.http.ResponseEntity
@@ -14,12 +14,15 @@ import uk.gov.justice.digital.hmpps.csr.api.dto.DetailDto
 import uk.gov.justice.digital.hmpps.csr.api.service.DetailService
 import java.time.LocalDate
 
-@Api(tags = ["details"])
+@Tag(
+  name = "details",
+  description = "Get details of shifts from CSR"
+)
 @RestController
 @RequestMapping(produces = [APPLICATION_JSON_VALUE])
 class DetailController(private val detailService: DetailService) {
 
-  @ApiOperation(value = "Retrieve all details for a user between two dates")
+  @Operation(summary = "Retrieve all details for a user between two dates")
   @GetMapping("/user/details")
   fun getDetailsByUser(
     @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: LocalDate,
@@ -29,13 +32,13 @@ class DetailController(private val detailService: DetailService) {
     return ResponseEntity.ok(details)
   }
 
-  @ApiOperation(value = "Retrieve all modified shifts for a plan unit")
+  @Operation(summary = "Retrieve all modified shifts for a plan unit")
   @GetMapping("planUnit/{planUnit}/shifts/updated")
   fun getModifiedShiftByPlanUnit(@PathVariable planUnit: String): ResponseEntity<Collection<DetailDto>> {
     return ResponseEntity.ok(detailService.getModifiedShiftsByPlanUnit(planUnit))
   }
 
-  @ApiOperation(value = "Retrieve all modified details for a plan unit")
+  @Operation(summary = "Retrieve all modified details for a plan unit")
   @GetMapping("planUnit/{planUnit}/details/updated")
   fun getModifiedDetailByPlanUnit(@PathVariable planUnit: String): ResponseEntity<Collection<DetailDto>> {
     return ResponseEntity.ok(detailService.getModifiedDetailsByPlanUnit(planUnit))

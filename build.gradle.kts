@@ -31,8 +31,10 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 
-  implementation("io.springfox:springfox-swagger2:2.9.2")
-  implementation("io.springfox:springfox-swagger-ui:2.9.2")
+  implementation("org.springdoc:springdoc-openapi-ui:1.6.3")
+  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.3")
+  implementation("org.springdoc:springdoc-openapi-security:1.6.3")
+
   implementation("org.apache.commons:commons-lang3:3.12.0")
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0")
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.0")
