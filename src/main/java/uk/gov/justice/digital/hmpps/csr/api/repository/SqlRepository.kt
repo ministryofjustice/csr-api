@@ -209,7 +209,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                                                                              )
                                                                               
                                         -- Staff assignment must be valid prior to current date (exclude date = 01-JAN-00 because 00 = 1900!) 
-                                        AND (FLOOR(st_planunit.valid_from - (SYSDATE - 1)) <= 0 AND TO_CHAR(st_planunit.valid_from,'YY') > 0) 
+                                        AND (st_planunit.valid_from < SYSDATE AND TO_CHAR(st_planunit.valid_from,'YY') > 0) 
                                         AND st_planunit.valid_to > SYSDATE
                          
                                         AND st_planunit.priority = 1 
@@ -226,13 +226,13 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                 AND (
                         (
                             -- Check timings for current day 
-                            TO_NUMBER(TRUNC((SYSDATE + 1) - sched.on_date) * (86400 / 3600)) = (86400 / 3600)
+                            sched.on_date between SYSDATE - 1 and SYSDATE 
                             -- Tasks that have not yet started 
                             AND (TO_NUMBER(ROUND(sched.task_start/3600, 0)) >= TO_NUMBER(TO_CHAR(SYSDATE, 'HH24')))
                         )
                         OR ( 
                             -- Check timings for the following day 
-                            TO_NUMBER(FLOOR((SYSDATE + 1) - sched.on_date)) = 0
+                            sched.on_date between SYSDATE and SYSDATE + 1
                             -- task start time must be within x hrs from now
                             AND TO_NUMBER(ROUND(sched.task_start/3600, 0)) <= TO_NUMBER(TO_CHAR(SYSDATE, 'HH24'))
                         )
