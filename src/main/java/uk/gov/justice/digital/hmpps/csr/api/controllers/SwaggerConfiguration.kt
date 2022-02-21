@@ -27,7 +27,7 @@ class SwaggerConfiguration(@Autowired val applicationContext: ApplicationContext
     val objectMapper = ObjectMapper()
     objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
     objectMapper.registerModule(JavaTimeModule())
-    objectMapper.registerModule(KotlinModule())
+    objectMapper.registerModule(KotlinModule.Builder().build())
     return objectMapper
   }
 
