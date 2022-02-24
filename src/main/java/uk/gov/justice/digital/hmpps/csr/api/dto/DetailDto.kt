@@ -9,34 +9,31 @@ import uk.gov.justice.digital.hmpps.csr.api.model.Detail
 import java.time.LocalDateTime
 
 data class DetailDto @JsonCreator constructor(
-  @field:Schema(
-    title = "User unique identifier",
-    example = "AB102CD",
-  )
+  @field:Schema(description = "User unique identifier", example = "AB102CD")
   @JsonProperty("quantumId")
   val quantumId: String?,
 
-  @field:Schema(title = "Date shift was last modified", example = "2020-08-22T09:45:55")
+  @field:Schema(description = "Date shift was last modified", example = "2020-08-22T09:45:55")
   @JsonProperty("shiftModified")
   val shiftModified: LocalDateTime?,
 
-  @field:Schema(title = "Type of shift the detail relates to", example = "OVERTIME")
+  @field:Schema(description = "Type of shift the detail relates to", example = "OVERTIME")
   @JsonProperty("shiftType")
   val shiftType: ShiftType,
 
-  @field:Schema(title = "Detail start date time", example = "2020-08-22T09:15:00")
+  @field:Schema(description = "Detail start date time", example = "2020-08-22T09:15:00")
   @JsonProperty("detailStart")
   val detailStart: LocalDateTime,
 
-  @field:Schema(title = "Detail end date time", example = "2020-08-22T09:15:00")
+  @field:Schema(description = "Detail end date time", example = "2020-08-22T09:15:00")
   @JsonProperty("detailEnd")
   val detailEnd: LocalDateTime,
 
-  @field:Schema(title = "Detail activity", example = "Canteen watch")
+  @field:Schema(description = "Detail activity", example = "Canteen watch")
   @JsonProperty("activity")
   val activity: String?,
 
-  @field:Schema(title = "Type of modification action", example = "EDIT")
+  @field:Schema(description = "Type of modification action", example = "EDIT")
   @JsonProperty("actionType")
   val actionType: ActionType?
 
