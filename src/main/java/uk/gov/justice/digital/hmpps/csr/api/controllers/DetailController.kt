@@ -14,10 +14,7 @@ import uk.gov.justice.digital.hmpps.csr.api.dto.DetailDto
 import uk.gov.justice.digital.hmpps.csr.api.service.DetailService
 import java.time.LocalDate
 
-@Tag(
-  name = "details",
-  description = "Get details of shifts from CSR"
-)
+@Tag(name = "details", description = "Get details of shifts from CSR")
 @RestController
 @RequestMapping(produces = [APPLICATION_JSON_VALUE])
 class DetailController(private val detailService: DetailService) {

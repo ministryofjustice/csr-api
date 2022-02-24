@@ -55,17 +55,6 @@ class CsrApiApplication {
     return dataSource
   }
 
-  @Bean
-  @Primary
-  fun objectMapper(): ObjectMapper? {
-    return ObjectMapper()
-      .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-      .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-      .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-      .setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
-      .registerModules(Jdk8Module(), JavaTimeModule(), KotlinModule.Builder().build())
-  }
-
   companion object {
     @JvmStatic
     fun main(args: Array<String>) {
