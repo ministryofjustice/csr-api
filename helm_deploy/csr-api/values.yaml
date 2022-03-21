@@ -85,3 +85,6 @@ generic-service:
     limits:
       cpu: 2000m
       memory: 1240Mi
+
+  poddisruptionbudget:
+   enabled: false
