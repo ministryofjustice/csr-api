@@ -13,6 +13,7 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_CLASS
 import org.springframework.test.context.ActiveProfiles
@@ -23,7 +24,6 @@ import java.time.Duration
 import java.util.Objects
 import java.util.UUID
 
-@DirtiesContext(classMode = BEFORE_CLASS)
 @ExtendWith(SpringExtension::class)
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -32,6 +32,9 @@ abstract class ResourceTest {
   @Suppress("SpringJavaInjectionPointsAutowiringInspection")
   @Autowired
   lateinit var webTestClient: WebTestClient
+
+  @Autowired
+  lateinit var jdbcTemplate: JdbcTemplate
 
   @Suppress("SpringJavaInjectionPointsAutowiringInspection")
   @Autowired

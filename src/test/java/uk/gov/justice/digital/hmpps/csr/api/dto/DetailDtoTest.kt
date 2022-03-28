@@ -17,8 +17,8 @@ class DetailDtoTest {
   fun `Create Overtime Dto`() {
     val detail = getFullyPopulatedDetail()
     val start = LocalDate.now(clock).atTime(LocalTime.MIN)
-    val end = LocalDate.now(clock).atTime(LocalTime.MAX)
-    val detailDto = DetailDto.from(detail, start, end)
+    val end = LocalDate.now(clock).atTime(LocalTime.parse("23:59"))
+    val detailDto = DetailDto.from(detail)
 
     assertThat(detailDto.quantumId).isEqualTo(quantumId)
     assertThat(detailDto.shiftModified).isEqualTo(shiftModified)
@@ -34,7 +34,7 @@ class DetailDtoTest {
     val detail = Detail(
       null,
       null,
-      LocalDate.now(),
+      LocalDate.now(clock),
       ShiftType.SHIFT.value,
       null,
       null,
@@ -43,13 +43,12 @@ class DetailDtoTest {
       null
     )
     val start = LocalDate.now(clock).atTime(LocalTime.MIN)
-    val end = LocalDate.now(clock).atTime(LocalTime.MAX)
-    val detailDto = DetailDto.from(detail, start, end)
+    val detailDto = DetailDto.from(detail)
 
     assertThat(detailDto.quantumId).isNull()
     assertThat(detailDto.shiftModified).isNull()
     assertThat(detailDto.detailStart).isEqualTo(start)
-    assertThat(detailDto.detailEnd).isEqualTo(end)
+    assertThat(detailDto.detailEnd).isEqualTo(start)
     assertThat(detailDto.activity).isNull()
     assertThat(detailDto.actionType).isNull()
   }
@@ -59,8 +58,9 @@ class DetailDtoTest {
       Clock.fixed(LocalDate.of(2020, 5, 3).atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
 
     private val shiftDate: LocalDate = LocalDate.now(clock)
-    private const val detailStartTimeInSeconds = 7200L
-    private const val detailEndTimeInSeconds = 84500L
+    private const val detailStartTimeInSeconds = 0L
+    private const val detailEndTimeInSeconds = 23 * 60 * 60 + 59 * 60L
+
     const val quantumId = "XYZ"
     val shiftModified: LocalDateTime = LocalDateTime.now(clock).minusDays(3)
     val shiftType = ShiftType.OVERTIME

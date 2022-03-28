@@ -9,9 +9,9 @@ spring:
 
   jpa:
     show-sql: true
-
-  datasource:
-    continue-on-error: true
+  sql:
+    init:
+      continue-on-error: true
 
 graceful:
   shutdown.enabled: false
