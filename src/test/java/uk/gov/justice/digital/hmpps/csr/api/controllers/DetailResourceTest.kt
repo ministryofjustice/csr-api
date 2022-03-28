@@ -101,7 +101,7 @@ class DetailResourceTest : ResourceTest() {
         it.path("/planUnit/{planUnit}/details/updated")
           .build("Frankland")
       }
-      .headers(setAuthorisation(roles = emptyList()))
+      .headers(setAuthorisation())
       .exchange()
       .expectStatus().isOk
       .expectBodyList(DetailDto::class.java)
@@ -145,7 +145,7 @@ class DetailResourceTest : ResourceTest() {
 
       val response = webTestClient.get()
         .uri("/updates")
-        .headers(setAuthorisation(roles = emptyList()))
+        .headers(setAuthorisation())
         .exchange()
         .expectStatus().isOk
         .expectBodyList(DetailDto::class.java)
@@ -213,7 +213,7 @@ class DetailResourceTest : ResourceTest() {
 
       webTestClient.put()
         .uri("/updates")
-        .headers(setAuthorisation(roles = emptyList()))
+        .headers(setAuthorisation())
         .contentType(MediaType.APPLICATION_JSON)
         .bodyValue("""[101,103,999]""")
         .exchange()
@@ -280,7 +280,6 @@ class DetailResourceTest : ResourceTest() {
         .headers(setAuthorisation())
         .exchange()
         .expectStatus().isForbidden
-
     }
   }
 }
