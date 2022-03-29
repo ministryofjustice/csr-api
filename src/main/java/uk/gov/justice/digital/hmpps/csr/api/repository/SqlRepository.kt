@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.RowMapper
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Repository
+import uk.gov.justice.digital.hmpps.csr.api.model.CmdNotification
 import uk.gov.justice.digital.hmpps.csr.api.model.Detail
 import uk.gov.justice.digital.hmpps.csr.api.model.DetailTemplate
 import java.sql.ResultSet
@@ -41,6 +42,18 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
     )
   }
 
+  fun getModified(): List<CmdNotification> =
+    jdbcTemplate.query(GET_MODIFIED, modifiedRowMapper)
+
+  fun deleteProcessed(ids: List<Long>) =
+    jdbcTemplate.update("delete from CMD_NOTIFICATION where ID in (:ids)", mapOf("ids" to ids))
+
+  fun deleteAll() =
+    jdbcTemplate.update("delete from CMD_NOTIFICATION", emptyMap<String, String>())
+
+  fun deleteOld(date: LocalDate) =
+    jdbcTemplate.update("delete from CMD_NOTIFICATION where LASTMODIFIED < :date", mapOf("date" to date))
+
   fun getDetailTemplates(templateNames: Collection<String>): Collection<DetailTemplate> {
     return jdbcTemplate.query(
       GET_DETAIL_TEMPLATES,
@@ -63,6 +76,23 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
         resultSet.getString("activity"),
         null,
         resultSet.getString("templateName")
+      )
+    }
+
+    val modifiedRowMapper: RowMapper<CmdNotification> = RowMapper { resultSet: ResultSet, _: Int ->
+      CmdNotification(
+        id = resultSet.getLong("id"),
+        staffId = resultSet.getInt("st_staff_id"),
+        levelId = resultSet.getInt("level_id"),
+        onDate = resultSet.getDate("on_date").toLocalDate(),
+        layer = resultSet.getInt("layer"),
+        quantumId = resultSet.getString("quantumId"),
+        lastModified = resultSet.getTimestamp("lastmodified").toLocalDateTime(),
+        actionType = resultSet.getInt("action_type"),
+        startTimeInSeconds = resultSet.getLong("startTime"),
+        endTimeInSeconds = resultSet.getLong("endTime"),
+        planunit = resultSet.getString("pu_planunit_id"),
+        activity = resultSet.getString("activity"),
       )
     }
 
@@ -241,6 +271,30 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
 
                 AND sched.LAYER = -1 -- TOP LAYER
                 AND sched.level_id IN(1000, 4000) -- detail and time recording lines
+    """.trimIndent()
+
+    val GET_MODIFIED = """
+            SELECT 
+                n.id,
+                n.st_staff_id,
+                n.level_id,
+                n.on_date,
+                n.layer,
+                usr.name AS quantumId, 
+                n.lastmodified,
+                n.action_type,
+                n.task_start as startTime, 
+                n.task_end as endTime, 
+                n.pu_planunit_id,
+                NVL (tk_model.name, tk_type.name) as activity
+
+            FROM CMD_NOTIFICATION n
+                LEFT JOIN sm_user usr ON n.ST_STAFF_ID = usr.OBJ_ID 
+                    AND usr.OBJ_TYPE = 3 
+                    AND usr.IS_DELETED = 0
+                LEFT JOIN tk_type  ON n.ref_id     = tk_type.tk_type_id 
+                LEFT JOIN tk_model ON n.optional_1 = tk_model.tk_model_id 
+            WHERE processed = 0
     """.trimIndent()
 
     val GET_DETAIL_TEMPLATES = """

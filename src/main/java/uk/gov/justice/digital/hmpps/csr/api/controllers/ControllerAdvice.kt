@@ -29,8 +29,8 @@ class ControllerAdvice {
       .body(ErrorResponse(status = (HttpStatus.INTERNAL_SERVER_ERROR.value()), developerMessage = (e.message)))
   }
 
-  @ExceptionHandler(AccessDeniedException::class)
-  fun handleAccessDeniedException(e: AccessDeniedException?): ResponseEntity<ErrorResponse> {
+  @ExceptionHandler(org.springframework.security.access.AccessDeniedException::class)
+  fun handleAccessDeniedException(e: org.springframework.security.access.AccessDeniedException?): ResponseEntity<ErrorResponse> {
     log.debug("Forbidden (403) returned", e)
     return ResponseEntity
       .status(HttpStatus.FORBIDDEN)
