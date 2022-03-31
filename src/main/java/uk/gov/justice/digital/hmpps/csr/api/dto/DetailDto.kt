@@ -2,6 +2,8 @@ package uk.gov.justice.digital.hmpps.csr.api.dto
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import io.swagger.v3.oas.annotations.media.Schema
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
 import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.csr.api.model.CmdNotification
@@ -55,8 +57,14 @@ DetailDto @JsonCreator constructor(
         actionType = detail.actionType?.let { type -> ActionType.from(type) }
       )
 
-    fun from(detail: CmdNotification): DetailDto =
-      DetailDto(
+    fun from(detail: CmdNotification): DetailDto {
+
+      // Note this is intended to be temporary - we are not expecting layer to be anything other than -1
+      // but would be nice to know
+      if (detail.layer != -1) {
+        log.warn("DetailDto.from: Found ${detail.staffId}, ${detail.levelId}, ${detail.onDate} with layer ${detail.layer}")
+      }
+      return DetailDto(
         id = detail.id,
         quantumId = detail.quantumId,
         shiftModified = detail.lastModified,
@@ -78,6 +86,7 @@ DetailDto @JsonCreator constructor(
           }
         },
       )
+    }
 
     // if both start and end are this magic number then detail is a full day activity
     private const val FULL_DAY_ACTIVITY = -2_147_483_648L
@@ -86,7 +95,7 @@ DetailDto @JsonCreator constructor(
      CSR database uses positive or negative numbers to offset the shiftDate.
      e.g. 04/09/2020T00:00:00 with a detail start of -10 is actually 03/09/2020T23:59:50
   */
-    fun calculateDetailDateTime(shiftDate: LocalDate, detailTime: Long): LocalDateTime {
+    private fun calculateDetailDateTime(shiftDate: LocalDate, detailTime: Long): LocalDateTime {
       val normalisedTime = if (detailTime == 86400L) {
         0
       } else {
@@ -100,5 +109,7 @@ DetailDto @JsonCreator constructor(
         shiftDate.atStartOfDay()
       }
     }
+
+    private val log: Logger = LoggerFactory.getLogger(DetailDto::class.java)
   }
 }

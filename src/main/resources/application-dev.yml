@@ -24,13 +24,13 @@ logging:
 csr:
   regions:
     - name: 1
-      url: 'jdbc:h2:mem:csr-api;Mode=Oracle;'
+      url: 'jdbc:h2:mem:csr-api-1;Mode=Oracle;'
       username: csr
       password: dummy
       driverClassName: org.h2.Driver
       schema: PUBLIC
     - name: 2
-      url: 'jdbc:h2:mem:csr-api;Mode=Oracle;'
+      url: 'jdbc:h2:mem:csr-api-2;Mode=Oracle;'
       username: csr
       password: dummy
       driverClassName: org.h2.Driver

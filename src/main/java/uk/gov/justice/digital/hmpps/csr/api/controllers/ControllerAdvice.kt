@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.csr.api.controllers
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -29,8 +30,8 @@ class ControllerAdvice {
       .body(ErrorResponse(status = (HttpStatus.INTERNAL_SERVER_ERROR.value()), developerMessage = (e.message)))
   }
 
-  @ExceptionHandler(org.springframework.security.access.AccessDeniedException::class)
-  fun handleAccessDeniedException(e: org.springframework.security.access.AccessDeniedException?): ResponseEntity<ErrorResponse> {
+  @ExceptionHandler(AccessDeniedException::class)
+  fun handleAccessDeniedException(e: AccessDeniedException?): ResponseEntity<ErrorResponse> {
     log.debug("Forbidden (403) returned", e)
     return ResponseEntity
       .status(HttpStatus.FORBIDDEN)

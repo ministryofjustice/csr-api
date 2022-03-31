@@ -16,11 +16,16 @@ import uk.gov.justice.digital.hmpps.csr.api.model.Detail
 import uk.gov.justice.digital.hmpps.csr.api.model.DetailTemplate
 import uk.gov.justice.digital.hmpps.csr.api.repository.SqlRepository
 import uk.gov.justice.digital.hmpps.csr.api.security.AuthenticationFacade
+import uk.gov.justice.digital.hmpps.csr.api.utils.RegionContext
 import java.time.LocalDate
 
-@Service
-class DetailService(private val sqlRepository: SqlRepository, val authenticationFacade: AuthenticationFacade) {
+private const val DELETECHUNKSIZE = 1000
 
+@Service
+class DetailService(
+  private val sqlRepository: SqlRepository,
+  private val authenticationFacade: AuthenticationFacade,
+) {
   val objectMapper: ObjectMapper = ObjectMapper()
     .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
@@ -61,6 +66,16 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
     return mapToDetailsDto(modifiedShifts)
   }
 
+  fun getStaffDetails(
+    region: Int,
+    from: LocalDate,
+    to: LocalDate,
+    quantumId: String = authenticationFacade.currentUsername
+  ): Collection<DetailDto> {
+    RegionContext.setRegion(region.toString())
+    return getStaffDetails(from, to, quantumId)
+  }
+
   fun getModifiedDetailsByPlanUnit(planUnit: String): Collection<DetailDto> {
     log.info("Fetching modified detail for $planUnit")
     val startTime = System.currentTimeMillis()
@@ -71,31 +86,46 @@ class DetailService(private val sqlRepository: SqlRepository, val authentication
     return mapToDetailsDto(modifiedDetails)
   }
 
-  fun getModified(): List<DetailDto> {
+  fun getModified(region: Int): List<DetailDto> {
     val startTime = System.currentTimeMillis()
+    RegionContext.setRegion(region.toString())
+
     val modified = mapCmdNotificationToDetailsDto(sqlRepository.getModified())
+
     log.info("getModified: Found ${modified.size}, time taken ${elapsed(startTime)}s")
     return modified
   }
 
-  @Transactional
-  fun deleteProcessed(ids: List<Long>) {
+  // Intentionally not transactional: we want chunks to get deleted even if one fails
+  fun deleteProcessed(region: Int, ids: List<Long>) {
     val startTime = System.currentTimeMillis()
-    val deleted = sqlRepository.deleteProcessed(ids)
-    log.info("deleteProcessed: received ${ids.size} ids, deleted $deleted rows, time taken ${elapsed(startTime)}s")
+    RegionContext.setRegion(region.toString())
+
+    ids.chunked(DELETECHUNKSIZE).forEach {
+      val deleted = sqlRepository.deleteProcessed(it)
+      log.debug("deleteProcessed: deleted $deleted rows")
+    }
+
+    log.info("deleteProcessed: received ${ids.size} ids, time taken ${elapsed(startTime)}s")
   }
 
   @Transactional
-  fun deleteAll() {
+  fun deleteAll(region: Int) {
     val startTime = System.currentTimeMillis()
+    RegionContext.setRegion(region.toString())
+
     val deleted = sqlRepository.deleteAll()
+
     log.info("deleteAll: deleted $deleted rows, time taken ${elapsed(startTime)}s")
   }
 
   @Transactional
-  fun deleteOld(date: LocalDate) {
+  fun deleteOld(region: Int, date: LocalDate) {
     val startTime = System.currentTimeMillis()
+    RegionContext.setRegion(region.toString())
+
     val deleted = sqlRepository.deleteOld(date)
+
     log.info("deleteOld: deleted $deleted rows up to $date, time taken ${elapsed(startTime)}s")
   }
 

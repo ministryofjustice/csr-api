@@ -36,7 +36,13 @@ api:
 csr:
   regions:
     - name: 1
-      url: 'jdbc:h2:mem:csr-api-test;Mode=Oracle;'
+      url: 'jdbc:h2:mem:csr-api-test-1;Mode=Oracle'
+    #  url: 'jdbc:h2:file:C:\users\steve\git\csr-api\csr-api-test;Mode=Oracle'
+      username: csr
+      password: dummy
+      driverClassName: org.h2.Driver
+    - name: 2
+      url: 'jdbc:h2:mem:csr-api-test-2;Mode=Oracle'
       username: csr
       password: dummy
       driverClassName: org.h2.Driver
