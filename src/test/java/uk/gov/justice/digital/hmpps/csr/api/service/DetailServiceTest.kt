@@ -6,6 +6,7 @@ import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.verify
+import io.mockk.verifySequence
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -19,6 +20,7 @@ import uk.gov.justice.digital.hmpps.csr.api.model.Detail
 import uk.gov.justice.digital.hmpps.csr.api.model.DetailTemplate
 import uk.gov.justice.digital.hmpps.csr.api.repository.SqlRepository
 import uk.gov.justice.digital.hmpps.csr.api.security.AuthenticationFacade
+import uk.gov.justice.digital.hmpps.csr.api.utils.RegionContext
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -439,6 +441,38 @@ internal class DetailServiceTest {
 
       assertThat(returnValue).hasSize(1)
       assertThat(returnValue.first().detailEnd).isEqualTo(shiftDate.atStartOfDay().minusSeconds(456))
+    }
+  }
+
+  @Nested
+  @DisplayName("Delete processed tests")
+  inner class DeleteProcessedTests {
+    @Test
+    fun `Should split large id array into several SQL calls`() {
+      val ids = List<Long>(1002) { it + 1L }
+      val chunk1 = List<Long>(1000) { it + 1L }
+      val chunk2 = List<Long>(2) { it + 1001L }
+      every { sqlRepository.deleteProcessed(any()) } returns 1
+
+      service.deleteProcessed(2, ids)
+
+      verifySequence {
+        sqlRepository.deleteProcessed(chunk1)
+        sqlRepository.deleteProcessed(chunk2)
+      }
+      assertThat(RegionContext.getRegion()).isEqualTo("2")
+    }
+
+    @Test
+    fun `Should do small id array in one go`() {
+      val ids = List<Long>(10) { it + 1L }
+      every { sqlRepository.deleteProcessed(any()) } returns 1
+
+      service.deleteProcessed(2, ids)
+
+      verifySequence {
+        sqlRepository.deleteProcessed(ids)
+      }
     }
   }
 

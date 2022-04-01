@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.RowMapper
 import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
 import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.csr.api.dto.DetailDto
+import uk.gov.justice.digital.hmpps.csr.api.utils.RegionContext
 import java.sql.ResultSet
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -121,6 +122,7 @@ class DetailResourceTest : ResourceTest() {
 
     @BeforeEach
     fun cleanUp() {
+      RegionContext.setRegion("1")
       jdbcTemplate.update("delete from CMD_NOTIFICATION")
     }
 
@@ -134,6 +136,8 @@ class DetailResourceTest : ResourceTest() {
 
     @Test
     fun testGetNotifications() {
+      RegionContext.setRegion("1")
+
       jdbcTemplate.update("insert into TK_TYPE( TK_TYPE_ID,  NAME) values (11, 'type 11')")
       jdbcTemplate.update("insert into TK_MODEL(TK_MODEL_ID, NAME) values (12, 'model 12')")
 
@@ -144,7 +148,7 @@ class DetailResourceTest : ResourceTest() {
       jdbcTemplate.update("$INSERT (105, 1148, 4000,  2, '2022-03-22', SYSDATE + 1, 47999, $NINE_HRS, $TEN_HRS, null,12)")
 
       val response = webTestClient.get()
-        .uri("/updates")
+        .uri("/updates/1")
         .headers(setAuthorisation())
         .exchange()
         .expectStatus().isOk
@@ -207,20 +211,21 @@ class DetailResourceTest : ResourceTest() {
 
     @Test
     fun testDeleteNotifications() {
+      RegionContext.setRegion("1")
+
       jdbcTemplate.update("$INSERT (101, 1147, 1000, -1, '2022-03-21', SYSDATE,     47001, 0,0, null,null)")
       jdbcTemplate.update("$INSERT (102, 1148, 4000, -1, '2022-03-22', SYSDATE + 1, 47006, 0,0, null,null)")
       jdbcTemplate.update("$INSERT (103, 1149, 1000, -1, '2022-03-22', SYSDATE + 1, 47006, 0,0, null,null)")
 
       webTestClient.put()
-        .uri("/updates")
+        .uri("/updates/1")
         .headers(setAuthorisation())
         .contentType(MediaType.APPLICATION_JSON)
         .bodyValue("""[101,103,999]""")
         .exchange()
         .expectStatus().isOk
 
-      val results = jdbcTemplate.query<Long>("SELECT ID FROM CMD_NOTIFICATION", testRowMapper)
-      assertThat(results).asList().containsExactly(102L)
+      assertThat(jdbcTemplate.query("SELECT ID FROM CMD_NOTIFICATION", testRowMapper)).asList().containsExactly(102L)
     }
 
     @Test
@@ -229,7 +234,7 @@ class DetailResourceTest : ResourceTest() {
       jdbcTemplate.update("$INSERT (102, 1148, 4000, -1, '2022-03-22', SYSDATE + 1, 47006, 0,0, null,null)")
 
       webTestClient.put()
-        .uri("/updates/delete-all")
+        .uri("/updates/delete-all/1")
         .headers(setAuthorisation(roles = ADMIN_ROLE))
         .exchange()
         .expectStatus().isOk
@@ -246,7 +251,7 @@ class DetailResourceTest : ResourceTest() {
       jdbcTemplate.update("$INSERT (104, 1148, 4000, -1, '2022-01-01', to_date('2022-03-04 08:00', 'YYYY-MM-DD HH24:MI'),     47001, 0,0, null,null)")
 
       webTestClient.put()
-        .uri("/updates/delete-old?date=2022-03-03")
+        .uri("/updates/delete-old/1?date=2022-03-03")
         .headers(setAuthorisation(roles = ADMIN_ROLE))
         .exchange()
         .expectStatus().isOk
@@ -258,7 +263,7 @@ class DetailResourceTest : ResourceTest() {
     @Test
     fun testDeleteOldInvalid() {
       webTestClient.put()
-        .uri("/updates/delete-old")
+        .uri("/updates/delete-old/1")
         .headers(setAuthorisation(roles = ADMIN_ROLE))
         .exchange()
         .expectStatus().isBadRequest
@@ -267,7 +272,7 @@ class DetailResourceTest : ResourceTest() {
     @Test
     fun testDeleteOldNoRole() {
       webTestClient.put()
-        .uri("/updates/delete-old?date=2022-03-03")
+        .uri("/updates/delete-old/1?date=2022-03-03")
         .headers(setAuthorisation())
         .exchange()
         .expectStatus().isForbidden
@@ -276,7 +281,7 @@ class DetailResourceTest : ResourceTest() {
     @Test
     fun testDeleteAllNoRole() {
       webTestClient.put()
-        .uri("/updates/delete-all")
+        .uri("/updates/delete-all/1")
         .headers(setAuthorisation())
         .exchange()
         .expectStatus().isForbidden
