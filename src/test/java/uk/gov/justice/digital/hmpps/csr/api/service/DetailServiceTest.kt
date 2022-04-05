@@ -55,19 +55,24 @@ internal class DetailServiceTest {
   @AfterEach
   fun confirmVerified() {
     confirmVerified(sqlRepository)
-    confirmVerified(authenticationFacade)
   }
 
   @Nested
   @DisplayName("Get Staff Details")
   inner class DetailServiceTests {
 
+    @AfterEach
+    fun confirmVerified() {
+      verify { authenticationFacade.currentUsername }
+      confirmVerified(authenticationFacade)
+    }
+
     @Test
     fun `Should pad 'from' dates by -1 days`() {
       val details = listOf(getValidShiftDetail(123L, 456L))
       every { sqlRepository.getDetails(paddedFrom, to, quantumId) } returns details
 
-      service.getStaffDetails(from, to, quantumId)
+      service.getStaffDetails(from, to)
 
       verify { sqlRepository.getDetails(paddedFrom, to, quantumId) }
     }
@@ -77,7 +82,7 @@ internal class DetailServiceTest {
       val details = listOf(getValidShiftDetail(123L, 456L))
       every { sqlRepository.getDetails(paddedFrom, to, quantumId) } returns details
 
-      val returnValue = service.getStaffDetails(from, to, quantumId)
+      val returnValue = service.getStaffDetails(from, to)
 
       verify { sqlRepository.getDetails(paddedFrom, to, quantumId) }
 
@@ -87,7 +92,7 @@ internal class DetailServiceTest {
     @Test
     fun `Should get empty Details`() {
       every { sqlRepository.getDetails(paddedFrom, to, quantumId) } returns listOf()
-      val returnValue = service.getStaffDetails(from, to, quantumId)
+      val returnValue = service.getStaffDetails(from, to)
 
       verify { sqlRepository.getDetails(paddedFrom, to, quantumId) }
 
@@ -108,7 +113,7 @@ internal class DetailServiceTest {
       every { sqlRepository.getDetails(paddedFrom, to, quantumId) } returns details
       every { sqlRepository.getDetailTemplates(listOf(templateName)) } returns templates
 
-      val returnValue = service.getStaffDetails(from, to, quantumId)
+      val returnValue = service.getStaffDetails(from, to)
 
       verify { sqlRepository.getDetails(paddedFrom, to, quantumId) }
       verify { sqlRepository.getDetailTemplates(listOf(templateName)) }
@@ -136,7 +141,7 @@ internal class DetailServiceTest {
       every { sqlRepository.getDetails(paddedFrom, to, quantumId) } returns details
       every { sqlRepository.getDetailTemplates(listOf(templateName)) } returns templates
 
-      val returnValue = service.getStaffDetails(from, to, quantumId)
+      val returnValue = service.getStaffDetails(from, to)
 
       verify { sqlRepository.getDetails(paddedFrom, to, quantumId) }
       verify { sqlRepository.getDetailTemplates(listOf(templateName)) }
@@ -168,7 +173,7 @@ internal class DetailServiceTest {
       every { sqlRepository.getDetails(paddedFrom, to, quantumId) } returns details
       every { sqlRepository.getDetailTemplates(listOf(templateName)) } returns templates
 
-      val returnValue = service.getStaffDetails(from, to, quantumId)
+      val returnValue = service.getStaffDetails(from, to)
       val calculatedStart = calculateDetailDateTime(shiftDate, detailStart + templateStart)
 
       verify { sqlRepository.getDetails(paddedFrom, to, quantumId) }
@@ -198,7 +203,7 @@ internal class DetailServiceTest {
       every { sqlRepository.getDetails(paddedFrom, to, quantumId) } returns details
       every { sqlRepository.getDetailTemplates(listOf(templateName)) } returns templates
 
-      val returnValue = service.getStaffDetails(from, to, quantumId)
+      val returnValue = service.getStaffDetails(from, to)
       val relativeStart = calculateDetailDateTime(shiftDate, detailStart + templateStart)
       val nonRelativeStart = calculateDetailDateTime(shiftDate, templateStart)
 
@@ -241,7 +246,7 @@ internal class DetailServiceTest {
       every { sqlRepository.getDetails(paddedFrom, to, quantumId) } returns details
       every { sqlRepository.getDetailTemplates(listOf(templateName1, templateName2)) } returns templates
 
-      val returnValue = service.getStaffDetails(from, to, quantumId)
+      val returnValue = service.getStaffDetails(from, to)
       val relativeStart1 = calculateDetailDateTime(shiftDate, detailStart1 + templateStart)
       val relativeStart2 = calculateDetailDateTime(shiftDate, detailStart2 + templateStart)
       val nonRelativeStart = calculateDetailDateTime(shiftDate, templateStart)
@@ -288,7 +293,7 @@ internal class DetailServiceTest {
       every { sqlRepository.getDetails(paddedFrom, to.plusDays(2), quantumId) } returns details
       every { sqlRepository.getDetailTemplates(listOf(templateName)) } returns templates
 
-      val returnValue = service.getStaffDetails(from, to.plusDays(2), quantumId)
+      val returnValue = service.getStaffDetails(from, to.plusDays(2))
 
       verify { sqlRepository.getDetails(paddedFrom, to.plusDays(2), quantumId) }
       verify { sqlRepository.getDetailTemplates(listOf(templateName)) }
@@ -327,7 +332,7 @@ internal class DetailServiceTest {
       val details = listOf(getValidShiftDetail(-1234L, 456L))
       every { sqlRepository.getDetails(paddedFrom, to, quantumId) } returns details
 
-      val returnValue = service.getStaffDetails(from, to, quantumId)
+      val returnValue = service.getStaffDetails(from, to)
 
       verify { sqlRepository.getDetails(paddedFrom, to, quantumId) }
 
@@ -340,7 +345,7 @@ internal class DetailServiceTest {
       val details = listOf(getValidShiftDetail(-2147483648L, 456L))
       every { sqlRepository.getDetails(paddedFrom, to, quantumId) } returns details
 
-      val returnValue = service.getStaffDetails(from, to, quantumId)
+      val returnValue = service.getStaffDetails(from, to)
 
       verify { sqlRepository.getDetails(paddedFrom, to, quantumId) }
 
@@ -353,7 +358,7 @@ internal class DetailServiceTest {
       val details = listOf(getValidShiftDetail(123L, -2147483648L))
       every { sqlRepository.getDetails(paddedFrom, to, quantumId) } returns details
 
-      val returnValue = service.getStaffDetails(from, to, quantumId)
+      val returnValue = service.getStaffDetails(from, to)
 
       verify { sqlRepository.getDetails(paddedFrom, to, quantumId) }
 
@@ -366,7 +371,7 @@ internal class DetailServiceTest {
       val details = listOf(getValidShiftDetail(86400L, 456L))
       every { sqlRepository.getDetails(paddedFrom, to, quantumId) } returns details
 
-      val returnValue = service.getStaffDetails(from, to, quantumId)
+      val returnValue = service.getStaffDetails(from, to)
 
       verify { sqlRepository.getDetails(paddedFrom, to, quantumId) }
 
@@ -380,7 +385,7 @@ internal class DetailServiceTest {
       every { sqlRepository.getDetails(paddedFrom, to, quantumId) } returns details
       every { authenticationFacade.currentUsername } returns quantumId
 
-      val returnValue = service.getStaffDetails(from, to, quantumId)
+      val returnValue = service.getStaffDetails(from, to)
 
       verify { sqlRepository.getDetails(paddedFrom, to, quantumId) }
 
@@ -394,7 +399,7 @@ internal class DetailServiceTest {
       every { sqlRepository.getDetails(paddedFrom, to, quantumId) } returns details
       every { authenticationFacade.currentUsername } returns quantumId
 
-      val returnValue = service.getStaffDetails(from, to, quantumId)
+      val returnValue = service.getStaffDetails(from, to)
 
       verify { sqlRepository.getDetails(paddedFrom, to, quantumId) }
 
@@ -408,7 +413,7 @@ internal class DetailServiceTest {
       every { sqlRepository.getDetails(paddedFrom, to, quantumId) } returns details
       every { authenticationFacade.currentUsername } returns quantumId
 
-      val returnValue = service.getStaffDetails(from, to, quantumId)
+      val returnValue = service.getStaffDetails(from, to)
 
       verify { sqlRepository.getDetails(paddedFrom, to, quantumId) }
 
@@ -422,7 +427,7 @@ internal class DetailServiceTest {
       every { sqlRepository.getDetails(paddedFrom, to, quantumId) } returns details
       every { authenticationFacade.currentUsername } returns quantumId
 
-      val returnValue = service.getStaffDetails(from, to, quantumId)
+      val returnValue = service.getStaffDetails(from, to)
 
       verify { sqlRepository.getDetails(paddedFrom, to, quantumId) }
 
@@ -435,7 +440,7 @@ internal class DetailServiceTest {
       val details = listOf(getValidShiftDetail(123L, -456L))
       every { sqlRepository.getDetails(paddedFrom, to, quantumId) } returns details
 
-      val returnValue = service.getStaffDetails(from, to, quantumId)
+      val returnValue = service.getStaffDetails(from, to)
 
       verify { sqlRepository.getDetails(paddedFrom, to, quantumId) }
 
