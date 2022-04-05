@@ -36,8 +36,8 @@ class DetailService(
   fun getStaffDetails(
     from: LocalDate,
     to: LocalDate,
-    quantumId: String = authenticationFacade.currentUsername
   ): Collection<DetailDto> {
+    val quantumId = authenticationFacade.currentUsername
     log.debug("Fetching shift details for $quantumId")
     // We must pad the 'from' so that we don't miss night shift ends that start the day before our from-to range.
     val details = sqlRepository.getDetails(from.minusDays(1), to, quantumId)
@@ -70,10 +70,9 @@ class DetailService(
     region: Int,
     from: LocalDate,
     to: LocalDate,
-    quantumId: String = authenticationFacade.currentUsername
   ): Collection<DetailDto> {
     RegionContext.setRegion(region.toString())
-    return getStaffDetails(from, to, quantumId)
+    return getStaffDetails(from, to)
   }
 
   fun getModifiedDetailsByPlanUnit(planUnit: String): Collection<DetailDto> {
@@ -102,8 +101,12 @@ class DetailService(
     RegionContext.setRegion(region.toString())
 
     ids.chunked(DELETECHUNKSIZE).forEach {
-      val deleted = sqlRepository.deleteProcessed(it)
-      log.debug("deleteProcessed: deleted $deleted rows")
+      try {
+        val deleted = sqlRepository.deleteProcessed(it)
+        log.debug("deleteProcessed: deleted $deleted rows")
+      } catch (e: Exception) {
+        log.error("Unexpected exception", e)
+      }
     }
 
     log.info("deleteProcessed: received ${ids.size} ids, time taken ${elapsed(startTime)}s")

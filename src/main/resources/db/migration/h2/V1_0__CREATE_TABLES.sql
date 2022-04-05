@@ -26,14 +26,28 @@ CREATE TABLE IF NOT EXISTS tw_schedule
 
 CREATE TABLE IF NOT EXISTS tk_model
 (
-    tk_model_id  VARCHAR     NOT NULL,
-    name         VARCHAR     NOT NULL
+    tk_model_id  INT     NOT NULL,
+    FRAME_START  INT     NOT NULL,
+    FRAME_END    INT     NOT NULL,
+    name         VARCHAR NOT NULL,
+    IS_DELETED  INT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS tk_type
 (
-    tk_type_id   VARCHAR     NOT NULL,
+    tk_type_id   INT         NOT NULL,
     name         VARCHAR     NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS tk_modelitem
+(
+    TK_MODELITEM_ID    INT  NOT NULL,
+    TK_MODEL_ID        INT  NOT NULL,
+    TK_TYPE_ID         INT  NOT NULL,
+    TASKSTYLE          INT  NOT NULL,
+    IS_FRAME_RELATIVE  INT  NOT NULL,
+    TASK_START         INT  NOT NULL,
+    TASK_END           INT  NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS sm_user

@@ -18,10 +18,113 @@ import java.time.Month
 
 class DetailResourceTest : ResourceTest() {
 
+  private val ONE_HR = 60 * 60
+  private val TWO_HRS = 60 * 60 * 2
+  private val NINE_HRS = 60 * 60 * 9
+  private val TEN_HRS = 60 * 60 * 10
+
   companion object {
     private val SYSTEM_ROLE = listOf("ROLE_SYSTEM_USER")
     private val ADMIN_ROLE = listOf("ROLE_CMD_ADMIN")
     private val TODAY_START = LocalDateTime.of(LocalDate.now(), LocalTime.MIN)
+  }
+
+  @BeforeEach
+  fun cleanUp() {
+    jdbcTemplate.update("delete from CMD_NOTIFICATION")
+    jdbcTemplate.update("delete from TK_MODEL")
+    jdbcTemplate.update("delete from TK_TYPE")
+    jdbcTemplate.update("delete from TK_MODELITEM")
+  }
+
+  @Nested
+  inner class UserDetails {
+    @Test
+    fun testUserDetailsOld() {
+
+      jdbcTemplate.update("insert into TK_TYPE( TK_TYPE_ID,  NAME) values (11, 'type 11')")
+      jdbcTemplate.update("insert into TK_MODEL(TK_MODEL_ID, NAME, FRAME_START, FRAME_END, IS_DELETED) values (12, 'model 12', $ONE_HR, $TWO_HRS, 0)")
+      jdbcTemplate.update(
+        """insert into TK_MODELITEM(TK_MODELITEM_ID,TK_MODEL_ID,TK_TYPE_ID,TASKSTYLE,IS_FRAME_RELATIVE,TASK_START,TASK_END)
+          values (100, 12, 11, 0, 0, $ONE_HR, $TWO_HRS)""".trimMargin()
+      )
+
+      jdbcTemplate.update(
+        """Insert into TW_SCHEDULE (TW_SCHEDULE_ID, ON_DATE, LEVEL_ID, ST_STAFF_ID, LAYER, PU_PLANUNIT_ID, REF_ID, TASK_START, TASK_END, OPTIONAL_1, SCHED_LASTMODIFIED)
+          values (1000001, '2022-03-13', 1000, 1147, -1, 1007, 11, 0, 0, 12, '2022-03-13')"""
+      )
+
+      // Note some tables are still populated from flyway SQL
+
+      val response = webTestClient.get()
+        .uri {
+          it.path("/user/details")
+            .queryParam("from", "2022-03-10")
+            .queryParam("to", "2022-03-20")
+            .build()
+        }
+        .headers(setAuthorisation())
+        .header("X-Region", "1")
+        .exchange()
+        .expectStatus().isOk
+        .expectBodyList(DetailDto::class.java)
+        .returnResult()
+
+      assertThat(response.responseBody).containsExactlyInAnyOrder(
+        DetailDto(
+          quantumId = null,
+          shiftModified = null,
+          shiftType = ShiftType.SHIFT,
+          detailStart = LocalDateTime.parse("2022-03-13T01:00:00"),
+          detailEnd = LocalDateTime.parse("2022-03-13T02:00:00"),
+          activity = "type 11",
+          actionType = null
+        ),
+      )
+    }
+
+    @Test
+    fun testUserDetails() {
+
+      jdbcTemplate.update("insert into TK_TYPE( TK_TYPE_ID,  NAME) values (11, 'type 11')")
+      jdbcTemplate.update("insert into TK_MODEL(TK_MODEL_ID, NAME, FRAME_START, FRAME_END, IS_DELETED) values (12, 'model 12', $ONE_HR, $TWO_HRS, 0)")
+      jdbcTemplate.update(
+        """insert into TK_MODELITEM(TK_MODELITEM_ID,TK_MODEL_ID,TK_TYPE_ID,TASKSTYLE,IS_FRAME_RELATIVE,TASK_START,TASK_END)
+          values (100, 12, 11, 0, 0, $ONE_HR, $TWO_HRS)""".trimMargin()
+      )
+
+      jdbcTemplate.update(
+        """Insert into TW_SCHEDULE (TW_SCHEDULE_ID, ON_DATE, LEVEL_ID, ST_STAFF_ID, LAYER, PU_PLANUNIT_ID, REF_ID, TASK_START, TASK_END, OPTIONAL_1, SCHED_LASTMODIFIED)
+          values (1000001, '2022-03-13', 1000, 1147, -1, 1007, 11, 0, 0, 12, '2022-03-13')"""
+      )
+
+      // Note some tables are still populated from flyway SQL
+
+      val response = webTestClient.get()
+        .uri {
+          it.path("/user/details/1")
+            .queryParam("from", "2022-03-10")
+            .queryParam("to", "2022-03-20")
+            .build()
+        }
+        .headers(setAuthorisation())
+        .exchange()
+        .expectStatus().isOk
+        .expectBodyList(DetailDto::class.java)
+        .returnResult()
+
+      assertThat(response.responseBody).containsExactlyInAnyOrder(
+        DetailDto(
+          quantumId = null,
+          shiftModified = null,
+          shiftType = ShiftType.SHIFT,
+          detailStart = LocalDateTime.parse("2022-03-13T01:00:00"),
+          detailEnd = LocalDateTime.parse("2022-03-13T02:00:00"),
+          activity = "type 11",
+          actionType = null
+        ),
+      )
+    }
   }
 
   @Test
@@ -120,16 +223,7 @@ class DetailResourceTest : ResourceTest() {
   @Nested
   inner class Notification {
 
-    @BeforeEach
-    fun cleanUp() {
-      RegionContext.setRegion("1")
-      jdbcTemplate.update("delete from CMD_NOTIFICATION")
-    }
-
     private val testRowMapper: RowMapper<Long> = RowMapper { rs: ResultSet, _: Int -> rs.getLong(1) }
-
-    private val NINE_HRS = 60 * 60 * 9
-    private val TEN_HRS = 60 * 60 * 10
 
     private val INSERT =
       "insert into CMD_NOTIFICATION (ID, ST_STAFF_ID, LEVEL_ID, LAYER, ON_DATE, LASTMODIFIED, ACTION_TYPE, TASK_START, TASK_END, REF_ID, OPTIONAL_1) values"
@@ -139,13 +233,13 @@ class DetailResourceTest : ResourceTest() {
       RegionContext.setRegion("1")
 
       jdbcTemplate.update("insert into TK_TYPE( TK_TYPE_ID,  NAME) values (11, 'type 11')")
-      jdbcTemplate.update("insert into TK_MODEL(TK_MODEL_ID, NAME) values (12, 'model 12')")
+      jdbcTemplate.update("insert into TK_MODEL(TK_MODEL_ID, NAME, FRAME_START, FRAME_END, IS_DELETED) values (12, 'model 12', $ONE_HR, $TWO_HRS, 0)")
 
       jdbcTemplate.update("$INSERT (101, 1147, 1000, -1, '2022-03-21', SYSDATE,     47001, $NINE_HRS, $TEN_HRS, 11,null)")
       jdbcTemplate.update("$INSERT (102, 1148, 4000, -1, '2022-03-22', SYSDATE + 1, 47006, $NINE_HRS, $TEN_HRS, null,12)")
-      jdbcTemplate.update("$INSERT (103, 1148, 4000, -1, '2022-03-22', SYSDATE + 1, 47015, $NINE_HRS, $TEN_HRS, null,12)")
-      jdbcTemplate.update("$INSERT (104, 1148, 4000, -1, '2022-03-22', SYSDATE + 1, 47012, $NINE_HRS, $TEN_HRS, null,12)")
-      jdbcTemplate.update("$INSERT (105, 1148, 4000,  2, '2022-03-22', SYSDATE + 1, 47999, $NINE_HRS, $TEN_HRS, null,12)")
+      jdbcTemplate.update("$INSERT (103, 1148, 4000, -1, '2022-03-22', SYSDATE + 1, 47015, $NINE_HRS, $TEN_HRS, null,null)")
+      jdbcTemplate.update("$INSERT (104, 1148, 4000, -1, '2022-03-22', SYSDATE + 1, 47012, $NINE_HRS, $TEN_HRS, null,null)")
+      jdbcTemplate.update("$INSERT (105, 1148, 4000,  2, '2022-03-22', SYSDATE + 1, 47999, $NINE_HRS, $TEN_HRS, null,null)")
 
       val response = webTestClient.get()
         .uri("/updates/1")
@@ -158,7 +252,7 @@ class DetailResourceTest : ResourceTest() {
       assertThat(response.responseBody).containsExactlyInAnyOrder(
         DetailDto(
           id = 101,
-          quantumId = "a_1147",
+          quantumId = "TEST-USER",
           shiftModified = LocalDate.now().atStartOfDay(),
           shiftType = ShiftType.SHIFT,
           detailStart = LocalDateTime.parse("2022-03-21T09:00:00"),
@@ -171,7 +265,7 @@ class DetailResourceTest : ResourceTest() {
           quantumId = "a_1148",
           shiftModified = LocalDate.now().plusDays(1).atStartOfDay(),
           shiftType = ShiftType.OVERTIME,
-          detailStart = LocalDateTime.parse("2022-03-22T09:00:00"),
+          detailStart = LocalDateTime.parse("2022-03-22T09:00:00"), // not overridden by tk_model
           detailEnd = LocalDateTime.parse("2022-03-22T10:00:00"),
           activity = "model 12",
           actionType = ActionType.ADD,
@@ -183,7 +277,7 @@ class DetailResourceTest : ResourceTest() {
           shiftType = ShiftType.OVERTIME,
           detailStart = LocalDateTime.parse("2022-03-22T09:00:00"),
           detailEnd = LocalDateTime.parse("2022-03-22T10:00:00"),
-          activity = "model 12",
+          activity = null,
           actionType = ActionType.ADD,
         ),
         DetailDto(
@@ -193,7 +287,7 @@ class DetailResourceTest : ResourceTest() {
           shiftType = ShiftType.OVERTIME,
           detailStart = LocalDateTime.parse("2022-03-22T09:00:00"),
           detailEnd = LocalDateTime.parse("2022-03-22T10:00:00"),
-          activity = "model 12",
+          activity = null,
           actionType = ActionType.DELETE,
         ),
         DetailDto(
@@ -203,7 +297,7 @@ class DetailResourceTest : ResourceTest() {
           shiftType = ShiftType.OVERTIME,
           detailStart = LocalDateTime.parse("2022-03-22T09:00:00"),
           detailEnd = LocalDateTime.parse("2022-03-22T10:00:00"),
-          activity = "model 12",
+          activity = null,
           actionType = ActionType.UNCHANGED,
         ),
       )
