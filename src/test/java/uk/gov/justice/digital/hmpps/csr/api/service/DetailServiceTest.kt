@@ -479,6 +479,22 @@ internal class DetailServiceTest {
         sqlRepository.deleteProcessed(ids)
       }
     }
+
+    @Test
+    fun `Should continue after failure`() {
+      val ids = List<Long>(1002) { it + 1L }
+      val chunk1 = List<Long>(1000) { it + 1L }
+      val chunk2 = List<Long>(2) { it + 1001L }
+      every { sqlRepository.deleteProcessed(chunk1) } throws Exception("test")
+      every { sqlRepository.deleteProcessed(chunk2) } returns 1
+
+      service.deleteProcessed(2, ids)
+
+      verifySequence {
+        sqlRepository.deleteProcessed(chunk1)
+        sqlRepository.deleteProcessed(chunk2)
+      }
+    }
   }
 
   private fun getValidShiftDetail(start: Long, end: Long): Detail {

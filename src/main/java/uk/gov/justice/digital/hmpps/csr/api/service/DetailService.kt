@@ -105,7 +105,7 @@ class DetailService(
         val deleted = sqlRepository.deleteProcessed(it)
         log.debug("deleteProcessed: deleted $deleted rows")
       } catch (e: Exception) {
-        // TODO, and test
+        log.error("Unexpected exception", e)
       }
     }
 
