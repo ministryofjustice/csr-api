@@ -210,8 +210,6 @@ class DetailResourceTest : ResourceTest() {
       .expectStatus().isOk
       .expectBodyList(DetailDto::class.java)
       .hasSize(0)
-
-    assertThat(RegionContext.getRegion()).isEqualTo("1")
   }
 
   @Test
