@@ -235,11 +235,11 @@ class DetailResourceTest : ResourceTest() {
       jdbcTemplate.update("insert into TK_TYPE( TK_TYPE_ID,  NAME) values (11, 'type 11')")
       jdbcTemplate.update("insert into TK_MODEL(TK_MODEL_ID, NAME, FRAME_START, FRAME_END, IS_DELETED) values (12, 'model 12', $ONE_HR, $TWO_HRS, 0)")
 
-      jdbcTemplate.update("$INSERT (101, 1147, 1000, '2022-03-21', SYSDATE,     47001, $NINE_HRS, $TEN_HRS, 11,null)")
-      jdbcTemplate.update("$INSERT (102, 1148, 4000, '2022-03-22', SYSDATE + 1, 47006, $NINE_HRS, $TEN_HRS, null,12)")
-      jdbcTemplate.update("$INSERT (103, 1148, 4000, '2022-03-22', SYSDATE + 1, 47015, $NINE_HRS, $TEN_HRS, null,null)")
-      jdbcTemplate.update("$INSERT (104, 1148, 4000, '2022-03-22', SYSDATE + 1, 47012, $NINE_HRS, $TEN_HRS, null,null)")
-      jdbcTemplate.update("$INSERT (105, 1148, 4000, '2022-03-22', SYSDATE + 1, 47999, $NINE_HRS, $TEN_HRS, null,null)")
+      jdbcTemplate.update("$INSERT (101, 1147, 1000, '2022-03-21', SYSDATE,     null,  $NINE_HRS, $TEN_HRS, 11,null)")
+      jdbcTemplate.update("$INSERT (102, 1148, 1000, '2022-03-22', SYSDATE + 1, null,  $NINE_HRS, $TEN_HRS, null,12)")
+      jdbcTemplate.update("$INSERT (103, 1148, 1000, '2022-03-22', SYSDATE + 1, 47015, null, null, null, null)")
+      jdbcTemplate.update("$INSERT (104, 1148, 4000, '2022-03-22', SYSDATE + 1, 47012, null, null, null, null)")
+      jdbcTemplate.update("$INSERT (105, 1148, 4000, '2022-03-22', SYSDATE + 1, 47999, null, null, null, null)")
 
       val response = webTestClient.get()
         .uri("/updates/1")
@@ -253,7 +253,7 @@ class DetailResourceTest : ResourceTest() {
         DetailDto(
           id = 101,
           quantumId = "TEST-USER",
-          shiftModified = LocalDate.now().atStartOfDay(),
+          shiftModified = LocalDateTime.parse("2099-08-21T00:00:00"),
           shiftType = ShiftType.SHIFT,
           detailStart = LocalDateTime.parse("2022-03-21T09:00:00"),
           detailEnd = LocalDateTime.parse("2022-03-21T10:00:00"),
@@ -263,20 +263,20 @@ class DetailResourceTest : ResourceTest() {
         DetailDto(
           id = 102,
           quantumId = "a_1148",
-          shiftModified = LocalDate.now().plusDays(1).atStartOfDay(),
-          shiftType = ShiftType.OVERTIME,
+          shiftModified = LocalDateTime.parse("2099-08-21T00:00:00"),
+          shiftType = ShiftType.SHIFT,
           detailStart = LocalDateTime.parse("2022-03-22T09:00:00"), // not overridden by tk_model
           detailEnd = LocalDateTime.parse("2022-03-22T10:00:00"),
           activity = "model 12",
-          actionType = ActionType.ADD,
+          actionType = ActionType.EDIT,
         ),
         DetailDto(
           id = 103,
           quantumId = "a_1148",
           shiftModified = LocalDate.now().plusDays(1).atStartOfDay(),
-          shiftType = ShiftType.OVERTIME,
-          detailStart = LocalDateTime.parse("2022-03-22T09:00:00"),
-          detailEnd = LocalDateTime.parse("2022-03-22T10:00:00"),
+          shiftType = ShiftType.SHIFT,
+          detailStart = LocalDateTime.parse("2022-03-22T00:00:00"),
+          detailEnd = LocalDateTime.parse("2022-03-22T00:00:00"),
           activity = null,
           actionType = ActionType.ADD,
         ),
@@ -285,8 +285,8 @@ class DetailResourceTest : ResourceTest() {
           quantumId = "a_1148",
           shiftModified = LocalDate.now().plusDays(1).atStartOfDay(),
           shiftType = ShiftType.OVERTIME,
-          detailStart = LocalDateTime.parse("2022-03-22T09:00:00"),
-          detailEnd = LocalDateTime.parse("2022-03-22T10:00:00"),
+          detailStart = LocalDateTime.parse("2022-03-22T00:00:00"),
+          detailEnd = LocalDateTime.parse("2022-03-22T00:00:00"),
           activity = null,
           actionType = ActionType.DELETE,
         ),
@@ -295,8 +295,8 @@ class DetailResourceTest : ResourceTest() {
           quantumId = "a_1148",
           shiftModified = LocalDate.now().plusDays(1).atStartOfDay(),
           shiftType = ShiftType.OVERTIME,
-          detailStart = LocalDateTime.parse("2022-03-22T09:00:00"),
-          detailEnd = LocalDateTime.parse("2022-03-22T10:00:00"),
+          detailStart = LocalDateTime.parse("2022-03-22T00:00:00"),
+          detailEnd = LocalDateTime.parse("2022-03-22T00:00:00"),
           activity = null,
           actionType = ActionType.UNCHANGED,
         ),
@@ -324,8 +324,8 @@ class DetailResourceTest : ResourceTest() {
 
     @Test
     fun testDeleteAllNotifications() {
-      jdbcTemplate.update("$INSERT (101, 1147, 1000, -1, '2022-03-21', SYSDATE,     47001, 0,0, null,null)")
-      jdbcTemplate.update("$INSERT (102, 1148, 4000, -1, '2022-03-22', SYSDATE + 1, 47006, 0,0, null,null)")
+      jdbcTemplate.update("$INSERT (101, 1147, 1000, '2022-03-21', SYSDATE,     47001, 0,0, null,null)")
+      jdbcTemplate.update("$INSERT (102, 1148, 4000, '2022-03-22', SYSDATE + 1, 47006, 0,0, null,null)")
 
       webTestClient.put()
         .uri("/updates/delete-all/1")

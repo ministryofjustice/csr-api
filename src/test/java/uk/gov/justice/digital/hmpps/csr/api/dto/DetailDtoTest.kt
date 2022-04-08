@@ -94,7 +94,7 @@ class DetailDtoTest {
       onDate = LocalDate.parse("2022-04-01"),
       quantumId = "A-USER",
       lastModified = LocalDateTime.parse("2022-03-30T15:23:00"),
-      actionType = null,
+      actionType = 0, // this means database value was null in a resultSet!
       startTimeInSeconds = 3600,
       endTimeInSeconds = 7200,
       activity = "CCTV Monitoring",

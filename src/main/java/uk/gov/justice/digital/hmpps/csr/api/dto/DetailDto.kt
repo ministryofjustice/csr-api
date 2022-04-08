@@ -71,7 +71,7 @@ DetailDto @JsonCreator constructor(
         detailEnd = calculateDetailDateTime(detail.onDate, detail.endTimeInSeconds ?: 0L),
 
         activity = detail.activity,
-        actionType = if (detail.actionType == null) ActionType.EDIT
+        actionType = if (detail.actionType == 0) ActionType.EDIT
         else detail.actionType.let {
           when (it) {
             47012 -> ActionType.DELETE
