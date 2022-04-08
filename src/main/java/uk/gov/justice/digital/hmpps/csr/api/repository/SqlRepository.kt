@@ -85,13 +85,11 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
         staffId = resultSet.getInt("st_staff_id"),
         levelId = resultSet.getInt("level_id"),
         onDate = resultSet.getDate("on_date").toLocalDate(),
-        layer = resultSet.getInt("layer"),
         quantumId = resultSet.getString("quantumId"),
         lastModified = resultSet.getTimestamp("lastmodified").toLocalDateTime(),
         actionType = resultSet.getInt("action_type"),
         startTimeInSeconds = resultSet.getLong("startTime"),
         endTimeInSeconds = resultSet.getLong("endTime"),
-        planunit = resultSet.getString("pu_planunit_id"),
         activity = resultSet.getString("activity"),
       )
     }
@@ -210,6 +208,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                                 SELECT MAX(tw_protocol.lastmodified)
                                 FROM tw_protocol 
                                 WHERE st_staff_id = sched.st_staff_id
+                                AND level_id = sched.level_id
                                 AND layer = -1 
                                 AND (tw_protocol.on_date BETWEEN (SYSDATE - 1) AND (SYSDATE + 1))
                             ) as shiftModified,
@@ -279,13 +278,21 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                 n.st_staff_id,
                 n.level_id,
                 n.on_date,
-                n.layer,
                 usr.name AS quantumId, 
-                n.lastmodified,
+                CASE WHEN n.action_type is null
+                then (
+                      SELECT MAX(tw_protocol.lastmodified)
+                      FROM tw_protocol
+                      WHERE st_staff_id = n.st_staff_id
+                      AND level_id = n.level_id
+                      AND layer = -1 
+                      AND (tw_protocol.on_date BETWEEN (SYSDATE - 1) AND (SYSDATE + 2))
+                     ) 
+                else n.lastmodified
+                end as lastmodified,
                 n.action_type,
                 n.task_start as startTime, 
                 n.task_end as endTime, 
-                n.pu_planunit_id,
                 NVL (tk_model.name, tk_type.name) as activity
 
             FROM CMD_NOTIFICATION n

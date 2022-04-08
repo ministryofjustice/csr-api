@@ -5,8 +5,9 @@ for each row
 begin
    if    :new.LEVEL_ID in (1000, 4000)
      and :new.ON_DATE between SYSDATE - 1 and SYSDATE + 14
+     and :new.LAYER = -1
    then
-       insert into CMD_NOTIFICATION (ID, ST_STAFF_ID, LEVEL_ID, LAYER, ON_DATE, LASTMODIFIED, ACTION_TYPE)
-       values (CMD_NOTIFICATION_ID.nextval, :new.ST_STAFF_ID, :new.LEVEL_ID, :new.LAYER, :new.ON_DATE, :new.LASTMODIFIED, :new.ACTION_TYPE);
+       insert into CMD_NOTIFICATION (ID, ST_STAFF_ID, LEVEL_ID, ON_DATE, LASTMODIFIED, ACTION_TYPE)
+       values (CMD_NOTIFICATION_ID.nextval, :new.ST_STAFF_ID, :new.LEVEL_ID, :new.ON_DATE, :new.LASTMODIFIED, :new.ACTION_TYPE);
    end if;
 end;
