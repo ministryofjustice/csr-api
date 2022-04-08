@@ -5,7 +5,6 @@ CREATE OR REPLACE TABLE CMD_NOTIFICATION
     -- Indexed columns in source tables
     st_staff_id        NUMBER(10)    NOT NULL,
     level_id           NUMBER(10)    NOT NULL,
-    layer              NUMBER(10)    NOT NULL,
     on_date            DATE          NOT NULL,
 
     -- common
@@ -19,9 +18,7 @@ CREATE OR REPLACE TABLE CMD_NOTIFICATION
     TASK_END	       NUMBER(10),
     REF_ID	           NUMBER(10),
     OPTIONAL_1	       NUMBER(10),
-    PU_PLANUNIT_ID	   NUMBER(10),
 
-    IS_UPDATE          NUMBER(5)   DEFAULT 0   NOT NULL,
     PROCESSED          NUMBER(5)   DEFAULT 0   NOT NULL,
 
     CONSTRAINT "CMD_NOTIFICATION_PK" PRIMARY KEY ("ID")

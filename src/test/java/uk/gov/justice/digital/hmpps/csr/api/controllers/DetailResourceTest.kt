@@ -226,7 +226,7 @@ class DetailResourceTest : ResourceTest() {
     private val testRowMapper: RowMapper<Long> = RowMapper { rs: ResultSet, _: Int -> rs.getLong(1) }
 
     private val INSERT =
-      "insert into CMD_NOTIFICATION (ID, ST_STAFF_ID, LEVEL_ID, LAYER, ON_DATE, LASTMODIFIED, ACTION_TYPE, TASK_START, TASK_END, REF_ID, OPTIONAL_1) values"
+      "insert into CMD_NOTIFICATION (ID, ST_STAFF_ID, LEVEL_ID, ON_DATE, LASTMODIFIED, ACTION_TYPE, TASK_START, TASK_END, REF_ID, OPTIONAL_1) values"
 
     @Test
     fun testGetNotifications() {
@@ -235,11 +235,11 @@ class DetailResourceTest : ResourceTest() {
       jdbcTemplate.update("insert into TK_TYPE( TK_TYPE_ID,  NAME) values (11, 'type 11')")
       jdbcTemplate.update("insert into TK_MODEL(TK_MODEL_ID, NAME, FRAME_START, FRAME_END, IS_DELETED) values (12, 'model 12', $ONE_HR, $TWO_HRS, 0)")
 
-      jdbcTemplate.update("$INSERT (101, 1147, 1000, -1, '2022-03-21', SYSDATE,     47001, $NINE_HRS, $TEN_HRS, 11,null)")
-      jdbcTemplate.update("$INSERT (102, 1148, 4000, -1, '2022-03-22', SYSDATE + 1, 47006, $NINE_HRS, $TEN_HRS, null,12)")
-      jdbcTemplate.update("$INSERT (103, 1148, 4000, -1, '2022-03-22', SYSDATE + 1, 47015, $NINE_HRS, $TEN_HRS, null,null)")
-      jdbcTemplate.update("$INSERT (104, 1148, 4000, -1, '2022-03-22', SYSDATE + 1, 47012, $NINE_HRS, $TEN_HRS, null,null)")
-      jdbcTemplate.update("$INSERT (105, 1148, 4000,  2, '2022-03-22', SYSDATE + 1, 47999, $NINE_HRS, $TEN_HRS, null,null)")
+      jdbcTemplate.update("$INSERT (101, 1147, 1000, '2022-03-21', SYSDATE,     47001, $NINE_HRS, $TEN_HRS, 11,null)")
+      jdbcTemplate.update("$INSERT (102, 1148, 4000, '2022-03-22', SYSDATE + 1, 47006, $NINE_HRS, $TEN_HRS, null,12)")
+      jdbcTemplate.update("$INSERT (103, 1148, 4000, '2022-03-22', SYSDATE + 1, 47015, $NINE_HRS, $TEN_HRS, null,null)")
+      jdbcTemplate.update("$INSERT (104, 1148, 4000, '2022-03-22', SYSDATE + 1, 47012, $NINE_HRS, $TEN_HRS, null,null)")
+      jdbcTemplate.update("$INSERT (105, 1148, 4000, '2022-03-22', SYSDATE + 1, 47999, $NINE_HRS, $TEN_HRS, null,null)")
 
       val response = webTestClient.get()
         .uri("/updates/1")
@@ -307,9 +307,9 @@ class DetailResourceTest : ResourceTest() {
     fun testDeleteNotifications() {
       RegionContext.setRegion("1")
 
-      jdbcTemplate.update("$INSERT (101, 1147, 1000, -1, '2022-03-21', SYSDATE,     47001, 0,0, null,null)")
-      jdbcTemplate.update("$INSERT (102, 1148, 4000, -1, '2022-03-22', SYSDATE + 1, 47006, 0,0, null,null)")
-      jdbcTemplate.update("$INSERT (103, 1149, 1000, -1, '2022-03-22', SYSDATE + 1, 47006, 0,0, null,null)")
+      jdbcTemplate.update("$INSERT (101, 1147, 1000, '2022-03-21', SYSDATE,     47001, 0,0, null,null)")
+      jdbcTemplate.update("$INSERT (102, 1148, 4000, '2022-03-22', SYSDATE + 1, 47006, 0,0, null,null)")
+      jdbcTemplate.update("$INSERT (103, 1149, 1000, '2022-03-22', SYSDATE + 1, 47006, 0,0, null,null)")
 
       webTestClient.put()
         .uri("/updates/1")
@@ -339,10 +339,10 @@ class DetailResourceTest : ResourceTest() {
 
     @Test
     fun testDeleteOld() {
-      jdbcTemplate.update("$INSERT (101, 1147, 1000, -1, '2022-01-01', to_date('2022-03-01 08:00', 'YYYY-MM-DD HH24:MI'), 47001, 0,0, null,null)")
-      jdbcTemplate.update("$INSERT (102, 1147, 1000, -1, '2022-01-01', to_date('2022-03-02 08:00', 'YYYY-MM-DD HH24:MI'),     47001, 0,0, null,null)")
-      jdbcTemplate.update("$INSERT (103, 1147, 1000, -1, '2022-01-01', to_date('2022-03-03 08:00', 'YYYY-MM-DD HH24:MI'),     47001, 0,0, null,null)")
-      jdbcTemplate.update("$INSERT (104, 1148, 4000, -1, '2022-01-01', to_date('2022-03-04 08:00', 'YYYY-MM-DD HH24:MI'),     47001, 0,0, null,null)")
+      jdbcTemplate.update("$INSERT (101, 1147, 1000, '2022-01-01', to_date('2022-03-01 08:00', 'YYYY-MM-DD HH24:MI'), 47001, 0,0, null,null)")
+      jdbcTemplate.update("$INSERT (102, 1147, 1000, '2022-01-01', to_date('2022-03-02 08:00', 'YYYY-MM-DD HH24:MI'), 47001, 0,0, null,null)")
+      jdbcTemplate.update("$INSERT (103, 1147, 1000, '2022-01-01', to_date('2022-03-03 08:00', 'YYYY-MM-DD HH24:MI'), 47001, 0,0, null,null)")
+      jdbcTemplate.update("$INSERT (104, 1148, 4000, '2022-01-01', to_date('2022-03-04 08:00', 'YYYY-MM-DD HH24:MI'), 47001, 0,0, null,null)")
 
       webTestClient.put()
         .uri("/updates/delete-old/1?date=2022-03-03")

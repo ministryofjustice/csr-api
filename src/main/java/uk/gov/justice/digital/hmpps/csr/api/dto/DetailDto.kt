@@ -57,14 +57,8 @@ DetailDto @JsonCreator constructor(
         actionType = detail.actionType?.let { type -> ActionType.from(type) }
       )
 
-    fun from(detail: CmdNotification): DetailDto {
-
-      // Note this is intended to be temporary - we are not expecting layer to be anything other than -1
-      // but would be nice to know
-      if (detail.layer != -1) {
-        log.warn("DetailDto.from: Found ${detail.staffId}, ${detail.levelId}, ${detail.onDate} with layer ${detail.layer}")
-      }
-      return DetailDto(
+    fun from(detail: CmdNotification): DetailDto =
+      DetailDto(
         id = detail.id,
         quantumId = detail.quantumId,
         shiftModified = detail.lastModified,
@@ -77,7 +71,8 @@ DetailDto @JsonCreator constructor(
         detailEnd = calculateDetailDateTime(detail.onDate, detail.endTimeInSeconds ?: 0L),
 
         activity = detail.activity,
-        actionType = detail.actionType?.let {
+        actionType = if (detail.actionType == null) ActionType.EDIT
+        else detail.actionType.let {
           when (it) {
             47012 -> ActionType.DELETE
             47001 -> ActionType.EDIT
@@ -86,7 +81,6 @@ DetailDto @JsonCreator constructor(
           }
         },
       )
-    }
 
     // if both start and end are this magic number then detail is a full day activity
     private const val FULL_DAY_ACTIVITY = -2_147_483_648L
