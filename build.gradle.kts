@@ -1,7 +1,7 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.1.4-beta"
-  kotlin("plugin.spring") version "1.6.20"
-  kotlin("plugin.jpa") version "1.6.20"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.1.5-beta"
+  kotlin("plugin.spring") version "1.6.21"
+  kotlin("plugin.jpa") version "1.6.21"
   idea
 }
 
@@ -22,7 +22,7 @@ dependencies {
 
   runtimeOnly("com.h2database:h2:2.1.210")
   runtimeOnly("com.zaxxer:HikariCP")
-  runtimeOnly("org.flywaydb:flyway-core:8.5.7")
+  runtimeOnly("org.flywaydb:flyway-core:8.5.8")
   runtimeOnly("com.oracle.database.jdbc:ojdbc10:19.14.0.0")
 
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
@@ -37,7 +37,7 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-security:1.6.7")
 
   implementation("org.apache.commons:commons-lang3:3.12.0")
-  implementation("com.nimbusds:nimbus-jose-jwt:9.21")
+  implementation("com.nimbusds:nimbus-jose-jwt:9.21.1")
   implementation("com.google.guava:guava:31.1-jre")
 
   testAnnotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
@@ -48,7 +48,7 @@ dependencies {
   }
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.tngtech.java:junit-dataprovider:1.13.1")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.33.0")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.34.0")
   testImplementation("io.github.http-builder-ng:http-builder-ng-apache:1.0.4")
   testImplementation("com.ninja-squad:springmockk:3.1.1")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
