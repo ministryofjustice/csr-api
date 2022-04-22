@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.1.5-beta"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.1.5-beta-2"
   kotlin("plugin.spring") version "1.6.21"
   kotlin("plugin.jpa") version "1.6.21"
   idea
@@ -22,7 +22,7 @@ dependencies {
 
   runtimeOnly("com.h2database:h2:2.1.210")
   runtimeOnly("com.zaxxer:HikariCP")
-  runtimeOnly("org.flywaydb:flyway-core:8.5.8")
+  runtimeOnly("org.flywaydb:flyway-core:8.5.9")
   runtimeOnly("com.oracle.database.jdbc:ojdbc10:19.14.0.0")
 
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
@@ -32,9 +32,9 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 
-  implementation("org.springdoc:springdoc-openapi-ui:1.6.7")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.7")
-  implementation("org.springdoc:springdoc-openapi-security:1.6.7")
+  implementation("org.springdoc:springdoc-openapi-ui:1.6.8")
+  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.8")
+  implementation("org.springdoc:springdoc-openapi-security:1.6.8")
 
   implementation("org.apache.commons:commons-lang3:3.12.0")
   implementation("com.nimbusds:nimbus-jose-jwt:9.21.1")
