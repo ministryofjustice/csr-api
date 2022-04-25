@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.1.5-beta-2"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.1.5-beta-3"
   kotlin("plugin.spring") version "1.6.21"
   kotlin("plugin.jpa") version "1.6.21"
   idea
@@ -37,7 +37,7 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-security:1.6.8")
 
   implementation("org.apache.commons:commons-lang3:3.12.0")
-  implementation("com.nimbusds:nimbus-jose-jwt:9.21.1")
+  implementation("com.nimbusds:nimbus-jose-jwt:9.22")
   implementation("com.google.guava:guava:31.1-jre")
 
   testAnnotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
