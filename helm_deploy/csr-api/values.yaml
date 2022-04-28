@@ -49,6 +49,9 @@ generic-service:
     JAVA_OPTS: -Xmx1024m
     SPRING_PROFILES_ACTIVE: oracle
     SERVER_PORT: 8080
+    APPLICATIONINSIGHTS_CONNECTION_STRING: "InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY);IngestionEndpoint=https://northeurope-0.in.applicationinsights.azure.com/;LiveEndpoint=https://northeurope.livediagnostics.monitor.azure.com/"
+    APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
+
 
   namespace_secrets:
     csr-values:
