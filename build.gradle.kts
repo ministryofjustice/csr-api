@@ -20,9 +20,9 @@ configurations {
 dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-  runtimeOnly("com.h2database:h2:2.1.210")
+  runtimeOnly("com.h2database:h2:2.1.212")
   runtimeOnly("com.zaxxer:HikariCP")
-  runtimeOnly("org.flywaydb:flyway-core:8.5.9")
+  runtimeOnly("org.flywaydb:flyway-core:8.5.10")
   runtimeOnly("com.oracle.database.jdbc:ojdbc10:19.14.0.0")
 
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
@@ -48,7 +48,7 @@ dependencies {
   }
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.tngtech.java:junit-dataprovider:1.13.1")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.34.0")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.35.0")
   testImplementation("io.github.http-builder-ng:http-builder-ng-apache:1.0.4")
   testImplementation("com.ninja-squad:springmockk:3.1.1")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
