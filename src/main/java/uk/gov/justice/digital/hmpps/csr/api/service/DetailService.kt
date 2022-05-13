@@ -101,7 +101,7 @@ class DetailService(
     ids.chunked(DELETECHUNKSIZE).forEach {
       try {
         val deleted = sqlRepository.deleteProcessed(it)
-        log.debug("deleteProcessed: deleted $deleted rows")
+        log.info("deleteProcessed: deleted $deleted rows")
       } catch (e: Exception) {
         log.error("Unexpected exception", e)
       }
@@ -110,7 +110,6 @@ class DetailService(
     return "Received ${ids.size} ids, time taken ${elapsed(startTime)}s".also {
       log.info("deleteProcessed: $it")
     }
-
   }
 
   @Transactional
