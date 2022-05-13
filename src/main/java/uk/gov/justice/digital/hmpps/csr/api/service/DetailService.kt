@@ -16,7 +16,6 @@ import uk.gov.justice.digital.hmpps.csr.api.model.Detail
 import uk.gov.justice.digital.hmpps.csr.api.model.DetailTemplate
 import uk.gov.justice.digital.hmpps.csr.api.repository.SqlRepository
 import uk.gov.justice.digital.hmpps.csr.api.security.AuthenticationFacade
-import uk.gov.justice.digital.hmpps.csr.api.utils.RegionContext
 import java.time.LocalDate
 
 private const val DELETECHUNKSIZE = 1000
@@ -64,15 +63,6 @@ class DetailService(
     val json = objectMapper.writeValueAsString(modifiedShifts)
     log.info("Return body size is ${json.length}")
     return mapToDetailsDto(modifiedShifts)
-  }
-
-  fun getStaffDetails(
-    region: Int,
-    from: LocalDate,
-    to: LocalDate,
-  ): Collection<DetailDto> {
-    RegionContext.setRegion(region.toString())
-    return getStaffDetails(from, to)
   }
 
   fun getModifiedDetailsByPlanUnit(planUnit: String): Collection<DetailDto> {

@@ -136,6 +136,7 @@ class DetailResourceTest : ResourceTest() {
           .build("Frankland")
       }
       .headers(setAuthorisation(roles = SYSTEM_ROLE))
+      .header("X-Region", "1")
       .exchange()
       .expectStatus().isOk
       .expectBodyList(DetailDto::class.java)
@@ -207,6 +208,7 @@ class DetailResourceTest : ResourceTest() {
           .build("Frankland")
       }
       .headers(setAuthorisation())
+      .header("X-Region", "1")
       .exchange()
       .expectStatus().isOk
       .expectBodyList(DetailDto::class.java)
