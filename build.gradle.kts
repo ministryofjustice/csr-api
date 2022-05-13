@@ -22,9 +22,9 @@ dependencies {
 
   runtimeOnly("com.h2database:h2:2.1.212")
   runtimeOnly("com.zaxxer:HikariCP")
+  runtimeOnly("org.flywaydb:flyway-core:8.5.10")
   runtimeOnly("com.oracle.database.jdbc:ojdbc10:19.14.0.0")
 
-  implementation("org.flywaydb:flyway-core:8.5.10")
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.springframework.boot:spring-boot-starter-security")

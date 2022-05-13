@@ -85,6 +85,20 @@ class DetailResourceTest : ResourceTest() {
     }
 
     @Test
+    fun testUserDetailsOldMissingRegionHeader() {
+      webTestClient.get()
+        .uri {
+          it.path("/user/details")
+            .queryParam("from", "2022-03-10")
+            .queryParam("to", "2022-03-20")
+            .build()
+        }
+        .headers(setAuthorisation())
+        .exchange()
+        .expectStatus().is5xxServerError
+    }
+
+    @Test
     fun testUserDetails() {
 
       jdbcTemplate.update("insert into TK_TYPE( TK_TYPE_ID,  NAME) values (11, 'type 11')")
