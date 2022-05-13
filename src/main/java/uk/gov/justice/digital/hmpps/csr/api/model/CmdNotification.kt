@@ -5,7 +5,6 @@ import java.time.LocalDateTime
 
 data class CmdNotification(
   var id: Long,
-  val staffId: Int,
   val levelId: Int,
   var onDate: LocalDate,
   val quantumId: String?,

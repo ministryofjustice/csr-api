@@ -20,7 +20,6 @@ import uk.gov.justice.digital.hmpps.csr.api.model.Detail
 import uk.gov.justice.digital.hmpps.csr.api.model.DetailTemplate
 import uk.gov.justice.digital.hmpps.csr.api.repository.SqlRepository
 import uk.gov.justice.digital.hmpps.csr.api.security.AuthenticationFacade
-import uk.gov.justice.digital.hmpps.csr.api.utils.RegionContext
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -459,13 +458,12 @@ internal class DetailServiceTest {
       val chunk2 = List<Long>(2) { it + 1001L }
       every { sqlRepository.deleteProcessed(any()) } returns 1
 
-      service.deleteProcessed(2, ids)
+      service.deleteProcessed(ids)
 
       verifySequence {
         sqlRepository.deleteProcessed(chunk1)
         sqlRepository.deleteProcessed(chunk2)
       }
-      assertThat(RegionContext.getRegion()).isEqualTo("2")
     }
 
     @Test
@@ -473,7 +471,7 @@ internal class DetailServiceTest {
       val ids = List<Long>(10) { it + 1L }
       every { sqlRepository.deleteProcessed(any()) } returns 1
 
-      service.deleteProcessed(2, ids)
+      service.deleteProcessed(ids)
 
       verifySequence {
         sqlRepository.deleteProcessed(ids)
@@ -488,7 +486,7 @@ internal class DetailServiceTest {
       every { sqlRepository.deleteProcessed(chunk1) } throws Exception("test")
       every { sqlRepository.deleteProcessed(chunk2) } returns 1
 
-      service.deleteProcessed(2, ids)
+      service.deleteProcessed(ids)
 
       verifySequence {
         sqlRepository.deleteProcessed(chunk1)

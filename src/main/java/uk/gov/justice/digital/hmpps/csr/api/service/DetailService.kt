@@ -16,7 +16,6 @@ import uk.gov.justice.digital.hmpps.csr.api.model.Detail
 import uk.gov.justice.digital.hmpps.csr.api.model.DetailTemplate
 import uk.gov.justice.digital.hmpps.csr.api.repository.SqlRepository
 import uk.gov.justice.digital.hmpps.csr.api.security.AuthenticationFacade
-import uk.gov.justice.digital.hmpps.csr.api.utils.RegionContext
 import java.time.LocalDate
 
 private const val DELETECHUNKSIZE = 1000
@@ -66,15 +65,6 @@ class DetailService(
     return mapToDetailsDto(modifiedShifts)
   }
 
-  fun getStaffDetails(
-    region: Int,
-    from: LocalDate,
-    to: LocalDate,
-  ): Collection<DetailDto> {
-    RegionContext.setRegion(region.toString())
-    return getStaffDetails(from, to)
-  }
-
   fun getModifiedDetailsByPlanUnit(planUnit: String): Collection<DetailDto> {
     log.info("Fetching modified detail for $planUnit")
     val startTime = System.currentTimeMillis()
@@ -85,9 +75,8 @@ class DetailService(
     return mapToDetailsDto(modifiedDetails)
   }
 
-  fun getModified(region: Int): List<DetailDto> {
+  fun getModified(): List<DetailDto> {
     val startTime = System.currentTimeMillis()
-    RegionContext.setRegion(region.toString())
 
     val modified = mapCmdNotificationToDetailsDto(sqlRepository.getModified())
 
@@ -96,40 +85,43 @@ class DetailService(
   }
 
   // Intentionally not transactional: we want chunks to get deleted even if one fails
-  fun deleteProcessed(region: Int, ids: List<Long>) {
+  fun deleteProcessed(ids: List<Long>): String {
     val startTime = System.currentTimeMillis()
-    RegionContext.setRegion(region.toString())
 
     ids.chunked(DELETECHUNKSIZE).forEach {
       try {
         val deleted = sqlRepository.deleteProcessed(it)
-        log.debug("deleteProcessed: deleted $deleted rows")
+        log.info("deleteProcessed: deleted $deleted rows")
       } catch (e: Exception) {
         log.error("Unexpected exception", e)
       }
     }
 
-    log.info("deleteProcessed: received ${ids.size} ids, time taken ${elapsed(startTime)}s")
+    return "Received ${ids.size} ids, time taken ${elapsed(startTime)}s".also {
+      log.info("deleteProcessed: $it")
+    }
   }
 
   @Transactional
-  fun deleteAll(region: Int) {
+  fun deleteAll(): String {
     val startTime = System.currentTimeMillis()
-    RegionContext.setRegion(region.toString())
 
     val deleted = sqlRepository.deleteAll()
 
-    log.info("deleteAll: deleted $deleted rows, time taken ${elapsed(startTime)}s")
+    return "Deleted $deleted rows, time taken ${elapsed(startTime)}s".also {
+      log.info("deleteAll: $it")
+    }
   }
 
   @Transactional
-  fun deleteOld(region: Int, date: LocalDate) {
+  fun deleteOld(date: LocalDate): String {
     val startTime = System.currentTimeMillis()
-    RegionContext.setRegion(region.toString())
 
     val deleted = sqlRepository.deleteOld(date)
 
-    log.info("deleteOld: deleted $deleted rows up to $date, time taken ${elapsed(startTime)}s")
+    return "Deleted $deleted rows up to $date, time taken ${elapsed(startTime)}s".also {
+      log.info("deleteOld: $it")
+    }
   }
 
   private fun elapsed(startTime: Long) = (System.currentTimeMillis() - startTime) / 1000.0

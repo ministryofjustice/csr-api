@@ -1,12 +1,12 @@
 package uk.gov.justice.digital.hmpps.csr.api.utils
 
 object RegionContext {
-  private val regionStore = ThreadLocal<String>()
-  fun getRegion(): String? {
+  private val regionStore = ThreadLocal<Int>()
+  fun getRegion(): Int? {
     return regionStore.get()
   }
 
-  fun setRegion(region: String?) {
+  fun setRegion(region: Int?) {
     regionStore.set(region)
   }
 }

@@ -6,10 +6,10 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.jdbc.core.RowMapper
+import org.springframework.test.web.reactive.server.expectBody
 import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
 import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.csr.api.dto.DetailDto
-import uk.gov.justice.digital.hmpps.csr.api.utils.RegionContext
 import java.sql.ResultSet
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -32,6 +32,7 @@ class DetailResourceTest : ResourceTest() {
   @BeforeEach
   fun cleanUp() {
     jdbcTemplate.update("delete from CMD_NOTIFICATION")
+    jdbcTemplate.update("delete from R2.CMD_NOTIFICATION")
     jdbcTemplate.update("delete from TK_MODEL")
     jdbcTemplate.update("delete from TK_TYPE")
     jdbcTemplate.update("delete from TK_MODELITEM")
@@ -81,6 +82,20 @@ class DetailResourceTest : ResourceTest() {
           actionType = null
         ),
       )
+    }
+
+    @Test
+    fun testUserDetailsOldMissingRegionHeader() {
+      webTestClient.get()
+        .uri {
+          it.path("/user/details")
+            .queryParam("from", "2022-03-10")
+            .queryParam("to", "2022-03-20")
+            .build()
+        }
+        .headers(setAuthorisation())
+        .exchange()
+        .expectStatus().is5xxServerError
     }
 
     @Test
@@ -135,6 +150,7 @@ class DetailResourceTest : ResourceTest() {
           .build("Frankland")
       }
       .headers(setAuthorisation(roles = SYSTEM_ROLE))
+      .header("X-Region", "1")
       .exchange()
       .expectStatus().isOk
       .expectBodyList(DetailDto::class.java)
@@ -206,6 +222,7 @@ class DetailResourceTest : ResourceTest() {
           .build("Frankland")
       }
       .headers(setAuthorisation())
+      .header("X-Region", "1")
       .exchange()
       .expectStatus().isOk
       .expectBodyList(DetailDto::class.java)
@@ -227,19 +244,19 @@ class DetailResourceTest : ResourceTest() {
 
     private val INSERT =
       "insert into CMD_NOTIFICATION (ID, ST_STAFF_ID, LEVEL_ID, ON_DATE, LASTMODIFIED, ACTION_TYPE, TASK_START, TASK_END, REF_ID, OPTIONAL_1) values"
+    private val INSERTR2 =
+      "insert into R2.CMD_NOTIFICATION (ID, ST_STAFF_ID, LEVEL_ID, ON_DATE, LASTMODIFIED, ACTION_TYPE, TASK_START, TASK_END, REF_ID, OPTIONAL_1) values"
 
     @Test
     fun testGetNotifications() {
-      RegionContext.setRegion("1")
-
       jdbcTemplate.update("insert into TK_TYPE( TK_TYPE_ID,  NAME) values (11, 'type 11')")
       jdbcTemplate.update("insert into TK_MODEL(TK_MODEL_ID, NAME, FRAME_START, FRAME_END, IS_DELETED) values (12, 'model 12', $ONE_HR, $TWO_HRS, 0)")
 
-      jdbcTemplate.update("$INSERT (101, 1147, 1000, '2022-03-21', SYSDATE,     null,  $NINE_HRS, $TEN_HRS, 11,null)")
-      jdbcTemplate.update("$INSERT (102, 1148, 1000, '2022-03-22', SYSDATE + 1, null,  $NINE_HRS, $TEN_HRS, null,12)")
-      jdbcTemplate.update("$INSERT (103, 1148, 1000, '2022-03-22', SYSDATE + 1, 47015, null, null, null, null)")
-      jdbcTemplate.update("$INSERT (104, 1148, 4000, '2022-03-22', SYSDATE + 1, 47012, null, null, null, null)")
-      jdbcTemplate.update("$INSERT (105, 1148, 4000, '2022-03-22', SYSDATE + 1, 47999, null, null, null, null)")
+      jdbcTemplate.update("$INSERT (101, 1147, 1000, '2022-03-21', CURRENT_DATE,     null,  $NINE_HRS, $TEN_HRS, 11,null)")
+      jdbcTemplate.update("$INSERT (102, 1148, 1000, '2022-03-22', CURRENT_DATE + 1, null,  $NINE_HRS, $TEN_HRS, null,12)")
+      jdbcTemplate.update("$INSERT (103, 1148, 1000, '2022-03-22', CURRENT_DATE + 1, 47015, null, null, null, null)")
+      jdbcTemplate.update("$INSERT (104, 1148, 4000, '2022-03-22', CURRENT_DATE + 1, 47012, null, null, null, null)")
+      jdbcTemplate.update("$INSERT (105, 1148, 4000, '2022-03-22', CURRENT_DATE + 1, 47999, null, null, null, null)")
 
       val response = webTestClient.get()
         .uri("/updates/1")
@@ -305,8 +322,6 @@ class DetailResourceTest : ResourceTest() {
 
     @Test
     fun testDeleteNotifications() {
-      RegionContext.setRegion("1")
-
       jdbcTemplate.update("$INSERT (101, 1147, 1000, '2022-03-21', SYSDATE,     47001, 0,0, null,null)")
       jdbcTemplate.update("$INSERT (102, 1148, 4000, '2022-03-22', SYSDATE + 1, 47006, 0,0, null,null)")
       jdbcTemplate.update("$INSERT (103, 1149, 1000, '2022-03-22', SYSDATE + 1, 47006, 0,0, null,null)")
@@ -318,6 +333,8 @@ class DetailResourceTest : ResourceTest() {
         .bodyValue("""[101,103,999]""")
         .exchange()
         .expectStatus().isOk
+        .expectBody<String>()
+        .consumeWith { c -> assertThat(c.responseBody!!.contains("Received 3 ids, time taken ")).isTrue() }
 
       assertThat(jdbcTemplate.query("SELECT ID FROM CMD_NOTIFICATION", testRowMapper)).asList().containsExactly(102L)
     }
@@ -332,9 +349,26 @@ class DetailResourceTest : ResourceTest() {
         .headers(setAuthorisation(roles = ADMIN_ROLE))
         .exchange()
         .expectStatus().isOk
+        .expectBody<String>()
+        .consumeWith { c -> assertThat(c.responseBody!!.contains("Deleted 2 rows, time taken ")).isTrue() }
 
-      val results = jdbcTemplate.query<Long>("SELECT ID FROM CMD_NOTIFICATION", testRowMapper)
-      assertThat(results).asList().hasSize(0)
+      assertThat(jdbcTemplate.query("SELECT ID FROM CMD_NOTIFICATION", testRowMapper)).asList().hasSize(0)
+    }
+
+    @Test
+    fun testDeleteAllNotificationsRegion2() {
+      jdbcTemplate.update("$INSERT (101, 1147, 1000, '2022-03-21', SYSDATE,     47001, 0,0, null,null)")
+      jdbcTemplate.update("$INSERTR2 (101, 1147, 1000, '2022-03-21', SYSDATE,     47001, 0,0, null,null)")
+      jdbcTemplate.update("$INSERTR2 (102, 1148, 4000, '2022-03-22', SYSDATE + 1, 47006, 0,0, null,null)")
+
+      webTestClient.put()
+        .uri("/updates/delete-all/2")
+        .headers(setAuthorisation(roles = ADMIN_ROLE))
+        .exchange()
+        .expectStatus().isOk
+
+      assertThat(jdbcTemplate.query("SELECT ID FROM CMD_NOTIFICATION", testRowMapper)).asList().hasSize(1)
+      assertThat(jdbcTemplate.query("SELECT ID FROM R2.CMD_NOTIFICATION", testRowMapper)).asList().hasSize(0)
     }
 
     @Test
@@ -349,9 +383,11 @@ class DetailResourceTest : ResourceTest() {
         .headers(setAuthorisation(roles = ADMIN_ROLE))
         .exchange()
         .expectStatus().isOk
+        .expectBody<String>()
+        .consumeWith { c -> assertThat(c.responseBody!!.contains("Deleted 2 rows up to 2022-03-03, time taken ")).isTrue() }
 
-      val results = jdbcTemplate.query<Long>("SELECT ID FROM CMD_NOTIFICATION", testRowMapper)
-      assertThat(results).asList().containsExactly(103L, 104L)
+      assertThat(jdbcTemplate.query("SELECT ID FROM CMD_NOTIFICATION", testRowMapper)).asList()
+        .containsExactly(103L, 104L)
     }
 
     @Test

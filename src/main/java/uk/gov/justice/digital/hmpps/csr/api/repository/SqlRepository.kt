@@ -82,7 +82,6 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
     val modifiedRowMapper: RowMapper<CmdNotification> = RowMapper { resultSet: ResultSet, _: Int ->
       CmdNotification(
         id = resultSet.getLong("id"),
-        staffId = resultSet.getInt("st_staff_id"),
         levelId = resultSet.getInt("level_id"),
         onDate = resultSet.getDate("on_date").toLocalDate(),
         quantumId = resultSet.getString("quantumId"),
@@ -275,7 +274,6 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
     val GET_MODIFIED = """
             SELECT 
                 n.id,
-                n.st_staff_id,
                 n.level_id,
                 n.on_date,
                 usr.name AS quantumId, 
@@ -286,7 +284,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                       WHERE st_staff_id = n.st_staff_id
                       AND level_id = n.level_id
                       AND layer = -1 
-                      AND (tw_protocol.on_date BETWEEN (SYSDATE - 1) AND (SYSDATE + 2))
+                      AND tw_protocol.on_date BETWEEN (SYSDATE - 1) AND (SYSDATE + 2)
                      ) 
                 else n.lastmodified
                 end as lastmodified,

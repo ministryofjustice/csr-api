@@ -58,7 +58,6 @@ class DetailDtoTest {
   fun `Create Dto from Shift CmdNotification`() {
     val detail = CmdNotification(
       id = 101,
-      staffId = 5,
       levelId = 1000,
       onDate = LocalDate.parse("2022-04-01"),
       quantumId = "A-USER",
@@ -89,7 +88,6 @@ class DetailDtoTest {
   fun `Create Dto from Detail CmdNotification`() {
     val detail = CmdNotification(
       id = 101,
-      staffId = 5,
       levelId = 4000,
       onDate = LocalDate.parse("2022-04-01"),
       quantumId = "A-USER",
