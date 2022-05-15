@@ -85,7 +85,7 @@ class DetailService(
   }
 
   // Intentionally not transactional: we want chunks to get deleted even if one fails
-  fun deleteProcessed(ids: List<Long>): String {
+  fun deleteProcessed(ids: List<Long>) {
     val startTime = System.currentTimeMillis()
 
     ids.chunked(DELETECHUNKSIZE).forEach {
@@ -97,9 +97,7 @@ class DetailService(
       }
     }
 
-    return "Received ${ids.size} ids, time taken ${elapsed(startTime)}s".also {
-      log.info("deleteProcessed: $it")
-    }
+    log.info("deleteProcessed: Received ${ids.size} ids, time taken ${elapsed(startTime)}s")
   }
 
   @Transactional
