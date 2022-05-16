@@ -50,8 +50,7 @@
         <appender-ref ref="consoleAppender"/>
     </logger>
 
-    <logger name="uk.gov.justice.digital.hmpps.csr.api.CsrApiApplication" additivity="false"
-            level="DEBUG">
+    <logger name="uk.gov.justice.digital.hmpps.csr.api" additivity="false" level="DEBUG">
         <appender-ref ref="logAppender"/>
         <appender-ref ref="consoleAppender"/>
     </logger>
