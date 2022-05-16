@@ -258,15 +258,15 @@ class DetailResourceTest : ResourceTest() {
       jdbcTemplate.update("$INSERT (104, 1148, 4000, '2022-03-22', CURRENT_DATE + 1, 47012, null, null, null, null)")
       jdbcTemplate.update("$INSERT (105, 1148, 4000, '2022-03-22', CURRENT_DATE + 1, 47999, null, null, null, null)")
 
-      val response = webTestClient.get()
-        .uri("/updates/1")
-        .headers(setAuthorisation())
-        .exchange()
-        .expectStatus().isOk
-        .expectBodyList(DetailDto::class.java)
-        .returnResult()
-
-      assertThat(response.responseBody).containsExactlyInAnyOrder(
+      assertThat(
+        webTestClient.get()
+          .uri("/updates/1")
+          .headers(setAuthorisation())
+          .exchange()
+          .expectStatus().isOk
+          .expectBodyList(DetailDto::class.java)
+          .returnResult().responseBody
+      ).containsExactlyInAnyOrder(
         DetailDto(
           id = 101,
           quantumId = "TEST-USER",
@@ -333,8 +333,6 @@ class DetailResourceTest : ResourceTest() {
         .bodyValue("""[101,103,999]""")
         .exchange()
         .expectStatus().isOk
-        .expectBody<String>()
-        .consumeWith { c -> assertThat(c.responseBody!!.contains("Received 3 ids, time taken ")).isTrue() }
 
       assertThat(jdbcTemplate.query("SELECT ID FROM CMD_NOTIFICATION", testRowMapper)).asList().containsExactly(102L)
     }

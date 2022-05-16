@@ -113,10 +113,10 @@ class DetailController(private val detailService: DetailService) {
   fun deleteProcessed(
     @PathVariable @Schema(description = "the number of the required region, 1-6") region: Int,
     @RequestBody @Schema(description = "List of ids to delete") ids: List<Long>
-  ): String {
+  ) {
     RegionContext.setRegion(region)
 
-    return detailService.deleteProcessed(ids)
+    detailService.deleteProcessed(ids)
   }
 
   @Operation(
