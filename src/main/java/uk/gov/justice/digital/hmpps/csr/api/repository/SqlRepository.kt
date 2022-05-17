@@ -85,7 +85,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
         levelId = resultSet.getInt("level_id"),
         onDate = resultSet.getDate("on_date").toLocalDate(),
         quantumId = resultSet.getString("quantumId"),
-        lastModified = resultSet.getTimestamp("lastmodified").toLocalDateTime(),
+        lastModified = resultSet.getTimestamp("lastmodified")?.toLocalDateTime(),
         actionType = resultSet.getInt("action_type"),
         startTimeInSeconds = resultSet.getLong("startTime"),
         endTimeInSeconds = resultSet.getLong("endTime"),

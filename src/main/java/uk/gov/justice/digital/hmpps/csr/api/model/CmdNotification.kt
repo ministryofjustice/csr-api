@@ -8,7 +8,7 @@ data class CmdNotification(
   val levelId: Int,
   var onDate: LocalDate,
   val quantumId: String?,
-  val lastModified: LocalDateTime,
+  val lastModified: LocalDateTime?,
   val actionType: Int?,
   val startTimeInSeconds: Long?,
   val endTimeInSeconds: Long?,
