@@ -257,7 +257,7 @@ class DetailResourceTest : ResourceTest() {
       jdbcTemplate.update("$INSERT (103, 1148, 1000, '2022-03-22', CURRENT_DATE + 1, 47015, null, null, null, null)")
       jdbcTemplate.update("$INSERT (104, 1148, 4000, '2022-03-22', CURRENT_DATE + 1, 47012, null, null, null, null)")
       jdbcTemplate.update("$INSERT (105, 1148, 4000, '2022-03-22', CURRENT_DATE + 1, 47999, null, null, null, null)")
-      jdbcTemplate.update("$INSERT (106, 1100, 4000, '2022-03-22', CURRENT_DATE,     null,  $NINE_HRS, $TEN_HRS, null,12)") // staff id not in tw_protocol means null timestamp
+      jdbcTemplate.update("$INSERT (106, 1100, 4000, '2022-03-22', CURRENT_DATE - 1, null,  $NINE_HRS, $TEN_HRS, null,12)") // staff id not in tw_protocol means null timestamp
 
       assertThat(
         webTestClient.get()
@@ -321,7 +321,7 @@ class DetailResourceTest : ResourceTest() {
         DetailDto(
           id = 106,
           quantumId = "a_1100",
-          shiftModified = null,
+          shiftModified = LocalDate.now().minusDays(1).atStartOfDay(), // NOTE: from CMD_NOTIFICATION, not TW_PROTOCOL
           shiftType = ShiftType.OVERTIME,
           detailStart = LocalDateTime.parse("2022-03-22T09:00:00"),
           detailEnd = LocalDateTime.parse("2022-03-22T10:00:00"),
