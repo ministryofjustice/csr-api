@@ -279,13 +279,13 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                 usr.name AS quantumId, 
                 CASE WHEN n.action_type is null
                 then coalesce(
-                      SELECT MAX(tw_protocol.lastmodified)
+                    ( SELECT MAX(tw_protocol.lastmodified)
                       FROM tw_protocol
                       WHERE st_staff_id = n.st_staff_id
                       AND level_id = n.level_id
                       AND layer = -1 
                       AND tw_protocol.on_date BETWEEN (SYSDATE - 1) AND (SYSDATE + 2)
-                     , n.lastmodified) -- backup if no tw_protocol row
+                    ), n.lastmodified) -- backup if no tw_protocol row
                 else n.lastmodified
                 end as lastmodified,
                 n.action_type,
