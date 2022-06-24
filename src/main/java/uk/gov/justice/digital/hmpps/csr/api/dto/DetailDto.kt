@@ -2,8 +2,6 @@ package uk.gov.justice.digital.hmpps.csr.api.dto
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import io.swagger.v3.oas.annotations.media.Schema
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
 import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.csr.api.model.CmdNotification
@@ -71,11 +69,10 @@ DetailDto @JsonCreator constructor(
         detailEnd = calculateDetailDateTime(detail.onDate, detail.endTimeInSeconds ?: 0L),
 
         activity = detail.activity,
-        actionType = if (detail.actionType == 0) ActionType.EDIT
-        else detail.actionType.let {
+        actionType = detail.actionType.let {
           when (it) {
             47012 -> ActionType.DELETE
-            47001 -> ActionType.EDIT
+            0, 47001 -> ActionType.EDIT
             47006, 47015 -> ActionType.ADD
             else -> ActionType.UNCHANGED
           }
@@ -103,7 +100,5 @@ DetailDto @JsonCreator constructor(
         shiftDate.atStartOfDay()
       }
     }
-
-    private val log: Logger = LoggerFactory.getLogger(DetailDto::class.java)
   }
 }

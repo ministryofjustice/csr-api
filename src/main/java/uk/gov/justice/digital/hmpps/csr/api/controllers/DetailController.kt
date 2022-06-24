@@ -61,32 +61,6 @@ class DetailController(private val detailService: DetailService) {
     return ResponseEntity.ok(details)
   }
 
-  @Operation(summary = "Retrieve all modified shifts for a plan unit", deprecated = true)
-  @Parameter(
-    `in` = ParameterIn.HEADER,
-    name = "X-Region",
-    description = "the number of the required region, 1-6",
-    required = true
-  )
-  @GetMapping("/planUnit/{planUnit}/shifts/updated")
-  @Deprecated("/updates now returns all notification data for the region")
-  fun getModifiedShiftByPlanUnit(@PathVariable planUnit: String): ResponseEntity<Collection<DetailDto>> {
-    return ResponseEntity.ok(detailService.getModifiedShiftsByPlanUnit(planUnit))
-  }
-
-  @Operation(summary = "Retrieve all modified details for a plan unit", deprecated = true)
-  @Parameter(
-    `in` = ParameterIn.HEADER,
-    name = "X-Region",
-    description = "the number of the required region, 1-6",
-    required = true
-  )
-  @GetMapping("/planUnit/{planUnit}/details/updated")
-  @Deprecated("/updates now returns all notification data for the region")
-  fun getModifiedDetailByPlanUnit(@PathVariable planUnit: String): ResponseEntity<Collection<DetailDto>> {
-    return ResponseEntity.ok(detailService.getModifiedDetailsByPlanUnit(planUnit))
-  }
-
   @Operation(summary = "Retrieve all modified records")
   @GetMapping("/updates/{region}")
   fun getModified(
