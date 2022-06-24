@@ -13,8 +13,6 @@ import uk.gov.justice.digital.hmpps.csr.api.dto.DetailDto
 import java.sql.ResultSet
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.Month
 
 class DetailResourceTest : ResourceTest() {
 
@@ -24,9 +22,7 @@ class DetailResourceTest : ResourceTest() {
   private val TEN_HRS = 60 * 60 * 10
 
   companion object {
-    private val SYSTEM_ROLE = listOf("ROLE_SYSTEM_USER")
     private val ADMIN_ROLE = listOf("ROLE_CMD_ADMIN")
-    private val TODAY_START = LocalDateTime.of(LocalDate.now(), LocalTime.MIN)
   }
 
   @BeforeEach
@@ -40,64 +36,6 @@ class DetailResourceTest : ResourceTest() {
 
   @Nested
   inner class UserDetails {
-    @Test
-    fun testUserDetailsOld() {
-
-      jdbcTemplate.update("insert into TK_TYPE( TK_TYPE_ID,  NAME) values (11, 'type 11')")
-      jdbcTemplate.update("insert into TK_MODEL(TK_MODEL_ID, NAME, FRAME_START, FRAME_END, IS_DELETED) values (12, 'model 12', $ONE_HR, $TWO_HRS, 0)")
-      jdbcTemplate.update(
-        """insert into TK_MODELITEM(TK_MODELITEM_ID,TK_MODEL_ID,TK_TYPE_ID,TASKSTYLE,IS_FRAME_RELATIVE,TASK_START,TASK_END)
-          values (100, 12, 11, 0, 0, $ONE_HR, $TWO_HRS)""".trimMargin()
-      )
-
-      jdbcTemplate.update(
-        """Insert into TW_SCHEDULE (TW_SCHEDULE_ID, ON_DATE, LEVEL_ID, ST_STAFF_ID, LAYER, PU_PLANUNIT_ID, REF_ID, TASK_START, TASK_END, OPTIONAL_1, SCHED_LASTMODIFIED)
-          values (1000001, '2022-03-13', 1000, 1147, -1, 1007, 11, 0, 0, 12, '2022-03-13')"""
-      )
-
-      // Note some tables are still populated from flyway SQL
-
-      val response = webTestClient.get()
-        .uri {
-          it.path("/user/details")
-            .queryParam("from", "2022-03-10")
-            .queryParam("to", "2022-03-20")
-            .build()
-        }
-        .headers(setAuthorisation())
-        .header("X-Region", "1")
-        .exchange()
-        .expectStatus().isOk
-        .expectBodyList(DetailDto::class.java)
-        .returnResult()
-
-      assertThat(response.responseBody).containsExactlyInAnyOrder(
-        DetailDto(
-          quantumId = null,
-          shiftModified = null,
-          shiftType = ShiftType.SHIFT,
-          detailStart = LocalDateTime.parse("2022-03-13T01:00:00"),
-          detailEnd = LocalDateTime.parse("2022-03-13T02:00:00"),
-          activity = "type 11",
-          actionType = null
-        ),
-      )
-    }
-
-    @Test
-    fun testUserDetailsOldMissingRegionHeader() {
-      webTestClient.get()
-        .uri {
-          it.path("/user/details")
-            .queryParam("from", "2022-03-10")
-            .queryParam("to", "2022-03-20")
-            .build()
-        }
-        .headers(setAuthorisation())
-        .exchange()
-        .expectStatus().is5xxServerError
-    }
-
     @Test
     fun testUserDetails() {
 
@@ -140,93 +78,6 @@ class DetailResourceTest : ResourceTest() {
         ),
       )
     }
-  }
-
-  @Test
-  fun testShifts() {
-    val response = webTestClient.get()
-      .uri {
-        it.path("/planUnit/{planUnit}/shifts/updated")
-          .build("Frankland")
-      }
-      .headers(setAuthorisation(roles = SYSTEM_ROLE))
-      .header("X-Region", "1")
-      .exchange()
-      .expectStatus().isOk
-      .expectBodyList(DetailDto::class.java)
-      .returnResult()
-
-    assertThat(response.responseBody).containsExactlyInAnyOrder(
-      DetailDto(
-        quantumId = "a_1152",
-        shiftModified = LocalDateTime.of(2099, Month.AUGUST, 21, 0, 0),
-        shiftType = ShiftType.SHIFT,
-        detailStart = TODAY_START,
-        detailEnd = TODAY_START,
-        activity = null,
-        actionType = ActionType.ADD
-      ),
-      DetailDto(
-        quantumId = "a_1152",
-        shiftModified = LocalDateTime.of(2099, Month.AUGUST, 21, 0, 0),
-        shiftType = ShiftType.SHIFT,
-        detailStart = TODAY_START.plusDays(1),
-        detailEnd = TODAY_START.plusDays(1),
-        activity = null,
-        actionType = ActionType.ADD
-      ),
-      DetailDto(
-        quantumId = "a_1154",
-        shiftModified = LocalDateTime.of(2099, Month.AUGUST, 21, 0, 0),
-        shiftType = ShiftType.SHIFT,
-        detailStart = TODAY_START,
-        detailEnd = TODAY_START,
-        activity = null,
-        actionType = ActionType.DELETE
-      ),
-      DetailDto(
-        quantumId = "a_1155",
-        shiftModified = LocalDateTime.of(2099, Month.AUGUST, 21, 0, 0),
-        shiftType = ShiftType.SHIFT,
-        detailStart = TODAY_START,
-        detailEnd = TODAY_START,
-        activity = null,
-        actionType = ActionType.EDIT
-      ),
-      DetailDto(
-        quantumId = "a_1156",
-        shiftModified = LocalDateTime.of(2099, Month.AUGUST, 21, 0, 0),
-        shiftType = ShiftType.SHIFT,
-        detailStart = TODAY_START,
-        detailEnd = TODAY_START,
-        activity = null,
-        actionType = ActionType.DELETE
-      ),
-      DetailDto(
-        quantumId = "a_1157",
-        shiftModified = LocalDateTime.of(2099, Month.AUGUST, 21, 0, 0),
-        shiftType = ShiftType.SHIFT,
-        detailStart = TODAY_START,
-        detailEnd = TODAY_START,
-        activity = null,
-        actionType = ActionType.DELETE
-      ),
-    )
-  }
-
-  @Test
-  fun testDetails() {
-    webTestClient.get()
-      .uri {
-        it.path("/planUnit/{planUnit}/details/updated")
-          .build("Frankland")
-      }
-      .headers(setAuthorisation())
-      .header("X-Region", "1")
-      .exchange()
-      .expectStatus().isOk
-      .expectBodyList(DetailDto::class.java)
-      .hasSize(0)
   }
 
   @Test
