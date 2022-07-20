@@ -9,6 +9,8 @@ generic-service:
 
   ingress:
     enabled: true
+    v1_2_enabled: true
+    v0_47_enabled: true
     annotations:
       kubernetes.io/ingress.class: "nginx"
       certmanager.k8s.io/cluster-issuer: letsencrypt-production
