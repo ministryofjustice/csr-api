@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.csr.api.controllers
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
-import io.swagger.v3.oas.annotations.enums.ParameterIn
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -27,23 +26,6 @@ import java.time.LocalDate
 @RestController
 @RequestMapping(produces = [APPLICATION_JSON_VALUE])
 class DetailController(private val detailService: DetailService) {
-
-  @Operation(summary = "Retrieve all details for a user between two dates")
-  @Parameter(
-    `in` = ParameterIn.HEADER,
-    name = "X-Region",
-    description = "the number of the required region, 1-6",
-    required = true
-  )
-  @GetMapping("/user/details")
-  @Deprecated("Deprecated in favour of the endpoint which specifies region in the url")
-  fun getDetailsByUser(
-    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: LocalDate,
-    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: LocalDate
-  ): ResponseEntity<Collection<DetailDto>> {
-    val details = detailService.getStaffDetails(from, to)
-    return ResponseEntity.ok(details)
-  }
 
   @Operation(summary = "Retrieve all details for a user between two dates")
   @GetMapping("/user/details/{region}")
