@@ -21,7 +21,8 @@ CREATE TABLE IF NOT EXISTS tw_schedule
     layer              INT       NOT NULL,
     ref_id             VARCHAR   NOT NULL,
     optional_1         VARCHAR   NOT NULL,
-    pu_planunit_id     VARCHAR   NOT NULL
+    pu_planunit_id     VARCHAR   NOT NULL,
+    TK_MODEL_INFO_ID   INT       NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS tk_model
@@ -30,7 +31,16 @@ CREATE TABLE IF NOT EXISTS tk_model
     FRAME_START  INT     NOT NULL,
     FRAME_END    INT     NOT NULL,
     name         VARCHAR NOT NULL,
-    IS_DELETED  INT NOT NULL
+    IS_DELETED   INT     NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS tk_model_info
+(
+    TK_MODEL_INFO_ID INT     NOT NULL,
+	IS_DELETED       INT     NOT NULL,
+	TK_MODEL_ID      INT     NOT NULL,
+	FRAME_START      INT     NOT NULL,
+	FRAME_END        INT     NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS tk_type

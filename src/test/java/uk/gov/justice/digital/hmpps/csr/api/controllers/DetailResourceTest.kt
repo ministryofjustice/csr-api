@@ -39,16 +39,26 @@ class DetailResourceTest : ResourceTest() {
     @Test
     fun testUserDetails() {
 
-      jdbcTemplate.update("insert into TK_TYPE( TK_TYPE_ID,  NAME) values (11, 'type 11')")
-      jdbcTemplate.update("insert into TK_MODEL(TK_MODEL_ID, NAME, FRAME_START, FRAME_END, IS_DELETED) values (12, 'model 12', $ONE_HR, $TWO_HRS, 0)")
+      jdbcTemplate.update("insert into TK_TYPE( TK_TYPE_ID,  NAME) values (10, 'present')")
+      jdbcTemplate.update("insert into TK_TYPE( TK_TYPE_ID,  NAME) values (11, 'break')")
+      jdbcTemplate.update("insert into TK_MODEL(TK_MODEL_ID, NAME, FRAME_START, FRAME_END, IS_DELETED) values (12, 'L1234', 0, 0, 0)")
+      jdbcTemplate.update("insert into TK_MODEL_INFO(TK_MODEL_INFO_ID, TK_MODEL_ID, FRAME_START, FRAME_END, IS_DELETED) values (1012, 12, $ONE_HR, $TWO_HRS, 0)")
       jdbcTemplate.update(
         """insert into TK_MODELITEM(TK_MODELITEM_ID,TK_MODEL_ID,TK_TYPE_ID,TASKSTYLE,IS_FRAME_RELATIVE,TASK_START,TASK_END)
-          values (100, 12, 11, 0, 0, $ONE_HR, $TWO_HRS)""".trimMargin()
+          values (100, 12, 10, 0, 1, 0, 5 * 60)""".trimMargin()
+      )
+      jdbcTemplate.update(
+        """insert into TK_MODELITEM(TK_MODELITEM_ID,TK_MODEL_ID,TK_TYPE_ID,TASKSTYLE,IS_FRAME_RELATIVE,TASK_START,TASK_END)
+          values (100, 12, 11, 0, 0, $ONE_HR + 5 * 60, $ONE_HR + 10 * 60)""".trimMargin()
+      )
+      jdbcTemplate.update(
+        """insert into TK_MODELITEM(TK_MODELITEM_ID,TK_MODEL_ID,TK_TYPE_ID,TASKSTYLE,IS_FRAME_RELATIVE,TASK_START,TASK_END)
+          values (100, 12, 10, 0, 1, 10 * 60, 60 * 60)""".trimMargin()
       )
 
       jdbcTemplate.update(
-        """Insert into TW_SCHEDULE (TW_SCHEDULE_ID, ON_DATE, LEVEL_ID, ST_STAFF_ID, LAYER, PU_PLANUNIT_ID, REF_ID, TASK_START, TASK_END, OPTIONAL_1, SCHED_LASTMODIFIED)
-          values (1000001, '2022-03-13', 1000, 1147, -1, 1007, 11, 0, 0, 12, '2022-03-13')"""
+        """Insert into TW_SCHEDULE (TW_SCHEDULE_ID, ON_DATE, LEVEL_ID, ST_STAFF_ID, LAYER, PU_PLANUNIT_ID, REF_ID, TASK_START, TASK_END, OPTIONAL_1, SCHED_LASTMODIFIED, TK_MODEL_INFO_ID)
+          values (1000001, '2022-03-13', 1000, 1147, -1, 1007, 11, 0, 0, 12, '2022-03-13', 1012)"""
       )
 
       // Note some tables are still populated from flyway SQL
@@ -66,14 +76,32 @@ class DetailResourceTest : ResourceTest() {
         .expectBodyList(DetailDto::class.java)
         .returnResult()
 
-      assertThat(response.responseBody).containsExactlyInAnyOrder(
+      assertThat(response.responseBody).containsExactly(
         DetailDto(
           quantumId = null,
           shiftModified = null,
           shiftType = ShiftType.SHIFT,
           detailStart = LocalDateTime.parse("2022-03-13T01:00:00"),
+          detailEnd = LocalDateTime.parse("2022-03-13T01:05:00"),
+          activity = "present",
+          actionType = null
+        ),
+        DetailDto(
+          quantumId = null,
+          shiftModified = null,
+          shiftType = ShiftType.SHIFT,
+          detailStart = LocalDateTime.parse("2022-03-13T01:05:00"),
+          detailEnd = LocalDateTime.parse("2022-03-13T01:10:00"),
+          activity = "break",
+          actionType = null
+        ),
+        DetailDto(
+          quantumId = null,
+          shiftModified = null,
+          shiftType = ShiftType.SHIFT,
+          detailStart = LocalDateTime.parse("2022-03-13T01:10:00"),
           detailEnd = LocalDateTime.parse("2022-03-13T02:00:00"),
-          activity = "type 11",
+          activity = "present",
           actionType = null
         ),
       )

@@ -87,17 +87,17 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
 
     val GET_DETAILS = """
         SELECT DISTINCT sched.on_date as shiftDate, 
-                        DECODE (tk_model.frame_start, NULL, sched.task_start, tk_model.frame_start) as startTime, 
-                        DECODE (tk_model.frame_end, NULL, sched.task_end, tk_model.frame_end) as endTime, 
+                        nvl (mi.frame_start, sched.task_start) as startTime,
+                        nvl (mi.frame_end, sched.task_end) as endTime, 
                         DECODE (sched.level_id, 4000, 1, 0) as shiftType,
-                        DECODE (tk_model.name, NULL, tk_type.name, tk_model.name) as activity,
-                        tk_model.name as templateName
+                        nvl (m.name, t.name) as activity,
+                        m.name as templateName
         FROM tw_schedule sched
                 INNER JOIN sm_user usr ON sched.st_staff_id = usr.obj_id AND usr.obj_type = 3 AND usr.is_deleted = 0
-                LEFT JOIN tk_type ON sched.ref_id = tk_type.tk_type_id 
-                LEFT JOIN tk_model ON tk_model.tk_model_id = sched.optional_1 and tk_model.is_deleted = 0
-        WHERE sched.st_staff_id = usr.obj_id
-        AND   sched.on_date BETWEEN :from AND :to
+                LEFT JOIN tk_type t ON sched.ref_id = t.tk_type_id
+                LEFT JOIN tk_model_info mi ON mi.tk_model_info_id = sched.tk_model_info_id and mi.is_deleted = 0
+                LEFT JOIN tk_model m ON m.tk_model_id = mi.tk_model_id
+        WHERE sched.on_date BETWEEN :from AND :to
         AND   sched.layer = -1
         AND   sched.level_id IN (1000, 4000)
         AND   LOWER(usr.name) = LOWER(:quantumId)
