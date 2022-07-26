@@ -39,6 +39,7 @@ class DetailResourceTest : ResourceTest() {
     @Test
     fun testUserDetails() {
 
+      jdbcTemplate.update("insert into TK_TYPE( TK_TYPE_ID,  NAME) values (9, 'plain activity')")
       jdbcTemplate.update("insert into TK_TYPE( TK_TYPE_ID,  NAME) values (10, 'present')")
       jdbcTemplate.update("insert into TK_TYPE( TK_TYPE_ID,  NAME) values (11, 'break')")
       jdbcTemplate.update("insert into TK_MODEL(TK_MODEL_ID, NAME, FRAME_START, FRAME_END, IS_DELETED) values (12, 'L1234', 0, 0, 0)")
@@ -57,8 +58,12 @@ class DetailResourceTest : ResourceTest() {
       )
 
       jdbcTemplate.update(
-        """Insert into TW_SCHEDULE (TW_SCHEDULE_ID, ON_DATE, LEVEL_ID, ST_STAFF_ID, LAYER, PU_PLANUNIT_ID, REF_ID, TASK_START, TASK_END, OPTIONAL_1, SCHED_LASTMODIFIED, TK_MODEL_INFO_ID)
-          values (1000001, '2022-03-13', 1000, 1147, -1, 1007, 11, 0, 0, 12, '2022-03-13', 1012)"""
+        """Insert into TW_SCHEDULE (TW_SCHEDULE_ID, ON_DATE, LEVEL_ID, ST_STAFF_ID, LAYER, PU_PLANUNIT_ID, REF_ID, TASK_START, TASK_END, OPTIONAL_1, SCHED_LASTMODIFIED, OBJECT_TYPE_ID, TK_MODEL_INFO_ID)
+          values (1000001, '2022-03-13', 1000, 1147, -1, 1007, 11, 0, 0, 12, '2022-03-13', 6001, 1012)"""
+      )
+      jdbcTemplate.update(
+        """Insert into TW_SCHEDULE (TW_SCHEDULE_ID, ON_DATE, LEVEL_ID, ST_STAFF_ID, LAYER, PU_PLANUNIT_ID, REF_ID, TASK_START, TASK_END, OPTIONAL_1, SCHED_LASTMODIFIED, OBJECT_TYPE_ID, TK_MODEL_INFO_ID)
+          values (1000002, '2022-03-13', 1000, 1147, -1, 1007, 9, $TWO_HRS, $NINE_HRS, 0, '2022-03-13', 6003, 1012)"""
       )
 
       // Note some tables are still populated from flyway SQL
@@ -102,6 +107,15 @@ class DetailResourceTest : ResourceTest() {
           detailStart = LocalDateTime.parse("2022-03-13T01:10:00"),
           detailEnd = LocalDateTime.parse("2022-03-13T02:00:00"),
           activity = "present",
+          actionType = null
+        ),
+        DetailDto(
+          quantumId = null,
+          shiftModified = null,
+          shiftType = ShiftType.SHIFT,
+          detailStart = LocalDateTime.parse("2022-03-13T02:00:00"),
+          detailEnd = LocalDateTime.parse("2022-03-13T09:00:00"),
+          activity = "plain activity",
           actionType = null
         ),
       )

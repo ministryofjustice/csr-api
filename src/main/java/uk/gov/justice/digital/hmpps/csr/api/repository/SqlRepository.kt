@@ -93,10 +93,10 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                         nvl (m.name, t.name) as activity,
                         m.name as templateName
         FROM tw_schedule sched
-                INNER JOIN sm_user usr ON sched.st_staff_id = usr.obj_id AND usr.obj_type = 3 AND usr.is_deleted = 0
-                LEFT JOIN tk_type t ON sched.ref_id = t.tk_type_id
-                LEFT JOIN tk_model_info mi ON mi.tk_model_info_id = sched.tk_model_info_id and mi.is_deleted = 0
-                LEFT JOIN tk_model m ON m.tk_model_id = mi.tk_model_id
+                INNER JOIN sm_user usr     ON sched.st_staff_id = usr.obj_id AND usr.obj_type = 3 AND usr.is_deleted = 0
+                LEFT JOIN tk_type t        ON sched.object_type_id = 6003 AND sched.ref_id = t.tk_type_id
+                LEFT JOIN tk_model_info mi ON sched.object_type_id = 6001 AND sched.tk_model_info_id = mi.tk_model_info_id AND mi.is_deleted = 0
+                LEFT JOIN tk_model m       ON sched.object_type_id = 6001 AND sched.optional_1 = m.tk_model_id AND m.is_deleted = 0
         WHERE sched.on_date BETWEEN :from AND :to
         AND   sched.layer = -1
         AND   sched.level_id IN (1000, 4000)

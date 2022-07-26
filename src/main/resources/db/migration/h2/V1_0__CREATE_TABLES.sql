@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS tw_schedule
     ref_id             VARCHAR   NOT NULL,
     optional_1         VARCHAR   NOT NULL,
     pu_planunit_id     VARCHAR   NOT NULL,
+    object_type_id     INT       NOT NULL,
     TK_MODEL_INFO_ID   INT       NOT NULL
 );
 
