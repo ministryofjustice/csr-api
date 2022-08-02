@@ -46,15 +46,15 @@ class DetailResourceTest : ResourceTest() {
       jdbcTemplate.update("insert into TK_MODEL_INFO(TK_MODEL_INFO_ID, TK_MODEL_ID, FRAME_START, FRAME_END, IS_DELETED) values (1012, 12, $ONE_HR, $TWO_HRS, 0)")
       jdbcTemplate.update(
         """insert into TK_MODELITEM(TK_MODELITEM_ID,TK_MODEL_ID,TK_TYPE_ID,TASKSTYLE,IS_FRAME_RELATIVE,TASK_START,TASK_END)
-          values (100, 12, 10, 0, 1, 0, 5 * 60)""".trimMargin()
+          values (100, 1012, 10, 0, 1, 0, 5 * 60)""".trimMargin()
       )
       jdbcTemplate.update(
         """insert into TK_MODELITEM(TK_MODELITEM_ID,TK_MODEL_ID,TK_TYPE_ID,TASKSTYLE,IS_FRAME_RELATIVE,TASK_START,TASK_END)
-          values (100, 12, 11, 0, 0, $ONE_HR + 5 * 60, $ONE_HR + 10 * 60)""".trimMargin()
+          values (100, 1012, 11, 0, 0, $ONE_HR + 5 * 60, $ONE_HR + 10 * 60)""".trimMargin()
       )
       jdbcTemplate.update(
         """insert into TK_MODELITEM(TK_MODELITEM_ID,TK_MODEL_ID,TK_TYPE_ID,TASKSTYLE,IS_FRAME_RELATIVE,TASK_START,TASK_END)
-          values (100, 12, 10, 0, 1, 10 * 60, 60 * 60)""".trimMargin()
+          values (100, 1012, 10, 0, 1, 10 * 60, 60 * 60)""".trimMargin()
       )
 
       jdbcTemplate.update(

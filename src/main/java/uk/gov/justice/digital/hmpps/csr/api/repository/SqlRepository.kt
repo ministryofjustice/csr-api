@@ -10,6 +10,9 @@ import uk.gov.justice.digital.hmpps.csr.api.model.DetailTemplate
 import java.sql.ResultSet
 import java.time.LocalDate
 
+const val DAY_MODEL = 6001
+const val ACTIVITY = 6003
+
 @Repository
 class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
 
@@ -94,14 +97,15 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
                         m.name as templateName
         FROM tw_schedule sched
                 INNER JOIN sm_user usr     ON sched.st_staff_id = usr.obj_id AND usr.obj_type = 3 AND usr.is_deleted = 0
-                LEFT JOIN tk_type t        ON sched.object_type_id = 6003 AND sched.ref_id = t.tk_type_id
-                LEFT JOIN tk_model_info mi ON sched.object_type_id = 6001 AND sched.tk_model_info_id = mi.tk_model_info_id AND mi.is_deleted = 0
-                LEFT JOIN tk_model m       ON sched.object_type_id = 6001 AND sched.optional_1 = m.tk_model_id AND m.is_deleted = 0
+                LEFT JOIN tk_type t        ON sched.object_type_id = $ACTIVITY AND sched.ref_id = t.tk_type_id
+                LEFT JOIN tk_model_info mi ON sched.object_type_id = $DAY_MODEL AND sched.tk_model_info_id = mi.tk_model_info_id AND mi.is_deleted = 0
+                LEFT JOIN tk_model m       ON sched.object_type_id = $DAY_MODEL AND sched.optional_1 = m.tk_model_id AND m.is_deleted = 0
         WHERE sched.on_date BETWEEN :from AND :to
         AND   sched.layer = -1
         AND   sched.level_id IN (1000, 4000)
         AND   LOWER(usr.name) = LOWER(:quantumId)
     """.trimIndent()
+    // level_id: 1000 = schedule , 3000 = actual, 4000 = time recording, 5000 = External system
 
     val GET_MODIFIED = """
             SELECT 
@@ -135,17 +139,18 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
     """.trimIndent()
 
     val GET_DETAIL_TEMPLATES = """
-            SELECT tk_modelItem.TASK_START AS startTime,
-                tk_modelItem.TASK_END AS endTime,
-                tk_modelItem.IS_FRAME_RELATIVE AS isRelative,
-                tk_type.NAME AS activity,
-                tk_model.NAME AS templateName
-                FROM tk_modelitem
-            JOIN tk_model ON tk_modelitem.TK_MODEL_ID = tk_model.TK_MODEL_ID
-            JOIN tk_type on tk_type.TK_TYPE_ID = tk_modelitem.TK_TYPE_ID
-            WHERE tk_model.NAME IN (:values)
-                AND tk_model.IS_DELETED = 0
-                AND tk_modelitem.taskstyle = 0
+         SELECT i.TASK_START AS startTime,
+                i.TASK_END AS endTime,
+                i.IS_FRAME_RELATIVE AS isRelative,
+                t.NAME AS activity,
+                m.NAME AS templateName
+         FROM tk_modelitem i
+            JOIN tk_model_info mi ON i.TK_MODEL_ID = mi.TK_MODEL_INFO_ID AND mi.IS_DELETED = 0
+            JOIN tk_model m ON mi.TK_MODEL_ID = m.TK_MODEL_ID AND m.IS_DELETED = 0
+            JOIN tk_type t on t.TK_TYPE_ID = i.TK_TYPE_ID
+            WHERE m.NAME IN (:values)
+              AND i.taskstyle = 0
     """.trimIndent()
+    // Yes, TK_MODEL_INFO.TK_MODEL_ID is a TK_MODEL_INFO_ID, not a TK_MODEL_ID !
   }
 }
