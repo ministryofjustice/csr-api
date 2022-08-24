@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.4.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.4.2"
   kotlin("plugin.spring") version "1.7.10"
   kotlin("plugin.jpa") version "1.7.10"
   idea
@@ -24,12 +24,12 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 
-  implementation("org.springdoc:springdoc-openapi-ui:1.6.9")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.9")
-  implementation("org.springdoc:springdoc-openapi-security:1.6.9")
+  implementation("org.springdoc:springdoc-openapi-ui:1.6.11")
+  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.11")
+  implementation("org.springdoc:springdoc-openapi-security:1.6.11")
 
   implementation("org.apache.commons:commons-lang3:3.12.0")
-  implementation("com.nimbusds:nimbus-jose-jwt:9.23")
+  implementation("com.nimbusds:nimbus-jose-jwt:9.24.2")
   implementation("com.google.guava:guava:31.1-jre")
 
   testAnnotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
