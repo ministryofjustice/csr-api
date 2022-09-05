@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.4.2"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.4.3-beta"
   kotlin("plugin.spring") version "1.7.10"
   kotlin("plugin.jpa") version "1.7.10"
   idea
@@ -15,7 +15,7 @@ dependencies {
   runtimeOnly("com.h2database:h2:2.1.214")
   runtimeOnly("com.zaxxer:HikariCP")
   runtimeOnly("org.flywaydb:flyway-core")
-  runtimeOnly("com.oracle.database.jdbc:ojdbc10:19.15.0.0.1")
+  runtimeOnly("com.oracle.database.jdbc:ojdbc10:19.16.0.0")
 
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -29,7 +29,7 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-security:1.6.11")
 
   implementation("org.apache.commons:commons-lang3:3.12.0")
-  implementation("com.nimbusds:nimbus-jose-jwt:9.24.2")
+  implementation("com.nimbusds:nimbus-jose-jwt:9.24.3")
   implementation("com.google.guava:guava:31.1-jre")
 
   testAnnotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
