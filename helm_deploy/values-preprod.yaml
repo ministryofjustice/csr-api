@@ -2,6 +2,10 @@
 generic-service:
   replicaCount: 2
 
+  poddisruptionbudget:
+    enabled: true
+    minAvailable: 1
+
   ingress:
     host: csr-api-prprod.aks-live-1.studio-hosting.service.justice.gov.uk
     tlsSecretName: csr-api-prprod-tls-secret
