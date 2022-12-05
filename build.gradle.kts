@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.7.0-beta"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.7.1"
   kotlin("plugin.spring") version "1.7.21"
   kotlin("plugin.jpa") version "1.7.21"
   idea
@@ -15,7 +15,7 @@ dependencies {
   runtimeOnly("com.h2database:h2:2.1.214")
   runtimeOnly("com.zaxxer:HikariCP")
   runtimeOnly("org.flywaydb:flyway-core")
-  runtimeOnly("com.oracle.database.jdbc:ojdbc10:19.16.0.0")
+  runtimeOnly("com.oracle.database.jdbc:ojdbc10:19.17.0.0")
 
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -42,7 +42,7 @@ dependencies {
   testImplementation("com.tngtech.java:junit-dataprovider:1.13.1")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.36.0")
   testImplementation("io.github.http-builder-ng:http-builder-ng-apache:1.0.4")
-  testImplementation("com.ninja-squad:springmockk:3.1.1")
+  testImplementation("com.ninja-squad:springmockk:4.0.0")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
 
   testImplementation("io.jsonwebtoken:jjwt:0.9.1")
