@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.csr.api.controllers
 
+import jakarta.validation.ValidationException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
 import uk.gov.justice.digital.hmpps.csr.api.dto.ErrorResponse
-import javax.validation.ValidationException
 
 @RestControllerAdvice(basePackages = ["uk.gov.justice.digital.hmpps.csr.api.controllers"])
 class ControllerAdvice {
@@ -18,7 +18,7 @@ class ControllerAdvice {
   fun handleRestClientResponseException(e: RestClientResponseException): ResponseEntity<ByteArray> {
     log.error("Unexpected exception", e)
     return ResponseEntity
-      .status(e.rawStatusCode)
+      .status(e.statusCode)
       .body(e.responseBodyAsByteArray)
   }
 
