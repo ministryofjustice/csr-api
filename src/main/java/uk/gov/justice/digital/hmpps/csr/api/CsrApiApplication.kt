@@ -38,13 +38,12 @@ class CsrApiApplication {
     return dataSource
   }
 
-  fun regionDataSource(region: Region): DataSource {
-    val dataSource = HikariDataSource()
-    dataSource.driverClassName = region.driverClassName
-    dataSource.jdbcUrl = region.url
-    dataSource.username = region.username
-    dataSource.password = region.password
-    return dataSource
+  fun regionDataSource(region: Region): DataSource = HikariDataSource().also {
+    it.driverClassName = region.driverClassName
+    it.jdbcUrl = region.url
+    it.username = region.username
+    it.password = region.password
+    it.schema = region.schema
   }
 
   companion object {
