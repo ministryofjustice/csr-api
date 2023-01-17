@@ -20,4 +20,5 @@ class Region {
   lateinit var password: String
   lateinit var url: String
   lateinit var driverClassName: String
+  lateinit var schema: String
 }
