@@ -45,7 +45,7 @@ dependencies {
 
   testImplementation("io.jsonwebtoken:jjwt-impl:0.11.5")
   testImplementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
-  testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.23.1")
+  testImplementation("io.opentelemetry:opentelemetry-sdk-testing")
 }
 
 // Language versions
