@@ -106,7 +106,7 @@ class DetailService(
 
   private fun mergeTemplatesIntoDetails(
     details: Collection<Detail>,
-    templates: Collection<DetailTemplate>
+    templates: Collection<DetailTemplate>,
   ): Collection<Detail> {
     val groupedTemplates = templates.groupBy { it.templateName }
 
@@ -140,7 +140,7 @@ class DetailService(
               end,
               it.activity,
               el.actionType,
-              el.templateName
+              el.templateName,
             )
           }
 

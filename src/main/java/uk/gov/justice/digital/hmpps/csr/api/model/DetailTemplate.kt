@@ -5,5 +5,5 @@ data class DetailTemplate(
   val detailEnd: Long,
   val isRelative: Boolean,
   val activity: String,
-  val templateName: String
+  val templateName: String,
 )

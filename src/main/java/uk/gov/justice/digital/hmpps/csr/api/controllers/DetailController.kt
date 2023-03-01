@@ -30,12 +30,18 @@ class DetailController(private val detailService: DetailService) {
   @Operation(summary = "Retrieve all details for a user between two dates")
   @GetMapping("/user/details/{region}")
   fun getDetailsByUserWithRegion(
-    @PathVariable @Schema(
+    @PathVariable
+    @Schema(
       description = "the number of the required region",
-      allowableValues = ["1", "2", "3", "4", "5", "6"]
-    ) region: Int,
-    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: LocalDate,
-    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: LocalDate
+      allowableValues = ["1", "2", "3", "4", "5", "6"],
+    )
+    region: Int,
+    @RequestParam
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    from: LocalDate,
+    @RequestParam
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    to: LocalDate,
   ): ResponseEntity<Collection<DetailDto>> {
     RegionContext.setRegion(region)
 
@@ -47,7 +53,7 @@ class DetailController(private val detailService: DetailService) {
   @GetMapping("/updates/{region}")
   fun getModified(
     @PathVariable
-    region: Int
+    region: Int,
   ): List<DetailDto> {
     RegionContext.setRegion(region)
 
@@ -60,15 +66,19 @@ class DetailController(private val detailService: DetailService) {
       content = [
         Content(
           mediaType = "application/json",
-          array = ArraySchema(schema = Schema(implementation = Long::class))
-        )
-      ]
+          array = ArraySchema(schema = Schema(implementation = Long::class)),
+        ),
+      ],
     ),
   )
   @PutMapping("/updates/{region}")
   fun deleteProcessed(
-    @PathVariable @Schema(description = "the number of the required region, 1-6") region: Int,
-    @RequestBody @Schema(description = "List of ids to delete") ids: List<Long>
+    @PathVariable
+    @Schema(description = "the number of the required region, 1-6")
+    region: Int,
+    @RequestBody
+    @Schema(description = "List of ids to delete")
+    ids: List<Long>,
   ) {
     RegionContext.setRegion(region)
 
@@ -77,11 +87,15 @@ class DetailController(private val detailService: DetailService) {
 
   @Operation(
     summary = "Delete all notification records",
-    description = "Intended for manual use only, requires CMD_ADMIN role"
+    description = "Intended for manual use only, requires CMD_ADMIN role",
   )
   @PutMapping("/updates/delete-all/{region}")
   @PreAuthorize("hasRole('ROLE_CMD_ADMIN')")
-  fun deleteAll(@PathVariable @Schema(description = "the number of the required region, 1-6") region: Int): String {
+  fun deleteAll(
+    @PathVariable
+    @Schema(description = "the number of the required region, 1-6")
+    region: Int,
+  ): String {
     RegionContext.setRegion(region)
 
     return detailService.deleteAll()
@@ -89,16 +103,18 @@ class DetailController(private val detailService: DetailService) {
 
   @Operation(
     summary = "Delete old notification records",
-    description = "Intended for manual use only, requires CMD_ADMIN role"
+    description = "Intended for manual use only, requires CMD_ADMIN role",
   )
   @PutMapping("/updates/delete-old/{region}")
   @PreAuthorize("hasRole('ROLE_CMD_ADMIN')")
   fun setProcessed(
-    @PathVariable @Schema(description = "the number of the required region, 1-6") region: Int,
+    @PathVariable
+    @Schema(description = "the number of the required region, 1-6")
+    region: Int,
     @RequestParam
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Parameter(description = "Delete all rows added before this date", example = "2022-03-28")
-    date: LocalDate
+    date: LocalDate,
   ): String {
     RegionContext.setRegion(region)
 

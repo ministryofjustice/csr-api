@@ -41,7 +41,7 @@ class DetailDtoTest {
       null,
       null,
       null,
-      null
+      null,
     )
     val start = LocalDate.now(clock).atTime(LocalTime.MIN)
     val detailDto = DetailDto.from(detail)
@@ -80,7 +80,7 @@ class DetailDtoTest {
         detailEnd = LocalDateTime.parse("2022-04-01T02:00:00"),
         activity = null,
         actionType = ActionType.ADD,
-      )
+      ),
     )
   }
 
@@ -110,7 +110,7 @@ class DetailDtoTest {
         detailEnd = LocalDateTime.parse("2022-04-01T02:00:00"),
         activity = "CCTV Monitoring",
         actionType = ActionType.EDIT,
-      )
+      ),
     )
   }
 
@@ -129,7 +129,6 @@ class DetailDtoTest {
     const val activity = "Phone Center"
 
     fun getFullyPopulatedDetail(): Detail {
-
       return Detail(
         quantumId,
         shiftModified,
@@ -139,7 +138,7 @@ class DetailDtoTest {
         detailEndTimeInSeconds,
         activity,
         actionType.value,
-        null
+        null,
       )
     }
   }

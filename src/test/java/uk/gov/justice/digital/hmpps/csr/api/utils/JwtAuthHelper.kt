@@ -53,7 +53,7 @@ class JwtAuthHelper {
       subject = user,
       scope = listOf("read"),
       expiryTime = Duration.ofHours(1L),
-      roles = roles
+      roles = roles,
     )
     return { it.set(HttpHeaders.AUTHORIZATION, "Bearer $token") }
   }

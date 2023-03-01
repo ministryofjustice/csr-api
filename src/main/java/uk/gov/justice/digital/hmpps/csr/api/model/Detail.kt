@@ -21,5 +21,5 @@ data class Detail(
 
   val actionType: Int?,
 
-  val templateName: String?
+  val templateName: String?,
 )

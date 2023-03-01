@@ -4,7 +4,8 @@ enum class ActionType(val value: Int) {
   UNCHANGED(0),
   ADD(1),
   EDIT(2),
-  DELETE(3);
+  DELETE(3),
+  ;
 
   companion object {
     private val map = values().associateBy(ActionType::value)

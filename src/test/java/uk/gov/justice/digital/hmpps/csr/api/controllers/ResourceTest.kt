@@ -29,6 +29,6 @@ abstract class ResourceTest {
 
   internal fun setAuthorisation(
     user: String = "TEST-USER",
-    roles: List<String> = listOf()
+    roles: List<String> = listOf(),
   ): (HttpHeaders) -> Unit = jwtAuthHelper.setAuthorisation(user, roles)
 }

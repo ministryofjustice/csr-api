@@ -13,7 +13,6 @@ class DetailTest {
 
   @Test
   fun `Should return a Detail with any values`() {
-
     val clock =
       Clock.fixed(LocalDate.of(2020, 5, 3).atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
 
@@ -36,7 +35,7 @@ class DetailTest {
       detailEndTimeInSeconds,
       activity,
       actionType.value,
-      templateName
+      templateName,
     )
 
     assertThat(overtime.quantumId).isEqualTo(quantumId)
