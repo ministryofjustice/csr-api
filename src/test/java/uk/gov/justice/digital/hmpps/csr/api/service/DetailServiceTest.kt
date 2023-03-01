@@ -32,7 +32,7 @@ internal class DetailServiceTest {
   private val authenticationFacade: AuthenticationFacade = mockk(relaxUnitFun = true)
   private val service = DetailService(
     sqlRepository,
-    authenticationFacade
+    authenticationFacade,
   )
 
   private val clock: Clock =
@@ -167,7 +167,7 @@ internal class DetailServiceTest {
       val templates = listOf(
         getValidDetailTemplate(templateStart, templateEnd, isRelative, templateName),
         getValidDetailTemplate(templateStart, templateEnd, isRelative, templateName),
-        getValidDetailTemplate(templateStart, templateEnd, isRelative, templateName)
+        getValidDetailTemplate(templateStart, templateEnd, isRelative, templateName),
       )
       every { sqlRepository.getDetails(paddedFrom, to, quantumId) } returns details
       every { sqlRepository.getDetailTemplates(listOf(templateName)) } returns templates
@@ -197,7 +197,7 @@ internal class DetailServiceTest {
         getValidDetailTemplate(templateStart, templateEnd, true, templateName),
         getValidDetailTemplate(templateStart, templateEnd, false, templateName),
         getValidDetailTemplate(templateStart, templateEnd, false, templateName),
-        getValidDetailTemplate(templateStart, templateEnd, true, templateName)
+        getValidDetailTemplate(templateStart, templateEnd, true, templateName),
       )
       every { sqlRepository.getDetails(paddedFrom, to, quantumId) } returns details
       every { sqlRepository.getDetailTemplates(listOf(templateName)) } returns templates
@@ -230,7 +230,7 @@ internal class DetailServiceTest {
 
       val details = listOf(
         getValidShiftDetailWithTemplateName(shiftDate, detailStart1, detailEnd1, templateName1),
-        getValidShiftDetailWithTemplateName(shiftDate, detailStart2, detailEnd2, templateName2)
+        getValidShiftDetailWithTemplateName(shiftDate, detailStart2, detailEnd2, templateName2),
       )
       val templates = listOf(
         getValidDetailTemplate(templateStart, templateEnd, true, templateName1),
@@ -239,7 +239,7 @@ internal class DetailServiceTest {
         getValidDetailTemplate(templateStart, templateEnd, true, templateName1),
         getValidDetailTemplate(templateStart, templateEnd, true, templateName2),
         getValidDetailTemplate(templateStart, templateEnd, true, templateName2),
-        getValidDetailTemplate(templateStart, templateEnd, false, templateName2)
+        getValidDetailTemplate(templateStart, templateEnd, false, templateName2),
       )
 
       every { sqlRepository.getDetails(paddedFrom, to, quantumId) } returns details
@@ -282,11 +282,11 @@ internal class DetailServiceTest {
       val details = listOf(
         getValidShiftDetailWithTemplateName(day1, detailStart1, detailEnd1, templateName),
         getValidShiftDetailWithTemplateName(day2, detailStart2, detailEnd2, templateName),
-        getValidShiftDetailWithTemplateName(day3, detailStart3, detailEnd3, templateName)
+        getValidShiftDetailWithTemplateName(day3, detailStart3, detailEnd3, templateName),
       )
       val templates = listOf(
         getValidDetailTemplate(templateStart, templateEnd, true, templateName),
-        getValidDetailTemplate(templateStart, templateEnd, false, templateName)
+        getValidDetailTemplate(templateStart, templateEnd, false, templateName),
       )
 
       every { sqlRepository.getDetails(paddedFrom, to.plusDays(2), quantumId) } returns details
@@ -301,22 +301,22 @@ internal class DetailServiceTest {
       assertThat(returnValue.elementAt(0).detailStart).isEqualTo(
         calculateDetailDateTime(
           day1,
-          detailStart1 + templateStart
-        )
+          detailStart1 + templateStart,
+        ),
       )
       assertThat(returnValue.elementAt(1).detailStart).isEqualTo(calculateDetailDateTime(day1, templateStart))
       assertThat(returnValue.elementAt(2).detailStart).isEqualTo(
         calculateDetailDateTime(
           day2,
-          detailStart2 + templateStart
-        )
+          detailStart2 + templateStart,
+        ),
       )
       assertThat(returnValue.elementAt(3).detailStart).isEqualTo(calculateDetailDateTime(day2, templateStart))
       assertThat(returnValue.elementAt(4).detailStart).isEqualTo(
         calculateDetailDateTime(
           day3,
-          detailStart3 + templateStart
-        )
+          detailStart3 + templateStart,
+        ),
       )
       assertThat(returnValue.elementAt(5).detailStart).isEqualTo(calculateDetailDateTime(day3, templateStart))
     }
@@ -496,7 +496,6 @@ internal class DetailServiceTest {
   }
 
   private fun getValidShiftDetail(start: Long, end: Long): Detail {
-
     val shiftModified: LocalDateTime = LocalDateTime.now(clock).minusDays(3)
     val shiftType = ShiftType.OVERTIME
     val actionType = ActionType.EDIT
@@ -511,7 +510,7 @@ internal class DetailServiceTest {
       end,
       activity,
       actionType.value,
-      null
+      null,
     )
   }
 
@@ -519,9 +518,8 @@ internal class DetailServiceTest {
     shiftDate: LocalDate,
     start: Long,
     end: Long,
-    templateName: String
+    templateName: String,
   ): Detail {
-
     val shiftModified: LocalDateTime = LocalDateTime.now(clock).minusDays(3)
     val shiftType = ShiftType.OVERTIME
     val actionType = ActionType.EDIT
@@ -536,7 +534,7 @@ internal class DetailServiceTest {
       end,
       activity,
       actionType.value,
-      templateName
+      templateName,
     )
   }
 
@@ -544,7 +542,7 @@ internal class DetailServiceTest {
     start: Long,
     end: Long,
     isRelative: Boolean,
-    templateName: String
+    templateName: String,
   ): DetailTemplate {
     val activity = "Phone Center"
 
@@ -553,7 +551,7 @@ internal class DetailServiceTest {
       end,
       isRelative,
       activity,
-      templateName
+      templateName,
     )
   }
 

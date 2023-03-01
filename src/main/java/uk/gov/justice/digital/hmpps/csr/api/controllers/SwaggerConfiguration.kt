@@ -26,8 +26,8 @@ class SwaggerConfiguration(buildProperties: BuildProperties?) {
           .scheme("bearer")
           .bearerFormat("JWT")
           .`in`(SecurityScheme.In.HEADER)
-          .name("Authorization")
-      )
+          .name("Authorization"),
+      ),
     )
     .info(
       Info()
@@ -35,7 +35,7 @@ class SwaggerConfiguration(buildProperties: BuildProperties?) {
         .description("CSR data API for CMD.")
         .version(version)
         .license(License().name("MIT").url("https://opensource.org/licenses/MIT"))
-        .contact(Contact().name("HMPPS Digital Studio").email("feedback@digital.justice.gov.uk"))
+        .contact(Contact().name("HMPPS Digital Studio").email("feedback@digital.justice.gov.uk")),
     )
     .addSecurityItem(SecurityRequirement().addList("bearer-jwt", listOf("read", "write")))
 }

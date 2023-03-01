@@ -33,7 +33,7 @@ DetailDto @JsonCreator constructor(
   val activity: String?,
 
   @field:Schema(description = "Type of modification action", example = "EDIT")
-  val actionType: ActionType?
+  val actionType: ActionType?,
 
 ) {
   companion object {
@@ -52,7 +52,7 @@ DetailDto @JsonCreator constructor(
         detailEnd = calculateDetailDateTime(detail.shiftDate, detail.endTimeInSeconds ?: 0L),
 
         activity = detail.activity,
-        actionType = detail.actionType?.let { type -> ActionType.from(type) }
+        actionType = detail.actionType?.let { type -> ActionType.from(type) },
       )
 
     fun from(detail: CmdNotification): DetailDto =

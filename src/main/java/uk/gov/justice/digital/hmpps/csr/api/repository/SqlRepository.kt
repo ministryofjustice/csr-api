@@ -23,7 +23,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
         .addValue("from", from)
         .addValue("to", to)
         .addValue("quantumId", quantumId),
-      detailsRowMapper
+      detailsRowMapper,
     )
   }
 
@@ -44,7 +44,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
       GET_DETAIL_TEMPLATES,
       MapSqlParameterSource()
         .addValue("values", templateNames),
-      detailsTemplateRowMapper
+      detailsTemplateRowMapper,
     )
   }
 
@@ -60,7 +60,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
         resultSet.getLong("endTime"),
         resultSet.getString("activity"),
         null,
-        resultSet.getString("templateName")
+        resultSet.getString("templateName"),
       )
     }
 
@@ -84,7 +84,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
         resultSet.getLong("endTime"),
         resultSet.getBoolean("isRelative"),
         resultSet.getString("activity"),
-        resultSet.getString("templateName")
+        resultSet.getString("templateName"),
       )
     }
 

@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.1.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.1.1-beta"
   kotlin("plugin.spring") version "1.8.10"
   kotlin("plugin.jpa") version "1.8.10"
   idea
@@ -15,7 +15,7 @@ dependencies {
   runtimeOnly("com.h2database:h2:2.1.214")
   runtimeOnly("com.zaxxer:HikariCP")
   runtimeOnly("org.flywaydb:flyway-core")
-  runtimeOnly("com.oracle.database.jdbc:ojdbc10:19.17.0.0")
+  runtimeOnly("com.oracle.database.jdbc:ojdbc10:19.18.0.0")
 
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -27,7 +27,7 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
 
   implementation("org.apache.commons:commons-lang3:3.12.0")
-  implementation("com.nimbusds:nimbus-jose-jwt:9.30.1")
+  implementation("com.nimbusds:nimbus-jose-jwt:9.31")
   implementation("com.google.guava:guava:31.1-jre")
 
   testAnnotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
@@ -45,16 +45,16 @@ dependencies {
 
   testImplementation("io.jsonwebtoken:jjwt-impl:0.11.5")
   testImplementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
-  testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.22.0")
+  testImplementation("io.opentelemetry:opentelemetry-sdk-testing:1.23.1")
 }
 
 // Language versions
 java {
-  toolchain.languageVersion.set(JavaLanguageVersion.of(18))
+  toolchain.languageVersion.set(JavaLanguageVersion.of(19))
 }
 
 tasks {
   withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions.jvmTarget = "18"
+    kotlinOptions.jvmTarget = "19"
   }
 }
