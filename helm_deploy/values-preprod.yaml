@@ -12,5 +12,10 @@ generic-service:
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt-production
 
+  scheduledDowntime:
+    enabled: true
+    startup: '15 6 0 * 1-5' # Start at 6.15am UTC Monday-Friday
+    shutdown: '55 21 * * 1-5' # Stop at 9.55pm UTC Monday-Friday
+
   env:
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json"
