@@ -8,10 +8,6 @@ spring:
         jwt:
           jwk-set-uri: https://sign-in-dev.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json
 
-oauth:
-  endpoint:
-    url: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
-
 logging:
   level:
     uk.gov: DEBUG

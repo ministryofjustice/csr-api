@@ -1,5 +1,8 @@
 package uk.gov.justice.digital.hmpps.csr.api.config
 
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.cache.CacheManager
+import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.convert.converter.Converter
@@ -13,6 +16,8 @@ import org.springframework.security.config.http.SessionCreationPolicy.STATELESS
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.oauth2.jwt.Jwt
+import org.springframework.security.oauth2.jwt.JwtDecoder
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter
 import org.springframework.security.web.SecurityFilterChain
@@ -20,6 +25,7 @@ import org.springframework.security.web.SecurityFilterChain
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
+@EnableCaching
 class ResourceServerConfiguration {
   @Bean
   fun filterChain(http: HttpSecurity): SecurityFilterChain {
@@ -48,6 +54,12 @@ class ResourceServerConfiguration {
     }
     return http.build()
   }
+
+  @Bean
+  fun locallyCachedJwtDecoder(
+    @Value("\${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}") jwkSetUri: String,
+    cacheManager: CacheManager,
+  ): JwtDecoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).cache(cacheManager.getCache("jwks")).build()
 
   class AuthAwareTokenConverter : Converter<Jwt, AbstractAuthenticationToken> {
     private val jwtGrantedAuthoritiesConverter: Converter<Jwt, Collection<GrantedAuthority>> =
