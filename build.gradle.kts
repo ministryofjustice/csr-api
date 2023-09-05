@@ -50,11 +50,11 @@ dependencies {
 
 // Language versions
 java {
-  toolchain.languageVersion.set(JavaLanguageVersion.of(19))
+  toolchain.languageVersion.set(JavaLanguageVersion.of(20))
 }
 
 tasks {
   withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions.jvmTarget = "19"
+    kotlinOptions.jvmTarget = "20"
   }
 }
