@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.4.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.4.1"
   kotlin("plugin.spring") version "1.9.10"
   kotlin("plugin.jpa") version "1.9.10"
   idea
@@ -12,7 +12,7 @@ configurations {
 dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-  runtimeOnly("com.h2database:h2:2.2.220")
+  runtimeOnly("com.h2database:h2:2.2.222")
   runtimeOnly("com.zaxxer:HikariCP")
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("com.oracle.database.jdbc:ojdbc10:19.20.0.0")
