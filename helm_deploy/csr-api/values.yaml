@@ -1,6 +1,7 @@
 ---
 generic-service:
   nameOverride: csr-api
+  productId: DPS052
 
   image:
     repository: quay.io/hmpps/csr-api
