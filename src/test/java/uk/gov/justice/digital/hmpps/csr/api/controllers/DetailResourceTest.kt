@@ -77,7 +77,7 @@ class DetailResourceTest : ResourceTest() {
             .queryParam("to", "2022-03-20")
             .build()
         }
-        .headers(setAuthorisation())
+        .headers(setAuthorisation(roles = listOf("ROLE_CMD")))
         .exchange()
         .expectStatus().isOk
         .expectBodyList(DetailDto::class.java)
@@ -157,7 +157,7 @@ class DetailResourceTest : ResourceTest() {
       assertThat(
         webTestClient.get()
           .uri("/updates/1")
-          .headers(setAuthorisation())
+          .headers(setAuthorisation(roles = listOf("ROLE_CMD")))
           .exchange()
           .expectStatus().isOk
           .expectBodyList(DetailDto::class.java)
@@ -234,7 +234,7 @@ class DetailResourceTest : ResourceTest() {
 
       webTestClient.put()
         .uri("/updates/1")
-        .headers(setAuthorisation())
+        .headers(setAuthorisation(roles = listOf("ROLE_CMD")))
         .contentType(MediaType.APPLICATION_JSON)
         .bodyValue("""[101,103,999]""")
         .exchange()
