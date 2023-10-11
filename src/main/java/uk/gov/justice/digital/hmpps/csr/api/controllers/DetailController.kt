@@ -25,6 +25,7 @@ import java.time.LocalDate
 @Tag(name = "details", description = "Details of shifts from CSR")
 @RestController
 @RequestMapping(produces = [APPLICATION_JSON_VALUE])
+@PreAuthorize("hasRole('ROLE_CMD')")
 class DetailController(private val detailService: DetailService) {
 
   @Operation(summary = "Retrieve all details for a user between two dates")
