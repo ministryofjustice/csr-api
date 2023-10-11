@@ -25,11 +25,11 @@ import java.time.LocalDate
 @Tag(name = "details", description = "Details of shifts from CSR")
 @RestController
 @RequestMapping(produces = [APPLICATION_JSON_VALUE])
+@PreAuthorize("hasRole('ROLE_CMD')")
 class DetailController(private val detailService: DetailService) {
 
   @Operation(summary = "Retrieve all details for a user between two dates")
   @GetMapping("/user/details/{region}")
-  @PreAuthorize("hasRole('ROLE_CMD')")
   fun getDetailsByUserWithRegion(
     @PathVariable
     @Schema(
@@ -52,7 +52,6 @@ class DetailController(private val detailService: DetailService) {
 
   @Operation(summary = "Retrieve all modified records")
   @GetMapping("/updates/{region}")
-  @PreAuthorize("hasRole('ROLE_CMD')")
   fun getModified(
     @PathVariable
     region: Int,
@@ -74,7 +73,6 @@ class DetailController(private val detailService: DetailService) {
     ),
   )
   @PutMapping("/updates/{region}")
-  @PreAuthorize("hasRole('ROLE_CMD')")
   fun deleteProcessed(
     @PathVariable
     @Schema(description = "the number of the required region, 1-6")
