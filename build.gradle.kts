@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.5.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.5.1"
   kotlin("plugin.spring") version "1.9.10"
   kotlin("plugin.jpa") version "1.9.10"
   idea
@@ -28,7 +28,7 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 
   implementation("org.apache.commons:commons-lang3:3.13.0")
-  implementation("com.nimbusds:nimbus-jose-jwt:9.35")
+  implementation("com.nimbusds:nimbus-jose-jwt:9.36")
 
   testAnnotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
@@ -43,8 +43,8 @@ dependencies {
   testImplementation("com.ninja-squad:springmockk:4.0.2")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
 
-  testImplementation("io.jsonwebtoken:jjwt-impl:0.12.0")
-  testImplementation("io.jsonwebtoken:jjwt-jackson:0.12.0")
+  testImplementation("io.jsonwebtoken:jjwt-impl:0.12.2")
+  testImplementation("io.jsonwebtoken:jjwt-jackson:0.12.2")
   testImplementation("io.opentelemetry:opentelemetry-sdk-testing")
 }
 
@@ -56,10 +56,5 @@ java {
 tasks {
   withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.jvmTarget = "20"
-  }
-
-  test {
-    // required for jjwt 0.12 - see https://github.com/jwtk/jjwt/issues/849
-    jvmArgs("--add-exports", "java.base/sun.security.util=ALL-UNNAMED")
   }
 }
