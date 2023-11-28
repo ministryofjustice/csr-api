@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.csr.api.controllers
 import jakarta.validation.ValidationException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.MissingServletRequestParameterException
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
-import org.springframework.web.reactive.resource.NoResourceFoundException
 import uk.gov.justice.digital.hmpps.csr.api.dto.ErrorResponse
 
 @RestControllerAdvice(basePackages = ["uk.gov.justice.digital.hmpps.csr.api.controllers"])
@@ -55,12 +53,6 @@ class ControllerAdvice {
       .status(HttpStatus.BAD_REQUEST)
       .body(ErrorResponse(status = (HttpStatus.BAD_REQUEST.value()), developerMessage = (e.message)))
   }
-
-  @ExceptionHandler(NoResourceFoundException::class)
-  fun handleEntityNotFoundException(e: NoResourceFoundException): ResponseEntity<ErrorResponse> = ResponseEntity
-    .status(HttpStatus.NOT_FOUND)
-    .contentType(MediaType.APPLICATION_JSON)
-    .body(ErrorResponse(status = HttpStatus.NOT_FOUND.value(), developerMessage = e.message))
 
   @ExceptionHandler(Exception::class)
   fun handleException(e: Exception): ResponseEntity<ErrorResponse> {
