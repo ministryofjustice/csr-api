@@ -1,7 +1,7 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.10.1"
-  kotlin("plugin.spring") version "1.9.21"
-  kotlin("plugin.jpa") version "1.9.21"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.12.0"
+  kotlin("plugin.spring") version "1.9.22"
+  kotlin("plugin.jpa") version "1.9.22"
   idea
 }
 
@@ -28,7 +28,7 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 
   implementation("org.apache.commons:commons-lang3:3.14.0")
-  implementation("com.nimbusds:nimbus-jose-jwt:9.37.2")
+  implementation("com.nimbusds:nimbus-jose-jwt:9.37.3")
 
   testAnnotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
