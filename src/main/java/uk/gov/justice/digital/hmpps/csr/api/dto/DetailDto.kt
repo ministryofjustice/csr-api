@@ -85,7 +85,7 @@ DetailDto @JsonCreator constructor(
     /*
      CSR database uses positive or negative numbers to offset the shiftDate.
      e.g. 04/09/2020T00:00:00 with a detail start of -10 is actually 03/09/2020T23:59:50
-  */
+     */
     private fun calculateDetailDateTime(shiftDate: LocalDate, detailTime: Long): LocalDateTime {
       val normalisedTime = if (detailTime == 86400L) {
         0

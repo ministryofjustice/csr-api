@@ -16,13 +16,12 @@ import java.time.LocalDateTime
 
 class DetailResourceTest : ResourceTest() {
 
-  private val ONE_HR = 60 * 60
-  private val TWO_HRS = 60 * 60 * 2
-  private val NINE_HRS = 60 * 60 * 9
-  private val TEN_HRS = 60 * 60 * 10
-
   companion object {
     private val ADMIN_ROLE = listOf("ROLE_CMD_ADMIN")
+    private const val ONE_HR = 60 * 60
+    private const val TWO_HRS = 60 * 60 * 2
+    private const val NINE_HRS = 60 * 60 * 9
+    private const val TEN_HRS = 60 * 60 * 10
   }
 
   @BeforeEach
@@ -137,9 +136,9 @@ class DetailResourceTest : ResourceTest() {
 
     private val testRowMapper: RowMapper<Long> = RowMapper { rs: ResultSet, _: Int -> rs.getLong(1) }
 
-    private val INSERT =
+    private val insert =
       "insert into CMD_NOTIFICATION (ID, ST_STAFF_ID, LEVEL_ID, ON_DATE, LASTMODIFIED, ACTION_TYPE, TASK_START, TASK_END, REF_ID, OPTIONAL_1) values"
-    private val INSERTR2 =
+    private val insertR2 =
       "insert into R2.CMD_NOTIFICATION (ID, ST_STAFF_ID, LEVEL_ID, ON_DATE, LASTMODIFIED, ACTION_TYPE, TASK_START, TASK_END, REF_ID, OPTIONAL_1) values"
 
     @Test
@@ -147,12 +146,12 @@ class DetailResourceTest : ResourceTest() {
       jdbcTemplate.update("insert into TK_TYPE( TK_TYPE_ID,  NAME) values (11, 'type 11')")
       jdbcTemplate.update("insert into TK_MODEL(TK_MODEL_ID, NAME, FRAME_START, FRAME_END, IS_DELETED) values (12, 'model 12', $ONE_HR, $TWO_HRS, 0)")
 
-      jdbcTemplate.update("$INSERT (101, 1147, 1000, '2022-03-21', CURRENT_DATE,     null,  $NINE_HRS, $TEN_HRS, 11,null)")
-      jdbcTemplate.update("$INSERT (102, 1148, 1000, '2022-03-22', CURRENT_DATE + 1, null,  $NINE_HRS, $TEN_HRS, null,12)")
-      jdbcTemplate.update("$INSERT (103, 1148, 1000, '2022-03-22', CURRENT_DATE + 1, 47015, null, null, null, null)")
-      jdbcTemplate.update("$INSERT (104, 1148, 4000, '2022-03-22', CURRENT_DATE + 1, 47012, null, null, null, null)")
-      jdbcTemplate.update("$INSERT (105, 1148, 4000, '2022-03-22', CURRENT_DATE + 1, 47999, null, null, null, null)")
-      jdbcTemplate.update("$INSERT (106, 1100, 4000, '2022-03-22', CURRENT_DATE - 1, null,  $NINE_HRS, $TEN_HRS, null,12)") // staff id not in tw_protocol means null timestamp
+      jdbcTemplate.update("$insert (101, 1147, 1000, '2022-03-21', CURRENT_DATE,     null,  $NINE_HRS, $TEN_HRS, 11,null)")
+      jdbcTemplate.update("$insert (102, 1148, 1000, '2022-03-22', CURRENT_DATE + 1, null,  $NINE_HRS, $TEN_HRS, null,12)")
+      jdbcTemplate.update("$insert (103, 1148, 1000, '2022-03-22', CURRENT_DATE + 1, 47015, null, null, null, null)")
+      jdbcTemplate.update("$insert (104, 1148, 4000, '2022-03-22', CURRENT_DATE + 1, 47012, null, null, null, null)")
+      jdbcTemplate.update("$insert (105, 1148, 4000, '2022-03-22', CURRENT_DATE + 1, 47999, null, null, null, null)")
+      jdbcTemplate.update("$insert (106, 1100, 4000, '2022-03-22', CURRENT_DATE - 1, null,  $NINE_HRS, $TEN_HRS, null,12)") // staff id not in tw_protocol means null timestamp
 
       assertThat(
         webTestClient.get()
@@ -178,7 +177,8 @@ class DetailResourceTest : ResourceTest() {
           quantumId = "a_1148",
           shiftModified = LocalDateTime.parse("2099-08-21T00:00:00"),
           shiftType = ShiftType.SHIFT,
-          detailStart = LocalDateTime.parse("2022-03-22T09:00:00"), // not overridden by tk_model
+          // not overridden by tk_model
+          detailStart = LocalDateTime.parse("2022-03-22T09:00:00"),
           detailEnd = LocalDateTime.parse("2022-03-22T10:00:00"),
           activity = "model 12",
           actionType = ActionType.EDIT,
@@ -216,7 +216,8 @@ class DetailResourceTest : ResourceTest() {
         DetailDto(
           id = 106,
           quantumId = "a_1100",
-          shiftModified = LocalDate.now().minusDays(1).atStartOfDay(), // NOTE: from CMD_NOTIFICATION, not TW_PROTOCOL
+          // NOTE: from CMD_NOTIFICATION, not TW_PROTOCOL
+          shiftModified = LocalDate.now().minusDays(1).atStartOfDay(),
           shiftType = ShiftType.OVERTIME,
           detailStart = LocalDateTime.parse("2022-03-22T09:00:00"),
           detailEnd = LocalDateTime.parse("2022-03-22T10:00:00"),
@@ -228,9 +229,9 @@ class DetailResourceTest : ResourceTest() {
 
     @Test
     fun testDeleteNotifications() {
-      jdbcTemplate.update("$INSERT (101, 1147, 1000, '2022-03-21', SYSDATE,     47001, 0,0, null,null)")
-      jdbcTemplate.update("$INSERT (102, 1148, 4000, '2022-03-22', SYSDATE + 1, 47006, 0,0, null,null)")
-      jdbcTemplate.update("$INSERT (103, 1149, 1000, '2022-03-22', SYSDATE + 1, 47006, 0,0, null,null)")
+      jdbcTemplate.update("$insert (101, 1147, 1000, '2022-03-21', SYSDATE,     47001, 0,0, null,null)")
+      jdbcTemplate.update("$insert (102, 1148, 4000, '2022-03-22', SYSDATE + 1, 47006, 0,0, null,null)")
+      jdbcTemplate.update("$insert (103, 1149, 1000, '2022-03-22', SYSDATE + 1, 47006, 0,0, null,null)")
 
       webTestClient.put()
         .uri("/updates/1")
@@ -245,8 +246,8 @@ class DetailResourceTest : ResourceTest() {
 
     @Test
     fun testDeleteAllNotifications() {
-      jdbcTemplate.update("$INSERT (101, 1147, 1000, '2022-03-21', SYSDATE,     47001, 0,0, null,null)")
-      jdbcTemplate.update("$INSERT (102, 1148, 4000, '2022-03-22', SYSDATE + 1, 47006, 0,0, null,null)")
+      jdbcTemplate.update("$insert (101, 1147, 1000, '2022-03-21', SYSDATE,     47001, 0,0, null,null)")
+      jdbcTemplate.update("$insert (102, 1148, 4000, '2022-03-22', SYSDATE + 1, 47006, 0,0, null,null)")
 
       webTestClient.put()
         .uri("/updates/delete-all/1")
@@ -261,9 +262,9 @@ class DetailResourceTest : ResourceTest() {
 
     @Test
     fun testDeleteAllNotificationsRegion2() {
-      jdbcTemplate.update("$INSERT (101, 1147, 1000, '2022-03-21', SYSDATE,     47001, 0,0, null,null)")
-      jdbcTemplate.update("$INSERTR2 (101, 1147, 1000, '2022-03-21', SYSDATE,     47001, 0,0, null,null)")
-      jdbcTemplate.update("$INSERTR2 (102, 1148, 4000, '2022-03-22', SYSDATE + 1, 47006, 0,0, null,null)")
+      jdbcTemplate.update("$insert (101, 1147, 1000, '2022-03-21', SYSDATE,     47001, 0,0, null,null)")
+      jdbcTemplate.update("$insertR2 (101, 1147, 1000, '2022-03-21', SYSDATE,     47001, 0,0, null,null)")
+      jdbcTemplate.update("$insertR2 (102, 1148, 4000, '2022-03-22', SYSDATE + 1, 47006, 0,0, null,null)")
 
       webTestClient.put()
         .uri("/updates/delete-all/2")
@@ -277,10 +278,10 @@ class DetailResourceTest : ResourceTest() {
 
     @Test
     fun testDeleteOld() {
-      jdbcTemplate.update("$INSERT (101, 1147, 1000, '2022-01-01', to_date('2022-03-01 08:00', 'YYYY-MM-DD HH24:MI'), 47001, 0,0, null,null)")
-      jdbcTemplate.update("$INSERT (102, 1147, 1000, '2022-01-01', to_date('2022-03-02 08:00', 'YYYY-MM-DD HH24:MI'), 47001, 0,0, null,null)")
-      jdbcTemplate.update("$INSERT (103, 1147, 1000, '2022-01-01', to_date('2022-03-03 08:00', 'YYYY-MM-DD HH24:MI'), 47001, 0,0, null,null)")
-      jdbcTemplate.update("$INSERT (104, 1148, 4000, '2022-01-01', to_date('2022-03-04 08:00', 'YYYY-MM-DD HH24:MI'), 47001, 0,0, null,null)")
+      jdbcTemplate.update("$insert (101, 1147, 1000, '2022-01-01', to_date('2022-03-01 08:00', 'YYYY-MM-DD HH24:MI'), 47001, 0,0, null,null)")
+      jdbcTemplate.update("$insert (102, 1147, 1000, '2022-01-01', to_date('2022-03-02 08:00', 'YYYY-MM-DD HH24:MI'), 47001, 0,0, null,null)")
+      jdbcTemplate.update("$insert (103, 1147, 1000, '2022-01-01', to_date('2022-03-03 08:00', 'YYYY-MM-DD HH24:MI'), 47001, 0,0, null,null)")
+      jdbcTemplate.update("$insert (104, 1148, 4000, '2022-01-01', to_date('2022-03-04 08:00', 'YYYY-MM-DD HH24:MI'), 47001, 0,0, null,null)")
 
       webTestClient.put()
         .uri("/updates/delete-old/1?date=2022-03-03")
