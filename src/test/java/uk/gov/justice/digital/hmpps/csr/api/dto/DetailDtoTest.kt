@@ -92,7 +92,8 @@ class DetailDtoTest {
       onDate = LocalDate.parse("2022-04-01"),
       quantumId = "A-USER",
       lastModified = LocalDateTime.parse("2022-03-30T15:23:00"),
-      actionType = 0, // this means database value was null in a resultSet!
+      // this means database value was null in a resultSet!/
+      actionType = 0,
       startTimeInSeconds = 3600,
       endTimeInSeconds = 7200,
       activity = "CCTV Monitoring",
@@ -119,14 +120,14 @@ class DetailDtoTest {
       Clock.fixed(LocalDate.of(2020, 5, 3).atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
 
     private val shiftDate: LocalDate = LocalDate.now(clock)
-    private const val detailStartTimeInSeconds = 0L
-    private const val detailEndTimeInSeconds = 23 * 60 * 60 + 59 * 60L
+    private val detailStartTimeInSeconds = 0L
+    private val detailEndTimeInSeconds = 23 * 60 * 60 + 59 * 60L
 
-    const val quantumId = "XYZ"
-    val shiftModified: LocalDateTime = LocalDateTime.now(clock).minusDays(3)
-    val shiftType = ShiftType.OVERTIME
-    val actionType = ActionType.EDIT
-    const val activity = "Phone Center"
+    private val quantumId = "XYZ"
+    private val shiftModified: LocalDateTime = LocalDateTime.now(clock).minusDays(3)
+    private val shiftType = ShiftType.OVERTIME
+    private val actionType = ActionType.EDIT
+    private val activity = "Phone Center"
 
     fun getFullyPopulatedDetail(): Detail {
       return Detail(
