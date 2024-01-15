@@ -15,13 +15,13 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 class DetailResourceTest : ResourceTest() {
+  private const val ONE_HR = 60 * 60
+  private const val TWO_HRS = 60 * 60 * 2
+  private const val NINE_HRS = 60 * 60 * 9
+  private const val TEN_HRS = 60 * 60 * 10
 
   companion object {
     private val ADMIN_ROLE = listOf("ROLE_CMD_ADMIN")
-    private const val ONE_HR = 60 * 60
-    private const val TWO_HRS = 60 * 60 * 2
-    private const val NINE_HRS = 60 * 60 * 9
-    private const val TEN_HRS = 60 * 60 * 10
   }
 
   @BeforeEach
