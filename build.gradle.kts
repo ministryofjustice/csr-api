@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.15.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.15.2"
   kotlin("plugin.spring") version "1.9.22"
   kotlin("plugin.jpa") version "1.9.22"
   idea
@@ -15,7 +15,7 @@ dependencies {
   runtimeOnly("com.h2database:h2:2.2.224")
   runtimeOnly("com.zaxxer:HikariCP")
   runtimeOnly("org.flywaydb:flyway-core")
-  runtimeOnly("com.oracle.database.jdbc:ojdbc10:19.21.0.0")
+  runtimeOnly("com.oracle.database.jdbc:ojdbc10:19.22.0.0")
 
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -38,13 +38,13 @@ dependencies {
   }
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.tngtech.java:junit-dataprovider:1.13.1")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.2.2")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.2.4")
   testImplementation("io.github.http-builder-ng:http-builder-ng-apache:1.0.4")
   testImplementation("com.ninja-squad:springmockk:4.0.2")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
 
-  testImplementation("io.jsonwebtoken:jjwt-impl:0.12.3")
-  testImplementation("io.jsonwebtoken:jjwt-jackson:0.12.3")
+  testImplementation("io.jsonwebtoken:jjwt-impl:0.12.5")
+  testImplementation("io.jsonwebtoken:jjwt-jackson:0.12.5")
   testImplementation("io.opentelemetry:opentelemetry-sdk-testing")
 }
 
