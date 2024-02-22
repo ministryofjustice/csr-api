@@ -19,16 +19,10 @@ dependencies {
 
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("org.springframework.boot:spring-boot-starter-security")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:0.1.2")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
-  implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-  implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-  implementation("org.springframework.boot:spring-boot-starter-cache")
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
-
-  implementation("org.apache.commons:commons-lang3:3.14.0")
-  implementation("com.nimbusds:nimbus-jose-jwt:9.37.3")
 
   testAnnotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
