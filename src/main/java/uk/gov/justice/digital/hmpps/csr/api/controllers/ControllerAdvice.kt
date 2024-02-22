@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
-import uk.gov.justice.digital.hmpps.csr.api.dto.ErrorResponse
+import uk.gov.justice.hmpps.kotlin.common.ErrorResponse
 
 @RestControllerAdvice(basePackages = ["uk.gov.justice.digital.hmpps.csr.api.controllers"])
 class ControllerAdvice {
@@ -27,7 +27,7 @@ class ControllerAdvice {
     log.error("Unexpected exception", e)
     return ResponseEntity
       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-      .body(ErrorResponse(status = (HttpStatus.INTERNAL_SERVER_ERROR.value()), developerMessage = (e.message)))
+      .body(ErrorResponse(status = (HttpStatus.INTERNAL_SERVER_ERROR), developerMessage = (e.message)))
   }
 
   @ExceptionHandler(AccessDeniedException::class)
@@ -35,7 +35,7 @@ class ControllerAdvice {
     log.debug("Forbidden (403) returned", e)
     return ResponseEntity
       .status(HttpStatus.FORBIDDEN)
-      .body(ErrorResponse(status = (HttpStatus.FORBIDDEN.value())))
+      .body(ErrorResponse(status = (HttpStatus.FORBIDDEN)))
   }
 
   @ExceptionHandler(ValidationException::class)
@@ -43,7 +43,7 @@ class ControllerAdvice {
     log.debug("Bad Request (400) returned", e)
     return ResponseEntity
       .status(HttpStatus.BAD_REQUEST)
-      .body(ErrorResponse(status = HttpStatus.BAD_REQUEST.value(), developerMessage = e.message))
+      .body(ErrorResponse(status = HttpStatus.BAD_REQUEST, developerMessage = e.message))
   }
 
   @ExceptionHandler(MissingServletRequestParameterException::class)
@@ -51,7 +51,7 @@ class ControllerAdvice {
     log.debug("Bad Request (400) returned", e)
     return ResponseEntity
       .status(HttpStatus.BAD_REQUEST)
-      .body(ErrorResponse(status = (HttpStatus.BAD_REQUEST.value()), developerMessage = (e.message)))
+      .body(ErrorResponse(status = (HttpStatus.BAD_REQUEST), developerMessage = (e.message)))
   }
 
   @ExceptionHandler(Exception::class)
@@ -59,7 +59,7 @@ class ControllerAdvice {
     log.error("Unexpected exception", e)
     return ResponseEntity
       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-      .body(ErrorResponse(status = (HttpStatus.INTERNAL_SERVER_ERROR.value()), developerMessage = (e.message)))
+      .body(ErrorResponse(status = (HttpStatus.INTERNAL_SERVER_ERROR), developerMessage = (e.message)))
   }
 
   companion object {
