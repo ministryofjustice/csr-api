@@ -8,16 +8,16 @@ generic-service:
     tag: latest
     port: 8080
 
-  ingress:
-    enabled: true
-    dso_enabled: true
-    annotations:
-      certmanager.k8s.io/cluster-issuer: letsencrypt-production
-# set timeouts to slightly less than the 10m set in cmd-api
-      nginx.ingress.kubernetes.io/proxy-connect-timeout: "595"
-      nginx.ingress.kubernetes.io/proxy-send-timeout: "595"
-      nginx.ingress.kubernetes.io/proxy-read-timeout: "595"
-    path: /
+#  ingress:
+#    enabled: true
+#    dso_enabled: true
+#    annotations:
+#      certmanager.k8s.io/cluster-issuer: letsencrypt-production
+## set timeouts to slightly less than the 10m set in cmd-api
+#      nginx.ingress.kubernetes.io/proxy-connect-timeout: "595"
+#      nginx.ingress.kubernetes.io/proxy-send-timeout: "595"
+#      nginx.ingress.kubernetes.io/proxy-read-timeout: "595"
+#    path: /
 
   livenessProbe:
     periodSeconds: 30
