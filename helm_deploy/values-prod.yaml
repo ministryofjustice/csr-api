@@ -6,11 +6,5 @@ generic-service:
     enabled: true
     minAvailable: 2
 
-  ingress:
-    host: csr-api.aks-live-1.studio-hosting.service.justice.gov.uk
-    tlsSecretName: csr-api-tls-secret
-    annotations:
-      cert-manager.io/cluster-issuer: letsencrypt-production
-
   env:
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "https://sign-in.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json"

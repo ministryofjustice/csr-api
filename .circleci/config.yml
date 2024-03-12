@@ -63,7 +63,7 @@ workflows:
           pipeline_id: <<pipeline.id>>
           pipeline_number: <<pipeline.number>>
           context:
-            - csr-api-preprod
+            - check-my-diary-preprod
             - hmpps-common-vars
           requires:
             - validate
@@ -86,7 +86,7 @@ workflows:
           pipeline_number: <<pipeline.number>>
           slack_notification: true
           context:
-            - csr-api-prod
+            - check-my-diary-prod
             - hmpps-common-vars
           requires:
             - request-prod-approval
