@@ -19,10 +19,10 @@ dependencies {
 
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:0.2.1")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:0.2.2")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
 
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.4.0")
 
   testAnnotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
@@ -35,7 +35,7 @@ dependencies {
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.2.7")
   testImplementation("io.github.http-builder-ng:http-builder-ng-apache:1.0.4")
   testImplementation("com.ninja-squad:springmockk:4.0.2")
-  testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
+  testImplementation("org.awaitility:awaitility-kotlin:4.2.1")
 
   testImplementation("io.jsonwebtoken:jjwt-impl:0.12.5")
   testImplementation("io.jsonwebtoken:jjwt-jackson:0.12.5")
