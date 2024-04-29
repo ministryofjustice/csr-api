@@ -19,7 +19,7 @@ dependencies {
 
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:0.2.2")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:0.2.4")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
