@@ -11,6 +11,9 @@ generic-service:
   ingress:
     enabled: true
     tlsSecretName: csr-api-cert
+    modsecurity_enabled: true
+    modsecurity_snippet: |
+      SecRuleEngine DetectionOnly
 
   livenessProbe:
     periodSeconds: 30
@@ -46,7 +49,6 @@ generic-service:
     APPLICATIONINSIGHTS_CONNECTION_STRING: "InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY);IngestionEndpoint=https://northeurope-0.in.applicationinsights.azure.com/;LiveEndpoint=https://northeurope.livediagnostics.monitor.azure.com/"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
 
-
   namespace_secrets:
     csr-values:
       APPINSIGHTS_INSTRUMENTATIONKEY: "APPINSIGHTS_INSTRUMENTATIONKEY"
@@ -72,6 +74,10 @@ generic-service:
 
   poddisruptionbudget:
    enabled: false
+
+  allowlist:
+    groups:
+      - internal
 
 generic-prometheus-alerts:
   targetApplication: csr-api
