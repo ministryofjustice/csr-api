@@ -2,6 +2,9 @@
 generic-service:
   replicaCount: 2
 
+  ingress:
+    host: csr-api-preprod.service.justice.gov.uk
+
   poddisruptionbudget:
     enabled: true
     minAvailable: 1
