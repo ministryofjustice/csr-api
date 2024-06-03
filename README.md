@@ -1,4 +1,8 @@
 # Corporate Staff Roster (CSR) API
+[![repo standards badge](https://img.shields.io/badge/endpoint.svg?&style=flat&logo=github&url=https%3A%2F%2Foperations-engineering-reports.cloud-platform.service.justice.gov.uk%2Fapi%2Fv1%2Fcompliant_public_repositories%2Fcsr-api)](https://operations-engineering-reports.cloud-platform.service.justice.gov.uk/public-report/csr-api "Link to report")
+[![CircleCI](https://circleci.com/gh/ministryofjustice/csr-api/tree/main.svg?style=svg)](https://circleci.com/gh/ministryofjustice/csr-api)
+[![Docker Repository on Quay](https://img.shields.io/badge/quay.io-repository-2496ED.svg?logo=docker)](https://quay.io/repository/hmpps/csr-api)
+[![API docs](https://img.shields.io/badge/API_docs_-view-85EA2D.svg?logo=swagger)](https://csr-api-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html?configUrl=/v3/api-docs)
 This service acts as an anti-corrupton layer from Invision/CSR.
 It aims to remove any idiosyncrasies from the data model, primarily combining ShiftDate (LocatDate) and DetailStart/DetailEnd (Long, seconds relative to midnight) values into a more easily understandable LocalDateTime.
 
