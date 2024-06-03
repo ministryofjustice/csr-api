@@ -3,7 +3,7 @@ generic-service:
   replicaCount: 3
 
   ingress:
-    host: csr-api.service.justice.gov.uk
+    host: csr-api.prison.service.justice.gov.uk
 
   poddisruptionbudget:
     enabled: true
