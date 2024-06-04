@@ -1,9 +1,11 @@
 # Corporate Staff Roster (CSR) API
-This service acts as an anti-corrupton layer from Invision/CSR.
-It aims to remove any idiosyncrasies from the data model, primarily combining ShiftDate (LocatDate) and DetailStart/DetailEnd (Long, seconds relative to midnight) values into a more easily understandable LocalDateTime.
+[![repo standards badge](https://img.shields.io/badge/endpoint.svg?&style=flat&logo=github&url=https%3A%2F%2Foperations-engineering-reports.cloud-platform.service.justice.gov.uk%2Fapi%2Fv1%2Fcompliant_public_repositories%2Fcsr-api)](https://operations-engineering-reports.cloud-platform.service.justice.gov.uk/public-report/csr-api "Link to report")
+[![CircleCI](https://circleci.com/gh/ministryofjustice/csr-api/tree/main.svg?style=svg)](https://circleci.com/gh/ministryofjustice/csr-api)
+[![Docker Repository on Quay](https://img.shields.io/badge/quay.io-repository-2496ED.svg?logo=docker)](https://quay.io/repository/hmpps/csr-api)
+[![API docs](https://img.shields.io/badge/API_docs_-view-85EA2D.svg?logo=swagger)](https://csr-api-preprod.prison.service.justice.gov.uk/swagger-ui/index.html)
 
-## Continuous Integration  
-https://app.circleci.com/pipelines/github/ministryofjustice/csr-api
+This service acts as an anti-corruption layer from Invision/CSR.
+It aims to remove any idiosyncrasies from the data model, primarily combining ShiftDate (LocatDate) and DetailStart/DetailEnd (Long, seconds relative to midnight) values into a more easily understandable LocalDateTime.
 
 ### Prerequisites  
 * Java JDK 16+  
@@ -13,7 +15,7 @@ https://app.circleci.com/pipelines/github/ministryofjustice/csr-api
 * OAuth  [(running in a container)](#oauth-security)
   
 #### OAuth security  
-In order to run the service locally, [Nomis OAuth Service](https://github.com/ministryofjustice/nomis-oauth2-server/) is required. This can be run locally using the [docker-compose.yml](docker-compose.yml) file which will pull down the latest version.  From the command line run:
+In order to run the service locally, [HMPPS Auth](https://github.com/ministryofjustice/hmpps-auth/) is required. This can be run locally using the [docker-compose.yml](docker-compose.yml) file which will pull down the latest version.  From the command line run:
   
 ```
  docker-compose up 
