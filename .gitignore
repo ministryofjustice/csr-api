@@ -32,3 +32,4 @@ sonar-project.properties
 /.trivyignore
 helm_deploy/csr-api/charts/
 helm_deploy/csr-api/Chart.lock
+.kotlin
