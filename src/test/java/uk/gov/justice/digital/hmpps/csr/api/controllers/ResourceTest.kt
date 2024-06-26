@@ -9,26 +9,24 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.reactive.server.WebTestClient
-import uk.gov.justice.digital.hmpps.csr.api.utils.JwtAuthHelper
+import uk.gov.justice.hmpps.test.kotlin.auth.JwtAuthorisationHelper
 
 @ExtendWith(SpringExtension::class)
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 abstract class ResourceTest {
 
-  @Suppress("SpringJavaInjectionPointsAutowiringInspection")
   @Autowired
   lateinit var webTestClient: WebTestClient
 
   @Autowired
   lateinit var jdbcTemplate: JdbcTemplate
 
-  @Suppress("SpringJavaInjectionPointsAutowiringInspection")
   @Autowired
-  lateinit var jwtAuthHelper: JwtAuthHelper
+  lateinit var jwtAuthHelper: JwtAuthorisationHelper
 
   internal fun setAuthorisation(
     user: String = "TEST-USER",
     roles: List<String> = listOf(),
-  ): (HttpHeaders) -> Unit = jwtAuthHelper.setAuthorisation(user, roles)
+  ): (HttpHeaders) -> Unit = jwtAuthHelper.setAuthorisationHeader(username = user, roles = roles)
 }

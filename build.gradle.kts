@@ -26,6 +26,7 @@ dependencies {
 
   testAnnotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
+  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.0.2-beta")
   testImplementation("org.springframework.boot:spring-boot-starter-test") {
     exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     exclude(module = "mockito-core")
@@ -37,8 +38,6 @@ dependencies {
   testImplementation("com.ninja-squad:springmockk:4.0.2")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.1")
 
-  testImplementation("io.jsonwebtoken:jjwt-impl:0.12.6")
-  testImplementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
   testImplementation("io.opentelemetry:opentelemetry-sdk-testing")
 }
 
