@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.csr.api.model.CmdNotification
 import uk.gov.justice.digital.hmpps.csr.api.model.Detail
 import uk.gov.justice.digital.hmpps.csr.api.model.DetailTemplate
 import uk.gov.justice.digital.hmpps.csr.api.repository.SqlRepository
-import uk.gov.justice.digital.hmpps.csr.api.security.AuthenticationFacade
+import uk.gov.justice.hmpps.kotlin.auth.HmppsAuthenticationHolder
 import java.time.LocalDate
 
 private const val DELETECHUNKSIZE = 1000
@@ -16,13 +16,13 @@ private const val DELETECHUNKSIZE = 1000
 @Service
 class DetailService(
   private val sqlRepository: SqlRepository,
-  private val authenticationFacade: AuthenticationFacade,
+  private val authenticationFacade: HmppsAuthenticationHolder,
 ) {
   fun getStaffDetails(
     from: LocalDate,
     to: LocalDate,
   ): Collection<DetailDto> {
-    val quantumId = authenticationFacade.currentUsername
+    val quantumId = authenticationFacade.username!!
     log.debug("Fetching shift details for $quantumId")
     // We must pad the 'from' so that we don't miss night shift ends that start the day before our from-to range.
     val details = sqlRepository.getDetails(from.minusDays(1), to, quantumId)

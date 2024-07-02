@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.csr.api.model.Detail
 import uk.gov.justice.digital.hmpps.csr.api.model.DetailTemplate
 import uk.gov.justice.digital.hmpps.csr.api.repository.SqlRepository
-import uk.gov.justice.digital.hmpps.csr.api.security.AuthenticationFacade
+import uk.gov.justice.hmpps.kotlin.auth.HmppsAuthenticationHolder
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -29,7 +29,7 @@ import java.time.ZoneId
 @DisplayName("Detail Service tests")
 internal class DetailServiceTest {
   private val sqlRepository: SqlRepository = mockk(relaxUnitFun = true)
-  private val authenticationFacade: AuthenticationFacade = mockk(relaxUnitFun = true)
+  private val authenticationFacade: HmppsAuthenticationHolder = mockk(relaxUnitFun = true)
   private val service = DetailService(
     sqlRepository,
     authenticationFacade,
@@ -48,7 +48,7 @@ internal class DetailServiceTest {
     clearMocks(sqlRepository)
     clearMocks(authenticationFacade)
 
-    every { authenticationFacade.currentUsername } returns quantumId
+    every { authenticationFacade.username } returns quantumId
   }
 
   @AfterEach
@@ -62,7 +62,7 @@ internal class DetailServiceTest {
 
     @AfterEach
     fun confirmVerified() {
-      verify { authenticationFacade.currentUsername }
+      verify { authenticationFacade.username }
       confirmVerified(authenticationFacade)
     }
 
@@ -382,7 +382,7 @@ internal class DetailServiceTest {
     fun `Should replace end time of 86400 with time plus 0`() {
       val details = listOf(getValidShiftDetail(123L, 86400L))
       every { sqlRepository.getDetails(paddedFrom, to, quantumId) } returns details
-      every { authenticationFacade.currentUsername } returns quantumId
+      every { authenticationFacade.username } returns quantumId
 
       val returnValue = service.getStaffDetails(from, to)
 
@@ -396,7 +396,7 @@ internal class DetailServiceTest {
     fun `Should add start time of 86401 as 86401`() {
       val details = listOf(getValidShiftDetail(86401L, 456L))
       every { sqlRepository.getDetails(paddedFrom, to, quantumId) } returns details
-      every { authenticationFacade.currentUsername } returns quantumId
+      every { authenticationFacade.username } returns quantumId
 
       val returnValue = service.getStaffDetails(from, to)
 
@@ -410,7 +410,7 @@ internal class DetailServiceTest {
     fun `Should add end time of 86401 as 86401`() {
       val details = listOf(getValidShiftDetail(123L, 86401L))
       every { sqlRepository.getDetails(paddedFrom, to, quantumId) } returns details
-      every { authenticationFacade.currentUsername } returns quantumId
+      every { authenticationFacade.username } returns quantumId
 
       val returnValue = service.getStaffDetails(from, to)
 
@@ -424,7 +424,7 @@ internal class DetailServiceTest {
     fun `Should subtract less than 0 start time`() {
       val details = listOf(getValidShiftDetail(-123L, 456L))
       every { sqlRepository.getDetails(paddedFrom, to, quantumId) } returns details
-      every { authenticationFacade.currentUsername } returns quantumId
+      every { authenticationFacade.username } returns quantumId
 
       val returnValue = service.getStaffDetails(from, to)
 
