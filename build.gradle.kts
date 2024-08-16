@@ -1,7 +1,7 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.2"
-  kotlin("plugin.spring") version "2.0.0"
-  kotlin("plugin.jpa") version "2.0.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.3"
+  kotlin("plugin.spring") version "2.0.10"
+  kotlin("plugin.jpa") version "2.0.10"
   idea
 }
 
@@ -12,21 +12,21 @@ configurations {
 dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-  runtimeOnly("com.h2database:h2:2.3.230")
+  runtimeOnly("com.h2database:h2:2.3.232")
   runtimeOnly("com.zaxxer:HikariCP")
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("com.oracle.database.jdbc:ojdbc10:19.24.0.0")
 
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:1.0.3")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:1.0.4")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 
   testAnnotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.0.3")
+  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.0.4")
   testImplementation("org.springframework.boot:spring-boot-starter-test") {
     exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     exclude(module = "mockito-core")
