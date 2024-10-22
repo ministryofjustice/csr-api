@@ -26,7 +26,7 @@ class DetailService(
     log.debug("Fetching shift details for $quantumId")
     // We must pad the 'from' so that we don't miss night shift ends that start the day before our from-to range.
     val details = sqlRepository.getDetails(from.minusDays(1), to, quantumId)
-    log.debug("Found ${details.size} shift details for $quantumId")
+    log.debug("Found {} shift details for {}", details.size, quantumId)
 
     // Some details are created from a template and we don't get the complete time or activity data
     // so we need to get a list of templates in our results and fetch the template data separately.
@@ -34,7 +34,7 @@ class DetailService(
 
     // We merge details that refer to templates with the data from the template.
     val mergedDetails = mergeTemplatesIntoDetails(details, templates)
-    log.info("Returning ${mergedDetails.size} shift details for $quantumId")
+    log.info("Returning {} shift details for {}", mergedDetails.size, quantumId)
 
     return mapToDetailsDto(mergedDetails)
   }
@@ -44,7 +44,7 @@ class DetailService(
 
     val modified = mapCmdNotificationToDetailsDto(sqlRepository.getModified())
 
-    log.info("getModified: Found ${modified.size}, time taken ${elapsed(startTime)}s")
+    log.debug("getModified: Found {}, time taken {}s", modified.size, elapsed(startTime))
     return modified
   }
 
@@ -55,13 +55,13 @@ class DetailService(
     ids.chunked(DELETECHUNKSIZE).forEach {
       try {
         val deleted = sqlRepository.deleteProcessed(it)
-        log.info("deleteProcessed: deleted $deleted rows")
+        log.info("deleteProcessed: deleted {} rows", deleted)
       } catch (e: Exception) {
         log.error("Unexpected exception", e)
       }
     }
 
-    log.info("deleteProcessed: Received ${ids.size} ids, time taken ${elapsed(startTime)}s")
+    log.info("deleteProcessed: Received {} ids, time taken {}s", ids.size, elapsed(startTime))
   }
 
   @Transactional
@@ -89,13 +89,13 @@ class DetailService(
   private fun elapsed(startTime: Long) = (System.currentTimeMillis() - startTime) / 1000.0
 
   private fun getTemplates(templateNames: Collection<String>): Collection<DetailTemplate> {
-    log.debug("Fetching templates: $templateNames")
+    log.debug("Fetching templates: {}", templateNames)
     val templates = if (templateNames.any()) {
       sqlRepository.getDetailTemplates(templateNames)
     } else {
       setOf()
     }
-    log.debug("Found ${templates.size}: templates")
+    log.debug("Found {}: templates", templates.size)
     return templates
   }
 
