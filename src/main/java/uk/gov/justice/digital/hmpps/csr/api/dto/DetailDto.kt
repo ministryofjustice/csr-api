@@ -38,46 +38,44 @@ DetailDto @JsonCreator constructor(
 ) {
   companion object {
 
-    fun from(detail: Detail): DetailDto =
-      DetailDto(
-        id = null,
-        quantumId = detail.quantumId,
-        shiftModified = detail.shiftModified,
-        shiftType = ShiftType.from(detail.shiftType),
+    fun from(detail: Detail): DetailDto = DetailDto(
+      id = null,
+      quantumId = detail.quantumId,
+      shiftModified = detail.shiftModified,
+      shiftType = ShiftType.from(detail.shiftType),
 
-        // We don't care about the shiftDate on its own
-        // We want to include it in the detail's start/end values
-        // So that our clients don't have to work it out themselves
-        detailStart = calculateDetailDateTime(detail.shiftDate, detail.startTimeInSeconds ?: 0L),
-        detailEnd = calculateDetailDateTime(detail.shiftDate, detail.endTimeInSeconds ?: 0L),
+      // We don't care about the shiftDate on its own
+      // We want to include it in the detail's start/end values
+      // So that our clients don't have to work it out themselves
+      detailStart = calculateDetailDateTime(detail.shiftDate, detail.startTimeInSeconds ?: 0L),
+      detailEnd = calculateDetailDateTime(detail.shiftDate, detail.endTimeInSeconds ?: 0L),
 
-        activity = detail.activity,
-        actionType = detail.actionType?.let { type -> ActionType.from(type) },
-      )
+      activity = detail.activity,
+      actionType = detail.actionType?.let { type -> ActionType.from(type) },
+    )
 
-    fun from(detail: CmdNotification): DetailDto =
-      DetailDto(
-        id = detail.id,
-        quantumId = detail.quantumId,
-        shiftModified = detail.lastModified,
-        shiftType = if (detail.levelId == 4000) ShiftType.OVERTIME else ShiftType.SHIFT,
+    fun from(detail: CmdNotification): DetailDto = DetailDto(
+      id = detail.id,
+      quantumId = detail.quantumId,
+      shiftModified = detail.lastModified,
+      shiftType = if (detail.levelId == 4000) ShiftType.OVERTIME else ShiftType.SHIFT,
 
-        // We don't care about the shiftDate on its own
-        // We want to include it in the detail's start/end values
-        // So that our clients don't have to work it out themselves
-        detailStart = calculateDetailDateTime(detail.onDate, detail.startTimeInSeconds ?: 0L),
-        detailEnd = calculateDetailDateTime(detail.onDate, detail.endTimeInSeconds ?: 0L),
+      // We don't care about the shiftDate on its own
+      // We want to include it in the detail's start/end values
+      // So that our clients don't have to work it out themselves
+      detailStart = calculateDetailDateTime(detail.onDate, detail.startTimeInSeconds ?: 0L),
+      detailEnd = calculateDetailDateTime(detail.onDate, detail.endTimeInSeconds ?: 0L),
 
-        activity = detail.activity,
-        actionType = detail.actionType.let {
-          when (it) {
-            47012 -> ActionType.DELETE
-            0, 47001 -> ActionType.EDIT
-            47006, 47015 -> ActionType.ADD
-            else -> ActionType.UNCHANGED
-          }
-        },
-      )
+      activity = detail.activity,
+      actionType = detail.actionType.let {
+        when (it) {
+          47012 -> ActionType.DELETE
+          0, 47001 -> ActionType.EDIT
+          47006, 47015 -> ActionType.ADD
+          else -> ActionType.UNCHANGED
+        }
+      },
+    )
 
     // if both start and end are this magic number then detail is a full day activity
     private const val FULL_DAY_ACTIVITY = -2_147_483_648L

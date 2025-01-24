@@ -44,12 +44,11 @@ class ControllerAdvice {
     }
 
   @ExceptionHandler(MissingServletRequestParameterException::class)
-  fun handleValidationException(e: MissingServletRequestParameterException): ResponseEntity<ErrorResponse> =
-    ResponseEntity
-      .status(HttpStatus.BAD_REQUEST)
-      .body(ErrorResponse(status = HttpStatus.BAD_REQUEST, developerMessage = e.message)).also {
-        log.debug("Bad Request (400) returned: {}", e.message)
-      }
+  fun handleValidationException(e: MissingServletRequestParameterException): ResponseEntity<ErrorResponse> = ResponseEntity
+    .status(HttpStatus.BAD_REQUEST)
+    .body(ErrorResponse(status = HttpStatus.BAD_REQUEST, developerMessage = e.message)).also {
+      log.debug("Bad Request (400) returned: {}", e.message)
+    }
 
   @ExceptionHandler(NoResourceFoundException::class)
   fun handleNoResourceFoundException(e: NoResourceFoundException): ResponseEntity<ErrorResponse> = ResponseEntity

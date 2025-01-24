@@ -16,37 +16,29 @@ const val ACTIVITY = 6003
 @Repository
 class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
 
-  fun getDetails(from: LocalDate, to: LocalDate, quantumId: String): Collection<Detail> {
-    return jdbcTemplate.query(
-      GET_DETAILS,
-      MapSqlParameterSource()
-        .addValue("from", from)
-        .addValue("to", to)
-        .addValue("quantumId", quantumId),
-      detailsRowMapper,
-    )
-  }
+  fun getDetails(from: LocalDate, to: LocalDate, quantumId: String): Collection<Detail> = jdbcTemplate.query(
+    GET_DETAILS,
+    MapSqlParameterSource()
+      .addValue("from", from)
+      .addValue("to", to)
+      .addValue("quantumId", quantumId),
+    detailsRowMapper,
+  )
 
-  fun getModified(): List<CmdNotification> =
-    jdbcTemplate.query(GET_MODIFIED, modifiedRowMapper)
+  fun getModified(): List<CmdNotification> = jdbcTemplate.query(GET_MODIFIED, modifiedRowMapper)
 
-  fun deleteProcessed(ids: List<Long>) =
-    jdbcTemplate.update("delete from CMD_NOTIFICATION where ID in (:ids)", mapOf("ids" to ids))
+  fun deleteProcessed(ids: List<Long>) = jdbcTemplate.update("delete from CMD_NOTIFICATION where ID in (:ids)", mapOf("ids" to ids))
 
-  fun deleteAll() =
-    jdbcTemplate.update("delete from CMD_NOTIFICATION", emptyMap<String, String>())
+  fun deleteAll() = jdbcTemplate.update("delete from CMD_NOTIFICATION", emptyMap<String, String>())
 
-  fun deleteOld(date: LocalDate) =
-    jdbcTemplate.update("delete from CMD_NOTIFICATION where LASTMODIFIED < :date", mapOf("date" to date))
+  fun deleteOld(date: LocalDate) = jdbcTemplate.update("delete from CMD_NOTIFICATION where LASTMODIFIED < :date", mapOf("date" to date))
 
-  fun getDetailTemplates(templateNames: Collection<String>): Collection<DetailTemplate> {
-    return jdbcTemplate.query(
-      GET_DETAIL_TEMPLATES,
-      MapSqlParameterSource()
-        .addValue("values", templateNames),
-      detailsTemplateRowMapper,
-    )
-  }
+  fun getDetailTemplates(templateNames: Collection<String>): Collection<DetailTemplate> = jdbcTemplate.query(
+    GET_DETAIL_TEMPLATES,
+    MapSqlParameterSource()
+      .addValue("values", templateNames),
+    detailsTemplateRowMapper,
+  )
 
   companion object {
 
