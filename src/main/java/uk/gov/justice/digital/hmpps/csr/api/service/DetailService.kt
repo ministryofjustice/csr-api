@@ -101,8 +101,7 @@ class DetailService(
 
   private fun mapToDetailsDto(details: Collection<Detail>): Collection<DetailDto> = details.map(DetailDto::from)
 
-  private fun mapCmdNotificationToDetailsDto(notifications: List<CmdNotification>): List<DetailDto> =
-    notifications.map(DetailDto::from)
+  private fun mapCmdNotificationToDetailsDto(notifications: List<CmdNotification>): List<DetailDto> = notifications.map(DetailDto::from)
 
   private fun mergeTemplatesIntoDetails(
     details: Collection<Detail>,

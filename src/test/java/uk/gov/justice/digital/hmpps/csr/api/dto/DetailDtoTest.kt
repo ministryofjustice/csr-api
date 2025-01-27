@@ -129,18 +129,16 @@ class DetailDtoTest {
     private val actionType = ActionType.EDIT
     private val activity = "Phone Center"
 
-    fun getFullyPopulatedDetail(): Detail {
-      return Detail(
-        quantumId,
-        shiftModified,
-        shiftDate,
-        shiftType.value,
-        detailStartTimeInSeconds,
-        detailEndTimeInSeconds,
-        activity,
-        actionType.value,
-        null,
-      )
-    }
+    fun getFullyPopulatedDetail(): Detail = Detail(
+      quantumId,
+      shiftModified,
+      shiftDate,
+      shiftType.value,
+      detailStartTimeInSeconds,
+      detailEndTimeInSeconds,
+      activity,
+      actionType.value,
+      null,
+    )
   }
 }
