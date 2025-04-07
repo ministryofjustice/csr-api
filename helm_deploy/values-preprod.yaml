@@ -4,6 +4,7 @@ generic-service:
 
   ingress:
     host: csr-api-preprod.prison.service.justice.gov.uk
+    className: modsec-non-prod
 
   poddisruptionbudget:
     enabled: true
