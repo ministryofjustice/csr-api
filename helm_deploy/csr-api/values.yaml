@@ -4,7 +4,7 @@ generic-service:
   productId: DPS052
 
   image:
-    repository: quay.io/hmpps/csr-api
+    repository: ghcr.io/ministryofjustice/csr-api
     tag: latest
     port: 8080
 
@@ -56,7 +56,7 @@ generic-service:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
 
   namespace_secrets:
-    application-insights:
+    csr-api-application-insights:
       APPLICATIONINSIGHTS_CONNECTION_STRING: "APPLICATIONINSIGHTS_CONNECTION_STRING"
     csr-values:
       CSR_DATABASE_URL: CSR_DATABASE_URL
