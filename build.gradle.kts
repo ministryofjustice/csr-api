@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.3"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.4"
   kotlin("plugin.spring") version "2.2.0"
   kotlin("plugin.jpa") version "2.2.0"
   idea
@@ -19,14 +19,14 @@ dependencies {
 
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:1.4.10")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:1.4.11")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
 
   testAnnotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.4.7")
+  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.4.11")
   testImplementation("org.springframework.boot:spring-boot-starter-test") {
     exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     exclude(module = "mockito-core")
