@@ -1,46 +1,50 @@
 package uk.gov.justice.digital.hmpps.csr.api.controllers
 
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.json.BasicJsonTester
-import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.test.web.servlet.client.RestTestClient
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(value = ["test"])
-class HealthResourceTest(@Autowired val testRestTemplate: TestRestTemplate) {
+@AutoConfigureRestTestClient
+class HealthResourceTest(@Autowired val restTestClient: RestTestClient) {
 
   val jsonTester = BasicJsonTester(this::class.java)
 
   @Test
   fun `Ping test`() {
-    val response = testRestTemplate.getForEntity(PING_URL, String::class.java)
-    assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-    assertThat(jsonTester.from(response.body)).hasJsonPathStringValue("$.status", "UP")
+    restTestClient.get().uri(PING_URL)
+      .exchange()
+      .expectStatus().isEqualTo(HttpStatus.OK)
+      .expectBody().jsonPath("$.status").isEqualTo("UP")
   }
 
   @Test
   fun `Health test`() {
-    val response = testRestTemplate.getForEntity(HEALTH_URL, String::class.java)
-    assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-    assertThat(jsonTester.from(response.body)).hasJsonPathStringValue("$.status", "UP")
-    assertThat(jsonTester.from(response.body)).hasJsonPathStringValue("$.components.ping.status", "UP")
-    // TODO: db status - we don't have a DB yet.
-    // assertThat(jsonTester.from(response.body)).hasJsonPathStringValue("$.components.db.status", "UP")
-    assertThat(jsonTester.from(response.body)).hasJsonPathStringValue("$.components.diskSpace.status", "UP")
+    restTestClient.get().uri(HEALTH_URL)
+      .exchange()
+      .expectStatus().isEqualTo(HttpStatus.OK)
+      .expectBody()
+      .jsonPath("$.status").isEqualTo("UP")
+      .jsonPath("$.components.ping.status").isEqualTo("UP")
+      .jsonPath("$.components.diskSpace.status").isEqualTo("UP")
   }
 
   @Test
   fun `Info test`() {
-    val response = testRestTemplate.getForEntity(INFO_URL, String::class.java)
-    assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-    assertThat(jsonTester.from(response.body)).hasJsonPathStringValue("$.build.name", "csr-api")
+    restTestClient.get().uri(INFO_URL)
+      .exchange()
+      .expectStatus().isEqualTo(HttpStatus.OK)
+      .expectBody()
+      .jsonPath("$.build.name").isEqualTo("csr-api")
   }
 
   companion object {

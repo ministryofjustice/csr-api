@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.jdbc.core.RowMapper
-import org.springframework.test.web.reactive.server.expectBody
+import org.springframework.test.web.servlet.client.expectBody
 import uk.gov.justice.digital.hmpps.csr.api.domain.ActionType
 import uk.gov.justice.digital.hmpps.csr.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.csr.api.dto.DetailDto
@@ -69,7 +69,7 @@ class DetailResourceTest : ResourceTest() {
 
       // Note some tables are still populated from flyway SQL
 
-      val response = webTestClient.get()
+      val response = restTestClient.get()
         .uri {
           it.path("/user/details/1")
             .queryParam("from", "2022-03-10")
@@ -79,7 +79,7 @@ class DetailResourceTest : ResourceTest() {
         .headers(setAuthorisation(roles = listOf("ROLE_CMD")))
         .exchange()
         .expectStatus().isOk
-        .expectBodyList(DetailDto::class.java)
+        .expectBody<List<DetailDto>>()
         .returnResult()
 
       assertThat(response.responseBody).containsExactly(
@@ -125,7 +125,7 @@ class DetailResourceTest : ResourceTest() {
 
   @Test
   fun test_unauthorised() {
-    webTestClient.get()
+    restTestClient.get()
       .uri("/somewhere")
       .exchange()
       .expectStatus().isUnauthorized
@@ -154,12 +154,12 @@ class DetailResourceTest : ResourceTest() {
       jdbcTemplate.update("$insert (106, 1100, 4000, '2022-03-22', CURRENT_DATE - 1, null,  $NINE_HRS, $TEN_HRS, null,12)") // staff id not in tw_protocol means null timestamp
 
       assertThat(
-        webTestClient.get()
+        restTestClient.get()
           .uri("/updates/1")
           .headers(setAuthorisation(roles = listOf("ROLE_CMD")))
           .exchange()
           .expectStatus().isOk
-          .expectBodyList(DetailDto::class.java)
+          .expectBody<List<DetailDto>>()
           .returnResult().responseBody,
       ).containsExactlyInAnyOrder(
         DetailDto(
@@ -233,11 +233,11 @@ class DetailResourceTest : ResourceTest() {
       jdbcTemplate.update("$insert (102, 1148, 4000, '2022-03-22', SYSDATE + 1, 47006, 0,0, null,null)")
       jdbcTemplate.update("$insert (103, 1149, 1000, '2022-03-22', SYSDATE + 1, 47006, 0,0, null,null)")
 
-      webTestClient.put()
+      restTestClient.put()
         .uri("/updates/1")
         .headers(setAuthorisation(roles = listOf("ROLE_CMD")))
         .contentType(MediaType.APPLICATION_JSON)
-        .bodyValue("""[101,103,999]""")
+        .body("""[101,103,999]""")
         .exchange()
         .expectStatus().isOk
 
@@ -249,7 +249,7 @@ class DetailResourceTest : ResourceTest() {
       jdbcTemplate.update("$insert (101, 1147, 1000, '2022-03-21', SYSDATE,     47001, 0,0, null,null)")
       jdbcTemplate.update("$insert (102, 1148, 4000, '2022-03-22', SYSDATE + 1, 47006, 0,0, null,null)")
 
-      webTestClient.put()
+      restTestClient.put()
         .uri("/updates/delete-all/1")
         .headers(setAuthorisation(roles = ADMIN_ROLE))
         .exchange()
@@ -266,7 +266,7 @@ class DetailResourceTest : ResourceTest() {
       jdbcTemplate.update("$insertR2 (101, 1147, 1000, '2022-03-21', SYSDATE,     47001, 0,0, null,null)")
       jdbcTemplate.update("$insertR2 (102, 1148, 4000, '2022-03-22', SYSDATE + 1, 47006, 0,0, null,null)")
 
-      webTestClient.put()
+      restTestClient.put()
         .uri("/updates/delete-all/2")
         .headers(setAuthorisation(roles = ADMIN_ROLE))
         .exchange()
@@ -283,7 +283,7 @@ class DetailResourceTest : ResourceTest() {
       jdbcTemplate.update("$insert (103, 1147, 1000, '2022-01-01', to_date('2022-03-03 08:00', 'YYYY-MM-DD HH24:MI'), 47001, 0,0, null,null)")
       jdbcTemplate.update("$insert (104, 1148, 4000, '2022-01-01', to_date('2022-03-04 08:00', 'YYYY-MM-DD HH24:MI'), 47001, 0,0, null,null)")
 
-      webTestClient.put()
+      restTestClient.put()
         .uri("/updates/delete-old/1?date=2022-03-03")
         .headers(setAuthorisation(roles = ADMIN_ROLE))
         .exchange()
@@ -297,7 +297,7 @@ class DetailResourceTest : ResourceTest() {
 
     @Test
     fun testDeleteOldInvalid() {
-      webTestClient.put()
+      restTestClient.put()
         .uri("/updates/delete-old/1")
         .headers(setAuthorisation(roles = ADMIN_ROLE))
         .exchange()
@@ -306,7 +306,7 @@ class DetailResourceTest : ResourceTest() {
 
     @Test
     fun testDeleteOldNoRole() {
-      webTestClient.put()
+      restTestClient.put()
         .uri("/updates/delete-old/1?date=2022-03-03")
         .headers(setAuthorisation())
         .exchange()
@@ -315,7 +315,7 @@ class DetailResourceTest : ResourceTest() {
 
     @Test
     fun testDeleteAllNoRole() {
-      webTestClient.put()
+      restTestClient.put()
         .uri("/updates/delete-all/1")
         .headers(setAuthorisation())
         .exchange()
