@@ -40,3 +40,9 @@ management:
     info:
       cache:
         time-to-live: 2000ms
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
