@@ -47,3 +47,8 @@ csr:
       driverClassName: org.h2.Driver
       schema: R2
 
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
