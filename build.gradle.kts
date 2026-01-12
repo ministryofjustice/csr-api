@@ -11,12 +11,6 @@ configurations {
   }
 }
 
-configurations {
-  implementation {
-    exclude(group = "com.fasterxml.jackson.module", module = "jackson-module-kotlin")
-  }
-}
-
 dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
@@ -47,6 +41,9 @@ dependencies {
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
 
   testImplementation("io.opentelemetry:opentelemetry-sdk-testing")
+  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.37") {
+    exclude(group = "io.swagger.core.v3")
+  }
 }
 
 // Language versions
