@@ -52,7 +52,6 @@ generic-service:
             topologyKey: kubernetes.io/hostname
 
   env:
-    JAVA_OPTS: -Xmx1024m
     SPRING_PROFILES_ACTIVE: oracle
     SERVER_PORT: 8080
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
