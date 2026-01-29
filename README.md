@@ -17,7 +17,7 @@ It aims to remove any idiosyncrasies from the data model, primarily combining Sh
 In order to run the service locally, [HMPPS Auth](https://github.com/ministryofjustice/hmpps-auth/) is required. This can be run locally using the [docker-compose.yml](docker-compose.yml) file which will pull down the latest version.  From the command line run:
   
 ```
- docker-compose up 
+ docker compose up 
 ```  
 
 ### Build service and run tests  
