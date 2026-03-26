@@ -121,4 +121,16 @@ class OpenApiDocsTest : ResourceTest() {
         assertThat(it).containsExactlyInAnyOrder("detailStart", "detailEnd", "shiftType")
       }
   }
+
+  @Test
+  fun `the swagger json don't contain any duplicate methods`() {
+    restTestClient.get()
+      .uri("/v3/api-docs")
+      .accept(MediaType.APPLICATION_JSON)
+      .exchange()
+      .expectStatus().isOk
+      .expectBody().jsonPath("*..operationId").value<List<String>> { list ->
+        assertThat(list).filteredOn { it.contains("_") }.isEmpty()
+      }
+  }
 }
