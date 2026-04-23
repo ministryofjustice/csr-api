@@ -1,13 +1,16 @@
 spring:
-  profiles:
-    include: oracle
-
   security:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: https://sign-in-dev.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json
+          jwk-set-uri: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json
 
 logging:
   level:
     uk.gov: DEBUG
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
