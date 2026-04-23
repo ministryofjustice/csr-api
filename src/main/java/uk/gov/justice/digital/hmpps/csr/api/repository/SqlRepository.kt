@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository
 import uk.gov.justice.digital.hmpps.csr.api.model.CmdNotification
 import uk.gov.justice.digital.hmpps.csr.api.model.Detail
 import uk.gov.justice.digital.hmpps.csr.api.model.DetailTemplate
+import uk.gov.justice.digital.hmpps.csr.api.utils.region.CsrConfiguration
 import java.sql.ResultSet
 import java.time.LocalDate
 
@@ -14,7 +15,15 @@ const val DAY_MODEL = 6001
 const val ACTIVITY = 6003
 
 @Repository
-class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
+class SqlRepository(
+  private val jdbcTemplate: NamedParameterJdbcTemplate,
+  csrConfiguration: CsrConfiguration,
+) {
+  private val schemaCommand = if (csrConfiguration.driverClassName.contains("h2")) {
+    "SET SCHEMA "
+  } else {
+    "ALTER SESSION SET CURRENT_SCHEMA = "
+  }
 
   fun getDetails(from: LocalDate, to: LocalDate, quantumId: String): Collection<Detail> = jdbcTemplate.query(
     GET_DETAILS,
@@ -39,6 +48,8 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
       .addValue("values", templateNames),
     detailsTemplateRowMapper,
   )
+
+  fun setSchema(schemaName: String) = jdbcTemplate.update("$schemaCommand $schemaName", emptyMap<String, String>())
 
   companion object {
 

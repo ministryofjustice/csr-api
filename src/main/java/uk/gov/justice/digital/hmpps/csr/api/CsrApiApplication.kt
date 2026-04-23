@@ -6,50 +6,31 @@ import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
-import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource
-import org.springframework.scheduling.annotation.EnableAsync
-import uk.gov.justice.digital.hmpps.csr.api.config.RegionAwareRoutingSource
-import uk.gov.justice.digital.hmpps.csr.api.utils.region.Region
-import uk.gov.justice.digital.hmpps.csr.api.utils.region.Regions
+import org.springframework.context.annotation.Configuration
+import uk.gov.justice.digital.hmpps.csr.api.utils.region.CsrConfiguration
 import javax.sql.DataSource
 
 @SpringBootApplication
-@EnableAsync
-@EnableConfigurationProperties
 class CsrApiApplication {
-
-  @Autowired
-  lateinit var regionData: Regions
-
-  @Bean
-  fun dataSource(): DataSource {
-    val dataSource: AbstractRoutingDataSource = RegionAwareRoutingSource()
-    /*
-    Read the region array in from application properties
-    and construct datasources mapped to region names
-    We then pass in the region as a header with the request
-    and use this to select the right datasource
-     */
-    val targetDataSources = regionData.regions.map {
-      it.name to regionDataSource(it)
-    }
-
-    dataSource.setTargetDataSources(targetDataSources.toMap())
-    return dataSource
-  }
-
-  fun regionDataSource(region: Region): DataSource = HikariDataSource().also {
-    it.driverClassName = region.driverClassName
-    it.jdbcUrl = region.url
-    it.username = region.username
-    it.password = region.password
-    it.schema = region.schema
-  }
-
   companion object {
     @JvmStatic
     fun main(args: Array<String>) {
       SpringApplication.run(CsrApiApplication::class.java, *args)
     }
+  }
+}
+
+@Configuration
+@EnableConfigurationProperties(CsrConfiguration::class)
+class CsrRegionDataSourceConfiguration(@Autowired private val regionData: CsrConfiguration) {
+  @Bean
+  fun regionDataSource(): DataSource = HikariDataSource().also {
+    it.driverClassName = regionData.driverClassName
+    it.jdbcUrl = regionData.url
+    it.username = regionData.username
+    it.password = regionData.password
+    it.maximumPoolSize = 20
+    // Startup set to R1 for Flyway's benefit
+    it.schema = regionData.regions[0].schema
   }
 }

@@ -26,6 +26,7 @@ class DetailResourceTest : ResourceTest() {
 
   @BeforeEach
   fun cleanUp() {
+    jdbcTemplate.update("SET SCHEMA PUBLIC")
     jdbcTemplate.update("delete from CMD_NOTIFICATION")
     jdbcTemplate.update("delete from R2.CMD_NOTIFICATION")
     jdbcTemplate.update("delete from TK_MODEL")
@@ -272,7 +273,7 @@ class DetailResourceTest : ResourceTest() {
         .exchange()
         .expectStatus().isOk
 
-      assertThat(jdbcTemplate.query("SELECT ID FROM CMD_NOTIFICATION", testRowMapper)).asList().hasSize(1)
+      assertThat(jdbcTemplate.query("SELECT ID FROM PUBLIC.CMD_NOTIFICATION", testRowMapper)).asList().hasSize(1)
       assertThat(jdbcTemplate.query("SELECT ID FROM R2.CMD_NOTIFICATION", testRowMapper)).asList().hasSize(0)
     }
 
