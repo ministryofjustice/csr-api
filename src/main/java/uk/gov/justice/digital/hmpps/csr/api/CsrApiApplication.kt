@@ -29,7 +29,8 @@ class CsrRegionDataSourceConfiguration(@Autowired private val regionData: CsrCon
     it.jdbcUrl = regionData.url
     it.username = regionData.username
     it.password = regionData.password
-    it.maximumPoolSize = 20
+    it.minimumIdle = 5
+    it.maximumPoolSize = 30
     // Startup set to R1 for Flyway's benefit
     it.schema = regionData.regions[0].schema
   }

@@ -11,17 +11,18 @@ import uk.gov.justice.digital.hmpps.csr.api.repository.SqlRepository
 import uk.gov.justice.hmpps.kotlin.auth.HmppsAuthenticationHolder
 import java.time.LocalDate
 
-private const val DELETECHUNKSIZE = 1000
-
 @Service
 class DetailService(
   private val sqlRepository: SqlRepository,
   private val authenticationFacade: HmppsAuthenticationHolder,
 ) {
+  @Transactional(readOnly = true)
   fun getStaffDetails(
     from: LocalDate,
     to: LocalDate,
+    regionSchema: String,
   ): Collection<DetailDto> {
+    sqlRepository.setSchema(regionSchema)
     val quantumId = authenticationFacade.username!!
     log.debug("Fetching shift details for $quantumId")
     // We must pad the 'from' so that we don't miss night shift ends that start the day before our from-to range.
@@ -39,7 +40,10 @@ class DetailService(
     return mapToDetailsDto(mergedDetails)
   }
 
-  fun getModified(): List<DetailDto> {
+  @Transactional(readOnly = true)
+  fun getModified(regionSchema: String): List<DetailDto> {
+    sqlRepository.setSchema(regionSchema)
+
     val startTime = System.currentTimeMillis()
 
     val modified = mapCmdNotificationToDetailsDto(sqlRepository.getModified())
@@ -48,24 +52,18 @@ class DetailService(
     return modified
   }
 
-  // Intentionally not transactional: we want chunks to get deleted even if one fails
-  fun deleteProcessed(ids: List<Long>) {
-    val startTime = System.currentTimeMillis()
+  @Transactional
+  fun deleteProcessed(ids: List<Long>, regionSchema: String) {
+    sqlRepository.setSchema(regionSchema)
 
-    ids.chunked(DELETECHUNKSIZE).forEach {
-      try {
-        val deleted = sqlRepository.deleteProcessed(it)
-        log.info("deleteProcessed: deleted {} rows", deleted)
-      } catch (e: Exception) {
-        log.error("Unexpected exception", e)
-      }
-    }
-
-    log.info("deleteProcessed: Received {} ids, time taken {}s", ids.size, elapsed(startTime))
+    val deleted = sqlRepository.deleteProcessed(ids)
+    log.info("deleteProcessed: deleted {} rows", deleted)
   }
 
   @Transactional
-  fun deleteAll(): String {
+  fun deleteAll(regionSchema: String): String {
+    sqlRepository.setSchema(regionSchema)
+
     val startTime = System.currentTimeMillis()
 
     val deleted = sqlRepository.deleteAll()
@@ -76,7 +74,9 @@ class DetailService(
   }
 
   @Transactional
-  fun deleteOld(date: LocalDate): String {
+  fun deleteOld(date: LocalDate, regionSchema: String): String {
+    sqlRepository.setSchema(regionSchema)
+
     val startTime = System.currentTimeMillis()
 
     val deleted = sqlRepository.deleteOld(date)

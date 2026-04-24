@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.slf4j.LoggerFactory
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.http.ResponseEntity
@@ -18,10 +19,11 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.csr.api.dto.DetailDto
-import uk.gov.justice.digital.hmpps.csr.api.repository.SqlRepository
 import uk.gov.justice.digital.hmpps.csr.api.service.DetailService
 import uk.gov.justice.digital.hmpps.csr.api.utils.region.CsrConfiguration
 import java.time.LocalDate
+
+private const val DELETE_CHUNK_SIZE = 100
 
 @Tag(name = "details", description = "Details of shifts from CSR")
 @RestController
@@ -29,7 +31,6 @@ import java.time.LocalDate
 @PreAuthorize("hasRole('ROLE_CMD')")
 class DetailController(
   private val detailService: DetailService,
-  private val sqlRepository: SqlRepository,
   csrConfiguration: CsrConfiguration,
 ) {
   private val regionMap = csrConfiguration.regions.associate { it.name to it.schema }
@@ -50,9 +51,7 @@ class DetailController(
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     to: LocalDate,
   ): ResponseEntity<Collection<DetailDto>> {
-    setDatabaseSchema(region)
-
-    val details = detailService.getStaffDetails(from, to)
+    val details = detailService.getStaffDetails(from, to, translateRegionIntoSchema(region))
     return ResponseEntity.ok(details)
   }
 
@@ -61,11 +60,7 @@ class DetailController(
   fun getModified(
     @PathVariable
     region: Int,
-  ): List<DetailDto> {
-    setDatabaseSchema(region)
-
-    return detailService.getModified()
-  }
+  ): List<DetailDto> = detailService.getModified(translateRegionIntoSchema(region))
 
   @Operation(
     summary = "Delete specific modified records",
@@ -87,9 +82,19 @@ class DetailController(
     @Schema(description = "List of ids to delete")
     ids: List<Long>,
   ) {
-    setDatabaseSchema(region)
+    val startTime = System.currentTimeMillis()
+    val regionSchema = translateRegionIntoSchema(region)
 
-    detailService.deleteProcessed(ids)
+    ids.chunked(DELETE_CHUNK_SIZE).forEach {
+      try {
+        val deleted = detailService.deleteProcessed(it, regionSchema)
+        log.info("deleteProcessed: deleted {} rows", deleted)
+      } catch (e: Exception) {
+        log.error("Unexpected exception", e)
+      }
+    }
+
+    log.info("deleteProcessed: Received {} ids, time taken {}s", ids.size, elapsed(startTime))
   }
 
   @Operation(
@@ -102,11 +107,7 @@ class DetailController(
     @PathVariable
     @Schema(description = "the number of the required region, 1-6")
     region: Int,
-  ): String {
-    setDatabaseSchema(region)
-
-    return detailService.deleteAll()
-  }
+  ): String = detailService.deleteAll(translateRegionIntoSchema(region))
 
   @Operation(
     summary = "Delete old notification records",
@@ -122,13 +123,13 @@ class DetailController(
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Parameter(description = "Delete all rows added before this date", example = "2022-03-28")
     date: LocalDate,
-  ): String {
-    setDatabaseSchema(region)
+  ): String = detailService.deleteOld(date, translateRegionIntoSchema(region))
 
-    return detailService.deleteOld(date)
-  }
+  private fun translateRegionIntoSchema(region: Int) = regionMap[region]!!
 
-  private fun setDatabaseSchema(region: Int) {
-    sqlRepository.setSchema(regionMap[region]!!)
+  private fun elapsed(startTime: Long) = (System.currentTimeMillis() - startTime) / 1000.0
+
+  private companion object {
+    private val log = LoggerFactory.getLogger(DetailService::class.java)
   }
 }
