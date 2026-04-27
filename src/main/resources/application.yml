@@ -8,10 +8,6 @@ spring:
     open-in-view: false
     show-sql: false
 
-  datasource:
-    hikari:
-      maximum-pool-size: 35
-
 server:
   port: 8081
   servlet:
