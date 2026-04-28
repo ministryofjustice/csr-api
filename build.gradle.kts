@@ -28,6 +28,8 @@ dependencies {
   constraints {
     implementation("org.webjars:swagger-ui:5.32.2")
   }
+  implementation("io.micrometer:micrometer-registry-azure-monitor:1.16.5")
+  implementation("com.microsoft.azure:applicationinsights-core:2.6.4")
 
   testAnnotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
